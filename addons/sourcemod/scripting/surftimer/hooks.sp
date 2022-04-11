@@ -181,8 +181,11 @@ public Action Event_OnPlayerSpawn(Handle event, const char[] name, bool dontBroa
 				g_bIgnoreZone[client] = false;
 			}
 
+			//START RECORDING
+			StartRecording(client);
+			if(g_bhasStages)
+				Stage_StartRecording(client);
 
-			//StartRecording(client);
 			CreateTimer(1.5, CenterMsgTimer, client, TIMER_FLAG_NO_MAPCHANGE);
 
 			//THIS "FIXES" A BUG WHERE THE TIMEINCREMENT WOULD BE CHANGED IN THE BEGINNING FOR FUCK ALL REASON...
