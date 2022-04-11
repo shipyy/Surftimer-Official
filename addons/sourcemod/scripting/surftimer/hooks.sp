@@ -182,7 +182,7 @@ public Action Event_OnPlayerSpawn(Handle event, const char[] name, bool dontBroa
 			}
 
 
-			StartRecording(client);
+			//StartRecording(client);
 			CreateTimer(1.5, CenterMsgTimer, client, TIMER_FLAG_NO_MAPCHANGE);
 
 			//THIS "FIXES" A BUG WHERE THE TIMEINCREMENT WOULD BE CHANGED IN THE BEGINNING FOR FUCK ALL REASON...
@@ -1020,6 +1020,21 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 		else
 		{
 			Replay_Recording(client, buttons, subtype, seed, impulse, weapon, angles, vel);
+
+			//IF PLAYER IS IN A STARTZONE
+			if(g_bInStartZone[client] || g_bInStageZone[client]){
+				CPrintToChat(client,"START");
+
+				//IF PLAYER IS IN STARTZONE/STAGESTART , NOT MOVING AND NOT ON A RUN WE CAN STOP RECORDING WHEN HE STOPS MOVING
+				if(g_fLastSpeed[client] == 0 && g_aRecording[client] != null && !g_bTimerRunning[client])
+					StopRecording(client);
+				//IF THE PLAYER GETS A WRCP DURING A RUN BUT STOPS AT THE STARTZONE WE TRIM THE FRAMES
+				else if(g_fLastSpeed[client] == 0 && g_aRecording[client] != null && g_bTimerRunning[client]){
+					if(g_bhasStages)
+						g_iStageStartFrame[client] = g_iRecordedTicks[client];
+				}
+			}
+
 		}
 
 		//PRINFO
