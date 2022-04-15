@@ -298,6 +298,7 @@ public void CL_OnEndTimerPress(int client)
 						for (int i = 0; i < CPLIMIT; i++)
 						{
 							g_fCheckpointServerRecord[zGroup][i] = g_fCheckpointTimesNew[zGroup][client][i];
+							g_fCheckpointSpeedServerRecord[zGroup][i] = g_fCheckpointSpeedsNew[zGroup][client][i];
 						}
 						g_bCheckpointRecordFound[zGroup] = true;
 					}
@@ -335,6 +336,7 @@ public void CL_OnEndTimerPress(int client)
 					for (int i = 0; i < CPLIMIT; i++)
 					{
 						g_fCheckpointServerRecord[zGroup][i] = g_fCheckpointTimesNew[zGroup][client][i];
+						g_fCheckpointSpeedServerRecord[zGroup][i] = g_fCheckpointSpeedsNew[zGroup][client][i];
 					}
 					g_bCheckpointRecordFound[zGroup] = true;
 				}
@@ -549,6 +551,7 @@ public void CL_OnEndTimerPress(int client)
 						for (int i = 0; i < CPLIMIT; i++)
 						{
 							g_fCheckpointServerRecord[zGroup][i] = g_fCheckpointTimesNew[zGroup][client][i];
+							g_fCheckpointSpeedServerRecord[zGroup][i] = g_fCheckpointSpeedsNew[zGroup][client][i];
 						}
 						g_bCheckpointRecordFound[zGroup] = true;
 					}
@@ -586,8 +589,10 @@ public void CL_OnEndTimerPress(int client)
 				// Update Checkpoints
 				if (g_bCheckpointsEnabled[client] && !g_bPositionRestored[client])
 				{
-					for (int i = 0; i < CPLIMIT; i++)
+					for (int i = 0; i < CPLIMIT; i++){
 						g_fCheckpointServerRecord[zGroup][i] = g_fCheckpointTimesNew[zGroup][client][i];
+						g_fCheckpointSpeedServerRecord[zGroup][i] = g_fCheckpointSpeedsNew[zGroup][client][i];
+					}
 					g_bCheckpointRecordFound[zGroup] = true;
 				}
 
