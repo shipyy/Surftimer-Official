@@ -151,6 +151,9 @@ void CreateCommands()
 	RegConsoleCmd("sm_surftimer", Client_OptionMenu, "[surftimer] opens options menu");
 	RegConsoleCmd("sm_bhoptimer", Client_OptionMenu, "[surftimer] opens options menu");
 	RegConsoleCmd("sm_knife", Command_GiveKnife, "[surftimer] Give players a knife");
+	RegConsoleCmd("sm_mhud", Command_MinimalHUD, "[surftimer] Use Minimal HUD");
+	RegConsoleCmd("sm_chud", Command_CentreSpeedHud, "[surftimer] Use Center HUD");
+
 
 	// New Commands
 	RegConsoleCmd("sm_mrank", Command_SelectMapTime, "[surftimer] prints a players map record in chat.");
@@ -210,6 +213,7 @@ void CreateCommands()
 	RegConsoleCmd("sm_centerspeed", Command_CenterSpeed, "[surftimer] [settings] on/off - toggle center speed display");
 	RegConsoleCmd("sm_nctriggers", Command_ToggleNcTriggers, "[surftimer] [settings] on/off - toggle triggers while noclipping");
 	RegConsoleCmd("sm_autoreset", Command_ToggleAutoReset, "[surftimer] [settings] on/off - toggle auto reset for your current map/bonus run if your above your pb");
+
 
 }
 
@@ -359,18 +363,34 @@ public Action Command_ToggleHints(int client, int args)
 	return Plugin_Handled;
 }
 
+public Action Command_CentreSpeedHud(int client, int args){
+
+	g_bCentreHud[client] = !g_bCentreHud[client];
+
+	if(g_bCentreHud[client]){
+		if(g_bMinimalHUD[client])
+			g_bMinimalHUD[client] = false;
+		CPrintToChat(client, "%t", "CenterHUDOn", g_szChatPrefix);
+	}
+	else
+		CPrintToChat(client, "%t", "CenterHUDOff", g_szChatPrefix);
+
+	return Plugin_Handled;
+
+}
+
 public Action Command_MinimalHUD(int client, int args){
 
 	if(g_bMinimalHUD[client]){
 		g_bMinimalHUD[client] = false;
-		CPrintToChat(client, "%t", "MinimalHUDOFF", g_szChatPrefix);
+		CPrintToChat(client, "%t", "MinimalHUDOff", g_szChatPrefix);
 	}
 	else{
 		g_bMinimalHUD[client] = true;
 		if(g_bCentreHud[client])
 			g_bCentreHud[client] = false;
 
-		CPrintToChat(client, "%t", "MinimalHUDON", g_szChatPrefix);
+		CPrintToChat(client, "%t", "MinimalHUDOn", g_szChatPrefix);
 	}
 
 	return Plugin_Handled;
