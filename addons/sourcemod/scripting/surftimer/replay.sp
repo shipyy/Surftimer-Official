@@ -1333,6 +1333,7 @@ public void Stage_StartRecording(int client)
 
 	if (g_aRecording[client] == null)
 	{
+		CPrintToChat(client,"HM I SEE");
 		StartRecording(client);
 	}
 }

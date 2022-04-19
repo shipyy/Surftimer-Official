@@ -122,10 +122,14 @@ public Action CKTimer1(Handle timer)
 				}
 
 				CenterHudAlive(client);
+				MinimalHudAlive(client);
 				MovementCheck(client);
 			}
-			else
+			else{
 				CenterHudDead(client);
+				MinimalHudDead(client);
+			}
+				
 		}
 	}
 	return Plugin_Continue;

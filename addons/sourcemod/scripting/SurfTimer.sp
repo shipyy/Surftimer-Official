@@ -328,9 +328,11 @@ float g_fCheckpointServerRecord[MAXZONEGROUPS][CPLIMIT];
 
 // Last difference to the server record checkpoint
 char g_szLastSRDifference[MAXPLAYERS + 1][64];
+char g_szLastSRDifferenceMinimalHUD[MAXPLAYERS + 1][64];
 
 // Last difference to clients own record checkpoint
 char g_szLastPBDifference[MAXPLAYERS + 1][64];
+char g_szLastPBDifferenceMinimalHUD[MAXPLAYERS + 1][64];
 
 // The time difference was shown, used to show for a few seconds in timer panel
 float g_fLastDifferenceTime[MAXPLAYERS + 1];
@@ -768,6 +770,12 @@ int g_iCentreHudModule[MAXPLAYERS + 1][6];
 bool g_bSpecListOnly[MAXPLAYERS + 1];
 bool g_bSideHud[MAXPLAYERS + 1];
 int g_iSideHudModule[MAXPLAYERS + 1][5];
+
+//MINIMAL HUD
+bool g_bMinimalHUD[MAXPLAYERS + 1];
+bool g_bMinimalHUD_CompareWR[MAXPLAYERS + 1];
+bool g_bMinimalHUD_ComparePB[MAXPLAYERS + 1];
+int g_MinimalHUDSpeedGradient[MAXPLAYERS + 1];
 
 // Custom tele side
 int g_iTeleSide[MAXPLAYERS + 1];
