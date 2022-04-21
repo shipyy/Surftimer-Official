@@ -154,6 +154,11 @@ public Action Event_OnPlayerSpawn(Handle event, const char[] name, bool dontBroa
 
 			return Plugin_Continue;
 		}
+		else{
+			//PRINFO STUFF
+			g_bStartCountintTimeinZone[client] = false;
+			g_fTimeIncrement[client] = 0.0;
+		}
 
 		// Change Player Skin
 		if (GetConVarBool(g_hPlayerSkinChange) && (GetClientTeam(client) > 1))
@@ -559,11 +564,14 @@ public Action Event_OnPlayerTeam(Handle event, const char[] name, bool dontBroad
 public Action Event_PlayerDisconnect(Handle event, const char[] name, bool dontBroadcast)
 {
 	if (GetConVarBool(g_hDisconnectMsg))
-	{
+	{	
 		char szName[64];
 		char disconnectReason[64];
 		int clientid = GetEventInt(event, "userid");
 		int client = GetClientOfUserId(clientid);
+
+		db_UpdatePRinfo(client, g_szSteamID[client], 1);
+
 		if (!IsValidClient(client) || IsFakeClient(client))
 			return Plugin_Handled;
 		GetEventString(event, "name", szName, sizeof(szName));
