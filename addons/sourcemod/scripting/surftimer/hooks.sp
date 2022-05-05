@@ -843,8 +843,10 @@ public Action OnLogAction(Handle source, Identity ident, int client, int target,
 public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3], float angles[3], int &weapon, int &subtype, int &cmdnum, int &tickcount, int &seed, int mouse[2])
 {
 	if (g_iCurrentStyle[client] == 0){
+		//PLAYER IS IN A RUN
 		if(g_bTimerRunning[client])
 			g_fTimeIncrement[client][g_iClientInZone[client][2]] = g_fCurrentRunTime[client];
+		//PLAYER IS JUST DOING STAGES
 		else if(g_bWrcpTimeractivated[client] && !g_bTimerRunning[client] && !g_bInStartZone[client] && !g_bInStageZone[client])
 			g_fTimeIncrement[client][g_iClientInZone[client][2]] = g_fCurrentWrcpRunTime[client];
 	} 
