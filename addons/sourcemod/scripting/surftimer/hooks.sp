@@ -192,9 +192,11 @@ public Action Event_OnPlayerSpawn(Handle event, const char[] name, bool dontBroa
 			}
 
 			//THIS "FIXES" A BUG WHERE THE TIMEINCREMENT WOULD BE CHANGED IN THE BEGINNING FOR FUCK ALL REASON...
-			for(int zonegroup = 0; zonegroup < MAXZONEGROUPS; zonegroup++){
-				if(g_fTimeIncrement[client][zonegroup] != 0.0)
-					g_fTimeIncrement[client][zonegroup] = 0.0;
+			if(!IsFakeClient(client)){
+				for(int zonegroup = 0; zonegroup < MAXZONEGROUPS; zonegroup++){
+					if(g_fTimeIncrement[client][zonegroup] != 0.0)
+						g_fTimeIncrement[client][zonegroup] = 0.0;
+				}
 			}
 
 			g_bFirstSpawn[client] = false;
