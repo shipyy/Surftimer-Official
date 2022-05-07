@@ -643,6 +643,7 @@ public void sql_selectPlayerProCountCallback(Handle owner, Handle hndl, const ch
 	{
 		db_viewFastestBonus();
 	}
+
 	return;
 }
 
@@ -3364,6 +3365,185 @@ public void sql_selectRecordCheckpointsCallback(Handle owner, Handle hndl, const
 	return;
 }
 
+public void db_LoadCPTypesTimes(int client)
+{
+
+	char szQuery[4096];
+	int rank;
+
+	PrintToConsoleAll("total : %i\n", g_MapTimesCount);
+
+	if(g_MapTimesCount >= 10)
+		g_bTOP = true;
+	if(g_MapTimesCount > 10)
+		g_bG1 = true;
+	if(g_MapTimesCount > g_G2Bot)
+		g_bG2 = true;
+	if(g_MapTimesCount > g_G3Bot)
+		g_bG3 = true;
+	if(g_MapTimesCount > g_G4Bot)
+		g_bG4 = true;
+	if(g_MapTimesCount > g_G5Bot)
+		g_bG5 = true;
+
+	PrintToConsoleAll("%b | %b | %b | %b | %b | %b\n", g_bTOP, g_bG1, g_bG2, g_bG3, g_bG4, g_bG5);
+
+	for(int i = 0; i < 6; i++){
+		rank = 0;
+		if(i == 0){
+			if(g_MapTimesCount >= 10){
+				Format(szQuery, 4096, sql_selectCheckpointsTimesType, g_szMapName, g_szMapName, 10-1);
+				SQL_TQuery(g_hDb, sql_selectCheckpointsTimesTypeCallback, szQuery, i, DBPrio_Low);
+			}
+		}
+		else if(i == 1){
+
+			if(g_MapTimesCount > 10){
+				if(g_MapTimesCount > g_G1Top){
+					rank = g_G1Top;
+				}
+				else if(g_MapTimesCount <= g_G1Top){
+					rank = g_MapTimesCount;
+				}
+
+				Format(szQuery, 4096, sql_selectCheckpointsTimesType, g_szMapName, g_szMapName, rank-1);
+				SQL_TQuery(g_hDb, sql_selectCheckpointsTimesTypeCallback, szQuery, i, DBPrio_Low);
+			}
+		}
+		else if(i == 2){
+
+			if(g_MapTimesCount >= g_G2Bot){
+				if(g_MapTimesCount > g_G2Top){
+					rank = g_G2Top;
+				}
+				else if(g_MapTimesCount <= g_G2Top){
+					rank = g_MapTimesCount;
+				}
+
+				Format(szQuery, 4096, sql_selectCheckpointsTimesType, g_szMapName, g_szMapName, rank-1);
+				SQL_TQuery(g_hDb, sql_selectCheckpointsTimesTypeCallback, szQuery, i, DBPrio_Low);
+			}
+		}
+		else if(i == 3){
+
+			if(g_MapTimesCount >= g_G3Bot){
+				if(g_MapTimesCount > g_G3Top){
+					rank = g_G3Top;
+				}
+				else if(g_MapTimesCount <= g_G3Top){
+					rank = g_MapTimesCount;
+				}
+
+				Format(szQuery, 4096, sql_selectCheckpointsTimesType, g_szMapName, g_szMapName, rank-1);
+				SQL_TQuery(g_hDb, sql_selectCheckpointsTimesTypeCallback, szQuery, i, DBPrio_Low);
+			}
+		}
+		else if(i == 4){
+
+			if(g_MapTimesCount >= g_G4Bot){
+				if(g_MapTimesCount > g_G4Top){
+					rank = g_G4Top;
+				}
+				else if(g_MapTimesCount <= g_G4Top){
+					rank = g_MapTimesCount;
+				}
+
+				Format(szQuery, 4096, sql_selectCheckpointsTimesType, g_szMapName, g_szMapName, rank-1);
+				SQL_TQuery(g_hDb, sql_selectCheckpointsTimesTypeCallback, szQuery, i, DBPrio_Low);
+			}
+		}
+		else if(i == 5){
+
+			if(g_MapTimesCount >= g_G5Bot){
+				if(g_MapTimesCount > g_G5Top){
+					rank = g_G5Top;
+				}
+				else if(g_MapTimesCount <= g_G5Top){
+					rank = g_MapTimesCount;
+				}
+
+				Format(szQuery, 4096, sql_selectCheckpointsTimesType, g_szMapName, g_szMapName, rank-1);
+				SQL_TQuery(g_hDb, sql_selectCheckpointsTimesTypeCallback, szQuery, i, DBPrio_Low);
+			}
+		}
+
+	}
+
+}
+
+public void sql_selectCheckpointsTimesTypeCallback(Handle owner, Handle hndl, const char[] error, any rank)
+{	
+	// fluffys come back
+	if (hndl == null)
+	{
+		LogError("[SurfTimer] SQL Error (sql_selectCheckpointsTimesTypeCallback): %s", error);
+		return;
+	}
+
+	if (SQL_HasResultSet(hndl))
+	{	
+		while(SQL_FetchRow(hndl)){
+			for(int i = 0; i < 35; i++){
+				g_fCustomCheckpointsTimes[rank][i] = SQL_FetchFloat(hndl, i);
+				//PrintToConsoleAll("value %i: %f\n", i, g_fCustomCheckpointsTimes[rank][i]);
+			}
+		}
+	}
+
+}
+
+public void db_LoadCPTypesSpeeds()
+{
+	char szQuery[1024];
+
+	for(int i = 0; i < 6; i++){
+
+		if(i == 0){
+			Format(szQuery, 1024, sql_selectCheckpointsSpeedsType, g_szMapName, g_szMapName, 10);
+			SQL_TQuery(g_hDb, sql_selectCheckpointsSpeedsTypeCallback, szQuery, i, DBPrio_Low);
+		}
+		else if(i == 1){
+			Format(szQuery, 1024, sql_selectCheckpointsSpeedsType, g_szMapName, g_szMapName, g_G1Top);
+			SQL_TQuery(g_hDb, sql_selectCheckpointsSpeedsTypeCallback, szQuery, i, DBPrio_Low);
+		}
+		else if(i == 2){
+			Format(szQuery, 1024, sql_selectCheckpointsSpeedsType, g_szMapName, g_szMapName, g_G2Top);
+			SQL_TQuery(g_hDb, sql_selectCheckpointsSpeedsTypeCallback, szQuery, i, DBPrio_Low);
+		}
+		else if(i == 3){
+			Format(szQuery, 1024, sql_selectCheckpointsSpeedsType, g_szMapName, g_szMapName, g_G3Top);
+			SQL_TQuery(g_hDb, sql_selectCheckpointsSpeedsTypeCallback, szQuery, i, DBPrio_Low);
+		}
+		else if(i == 4){
+			Format(szQuery, 1024, sql_selectCheckpointsSpeedsType, g_szMapName, g_szMapName, g_G4Top);
+			SQL_TQuery(g_hDb, sql_selectCheckpointsSpeedsTypeCallback, szQuery, i, DBPrio_Low);
+		}
+		else if(i == 5){
+			Format(szQuery, 1024, sql_selectCheckpointsSpeedsType, g_szMapName, g_szMapName, g_G5Top);
+			SQL_TQuery(g_hDb, sql_selectCheckpointsSpeedsTypeCallback, szQuery, i, DBPrio_Low);
+		}
+
+	}
+
+}
+
+public void sql_selectCheckpointsSpeedsTypeCallback(Handle owner, Handle hndl, const char[] error, any rank)
+{
+	// fluffys come back
+	if (hndl == null)
+	{
+		LogError("[SurfTimer] SQL Error (sql_selectCheckpointsTimesTypeCallback): %s", error);
+		return;
+	}
+
+	if (SQL_HasResultSet(hndl) && SQL_FetchRow(hndl))
+	{	
+		//for(int i = 0; i < 35; i++)
+			//g_fCustomCheckpointsSpeeds[rank][i] = SQL_FetchFloat(hndl, i);
+	}
+
+}
+
 public void db_viewCheckpoints(int client, char szSteamID[32], char szMapName[128])
 {
 	char szQuery[1024];
@@ -3410,6 +3590,10 @@ public void SQL_selectCheckpointsCallback(Handle owner, Handle hndl, const char[
 		LogToFileEx(g_szLogFile, "[SurfTimer] %s: Finished db_viewCheckpoints in %fs", g_szSteamID[client], tick);
 		LoadClientSetting(client, g_iSettingToLoad[client]);
 	}
+
+	db_LoadCPTypesTimes(client);
+	//db_LoadCPTypesSpeeds();
+
 }
 
 public void db_viewCheckpointsinZoneGroup(int client, char szSteamID[32], char szMapName[128], int zonegroup)

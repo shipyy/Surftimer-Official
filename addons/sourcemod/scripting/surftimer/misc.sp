@@ -3920,9 +3920,93 @@ public void Checkpoint(int client, int zone, int zonegroup, float time)
 	char sz_srDiff[128];
 	char sz_srDiff_colorless[128];
 
-	if (g_bCheckpointRecordFound[zonegroup] && g_fCheckpointServerRecord[zonegroup][zone] > 0.1 && g_bTimerRunning[client])
+	float f_srDiff;
+
+	//CUSTOM CHECKPOINTS
+	if(g_iMinimalHUD_CompareType[client] > 2){
+
+		if(g_iMinimalHUD_CompareType[client] == 3)
+			if(g_bTOP)
+				f_srDiff = (g_fCustomCheckpointsTimes[0][zone] - time);
+			else
+				f_srDiff = 0.0;
+		else if(g_iMinimalHUD_CompareType[client] == 4)
+			if(g_bG1)
+				f_srDiff = (g_fCustomCheckpointsTimes[1][zone] - time);
+			else
+				f_srDiff = 0.0;
+		else if(g_iMinimalHUD_CompareType[client] == 5)
+			if(g_bG2)
+				f_srDiff = (g_fCustomCheckpointsTimes[2][zone] - time);
+			else
+				f_srDiff = 0.0;
+		else if(g_iMinimalHUD_CompareType[client] == 6)
+			if(g_bG3)
+				f_srDiff = (g_fCustomCheckpointsTimes[3][zone] - time);
+			else
+				f_srDiff = 0.0;
+		else if(g_iMinimalHUD_CompareType[client] == 7)
+			if(g_bG4)
+				f_srDiff = (g_fCustomCheckpointsTimes[4][zone] - time);
+			else
+				f_srDiff = 0.0;
+		else if(g_iMinimalHUD_CompareType[client] == 8)
+			if(g_bG5)
+				f_srDiff = (g_fCustomCheckpointsTimes[5][zone] - time);
+			else
+				f_srDiff = 0.0;
+		
+
+		FormatTimeFloat(client, f_srDiff, 3, sz_srDiff, 128);
+
+		if (f_srDiff > 0){
+			Format(sz_srDiff_colorless, 128, "-%s", sz_srDiff);
+			Format(sz_srDiff, 128, "%cSR: %c-%s%c", WHITE, LIGHTGREEN, sz_srDiff, WHITE);
+		}
+		else{
+			Format(sz_srDiff_colorless, 128, "+%s", sz_srDiff);
+			Format(sz_srDiff, 128, "%cSR: %c+%s%c", WHITE, RED, sz_srDiff, WHITE);
+		}
+
+		if(g_iMinimalHUD_CompareType[client] == 3)
+			if(g_bTOP)
+				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[R10: %s]", sz_srDiff_colorless);
+			else
+				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[R10: N/A]");
+		else if(g_iMinimalHUD_CompareType[client] == 4)
+			if(g_bG1)
+				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G1: %s]", sz_srDiff_colorless);
+			else
+				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G1: N/A]", sz_srDiff_colorless);
+		else if(g_iMinimalHUD_CompareType[client] == 5)
+			if(g_bG2)
+				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G2: %s]", sz_srDiff_colorless);
+			else
+				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G2: N/A]", sz_srDiff_colorless);
+		else if(g_iMinimalHUD_CompareType[client] == 6)
+			if(g_bG3)
+				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G3: %s]", sz_srDiff_colorless);
+			else
+				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G3: N/A]", sz_srDiff_colorless);
+		else if(g_iMinimalHUD_CompareType[client] == 7)
+			if(g_bG4)
+				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G4: %s]", sz_srDiff_colorless);
+			else
+				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G4: N/A]", sz_srDiff_colorless);
+		else if(g_iMinimalHUD_CompareType[client] == 8)
+			if(g_bG5)
+				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G5: %s]", sz_srDiff_colorless);
+			else
+				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G5: N/A]", sz_srDiff_colorless);
+
+	}
+
+	//FORMAT THE COMPARISONS STRINGS AGAINST THE SR
+	//IF THERE IS A RECORD
+	if (g_bCheckpointRecordFound[zonegroup] && g_fCheckpointServerRecord[zonegroup][zone] > 0.0 && g_bTimerRunning[client])
 	{
-		float f_srDiff = (g_fCheckpointServerRecord[zonegroup][zone] - time);
+
+		f_srDiff = (g_fCheckpointServerRecord[zonegroup][zone] - time);
 
 		FormatTimeFloat(client, f_srDiff, 3, sz_srDiff, 128);
 
@@ -4005,8 +4089,10 @@ public void Checkpoint(int client, int zone, int zonegroup, float time)
 		SendMapCheckpointForward(client, zonegroup, zone, time, szTime, szDiff_colorless, sz_srDiff_colorless);
 
 		if (g_bCheckpointsEnabled[client] && g_iCpMessages[client])
-		{
+		{	
+			
 			CPrintToChat(client, "%t", "Misc30", g_szChatPrefix, g_iClientInZone[client][1] + 1, szTime, szDiff, sz_srDiff);
+
 		}
 
 		Format(szSpecMessage, sizeof(szSpecMessage), "%t", "Misc31", g_szChatPrefix, szName, g_iClientInZone[client][1] + 1, szTime, szDiff, sz_srDiff);
