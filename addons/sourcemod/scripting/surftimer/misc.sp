@@ -2028,6 +2028,15 @@ public void CheckMapRanks(int client)
 					g_MapRank[i]++;
 			}
 		}
+
+		char szName[128];
+		GetClientName(client, szName, 128);
+
+		if(g_OldMapRank[client] == 99999)
+			db_InsertTrack(g_szSteamID[client], szName, g_szMapName, 0, 0, g_MapRank[client]);
+		else
+			db_InsertTrack(g_szSteamID[client], szName, g_szMapName, 0, g_OldMapRank[client], g_MapRank[client]);
+
 	}
 }
 
@@ -2044,6 +2053,13 @@ public void CheckBonusRanks(int client, int zGroup)
 					g_MapRankBonus[zGroup][i]++;
 			}
 		}
+		char szName[128];
+		GetClientName(client, szName, 128);
+
+		if(g_OldMapRankBonus[zGroup][client] == 9999999)
+			db_InsertTrack(g_szSteamID[client], szName, g_szMapName, zGroup, 0, g_MapRankBonus[zGroup][client]);
+		else
+			db_InsertTrack(g_szSteamID[client], szName, g_szMapName, zGroup, g_OldMapRankBonus[zGroup][client], g_MapRankBonus[zGroup][client]);
 	}
 }
 
