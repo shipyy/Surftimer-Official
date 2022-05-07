@@ -1400,6 +1400,8 @@ bool g_bLeftZone[MAXPLAYERS + 1];
 
 int g_iClientTick[MAXPLAYERS + 1];
 
+int g_iRankToDelete[MAXPLAYERS + 1];
+
 /*===================================
 =         Predefined Arrays         =
 ===================================*/
