@@ -115,3 +115,10 @@ char sql_setZoneNames[] = "UPDATE ck_zones SET zonename = '%s' WHERE mapname = '
 
 char sql_MainEditQuery[] = "SELECT steamid, name, %s FROM %s where mapname='%s' and style='%i' %sORDER BY %s ASC LIMIT 50";
 char sql_MainDeleteQeury[] = "DELETE From %s where mapname='%s' and style='%i' and steamid='%s' %s";
+
+//ck_recentlylost
+char sql_InsertTrack[] = "INSERT INTO ck_track (steamid, name, mapname, zonegroup, previous_rank, new_rank ) VALUES('%s', '%s', '%s', '%i', '%i', '%i');";
+char sql_GetPlayersToUpdate[] = "SELECT steamid, name, mapname, zonegroup, previous_rank, new_rank FROM ck_track WHERE mapname = '%s' AND zonegroup = '%i' ORDER BY steamid ASC,new_rank DESC;";
+char sql_RecentlyLost[] = "SELECT mapname, zonegroup, previous_rank, new_rank FROM ck_track WHERE previous_rank < new_rank AND previous_rank <> 0 AND steamid = '%s';";
+char sql_Tracking[] = "SELECT mapname, zonegroup, previous_rank, new_rank FROM ck_track WHERE steamid = '%s';";
+char sql_RemovePlayerTrack[] = "DELETE FROM ck_track WHERE steamid = '%s' AND mapname = '%s' AND zonegroup = '%i'";
