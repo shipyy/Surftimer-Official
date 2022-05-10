@@ -1317,6 +1317,11 @@ float g_fTargetTime[MAXPLAYERS + 1];
 char g_szTargetCPR[MAXPLAYERS + 1][MAX_NAME_LENGTH];
 char g_szCPRMapName[MAXPLAYERS + 1][128];
 
+//CCP COMMAND
+Menu ccp_menu;
+float g_fCCPRecordCheckpointTimes[CPLIMIT];
+float g_fCCPPlayerCheckpointTimes[CPLIMIT];
+
 // surf_christmas2
 bool g_bUsingStageTeleport[MAXPLAYERS + 1];
 
