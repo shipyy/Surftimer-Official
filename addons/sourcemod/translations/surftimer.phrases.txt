@@ -1402,7 +1402,7 @@
 	"Misc43"
 	{
 		"#format"	"{1:s}"
-		"en"		"{1} This is a VIP feature"
+		"en"		"{1} This is a TOP 10 feature"
 	}
 	"Misc44"
 	{
