@@ -1398,8 +1398,8 @@
 	}
 	"Misc43"
 	{
-		"#format"	"{1:s}"
-		"en"		"{1} This is a TOP 10 feature"
+		"#format"	"{1:s},{2:i}"
+		"en"		"{1} This is a {blue}TOP {2}{default} feature"
 	}
 	"Misc44"
 	{

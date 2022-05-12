@@ -310,6 +310,9 @@ void CreateConVars()
 	}
 	HookConVarChange(g_hAutoVipFlag, OnSettingChanged);
 
+	g_hUseVIPRank = AutoExecConfig_CreateConVar("ck_Use_VIP_Rank", "0", "Use Server Rank VIP threshold", FCVAR_NOTIFY, true, 0.0, true, 1.0);
+	HookConVarChange(g_hUseVIPRank, OnSettingChanged);
+
 	g_hVIPRank = AutoExecConfig_CreateConVar("ck_VIP_Rank", "10", "Server Rank VIP threshold", FCVAR_NOTIFY, true, 0.0, false);
 	HookConVarChange(g_hVIPRank, OnSettingChanged);
 
