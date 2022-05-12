@@ -1401,8 +1401,8 @@
 	}
 	"Misc43"
 	{
-		"#format"	"{1:s},{2:i}"
-		"en"		"{1} This is a {blue}TOP {2}{default} feature"
+		"#format"	"{1:s}"
+		"en"		"{1} This is a {darkred}VIP{default} feature"
 	}
 	"Misc44"
 	{
@@ -1423,6 +1423,11 @@
 	{
 		"#format"	"{1:s},{2:i},{3:s},{4:s}"
 		"en"		"{1} CP [{lightgreen}{2}{default}] {lightgreen}Speed: {default}{3} u/s {default}[PB: {lightgreen}N/A{default} | {4}{default}]"
+	}
+	"Misc48"
+	{
+		"#format"	"{1:s},{2:i}"
+		"en"		"{1} This is a {darkred}TOP {2}{default} feature"
 	}
 	"SQL1"
 	{

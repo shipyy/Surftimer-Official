@@ -1972,6 +1972,9 @@ public void OnMapEnd()
 
 public void OnConfigsExecuted()
 {	
+	if(GetConVarBool(g_hUseVIPRank))
+		db_ManageVIP_Tables();
+	LogToFileEx(g_szLogFile, "[SurfTimer] Finished Managing VIP Table");
 
 	// Get Chat Prefix
 	GetConVarString(g_hChatPrefix, g_szChatPrefix, sizeof(g_szChatPrefix));
@@ -2762,10 +2765,6 @@ public void OnPluginStart()
 	CreateCommandListeners();
 
 	db_setupDatabase();
-
-	if(GetConVarBool(g_hUseVIPRank))
-		db_ManageVIP_Tables();
-		
 	CreateCommandsNewMap();
 
 	// mic

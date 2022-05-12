@@ -10086,7 +10086,8 @@ public void db_ManageVIP_Tables()
 		SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, DBPrio_Low);
 
 		//ADD THE SPECIFIED TOP OF PLAYERS TO THE VIP TABLE
-		Format(szQuery, 1024, "INSERT INTO ck_vipadmins(steamid,vip) (SELECT steamid,1 FROM ck_playerrank ORDER BY points DESC LIMIT %i);", GetConVarBool(g_hVIPRank));
+		Format(szQuery, 1024, "INSERT INTO ck_vipadmins(steamid,vip) (SELECT steamid,1 FROM ck_playerrank ORDER BY points DESC LIMIT %i);", GetConVarInt(g_hVIPRank));
+		PrintToServer(szQuery);
 		SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, DBPrio_Low);
 	}
 
