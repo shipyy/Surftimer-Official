@@ -8968,10 +8968,10 @@ public void SQL_CheckVIPAdminCallback(Handle owner, Handle hndl, const char[] er
 
 		if(active == 1){
 			if(GetConVarBool(g_hUseVIPRank)){
-				if( (VIP_lvl == 1 && (g_PlayerRank[client][0] <= GetConVarInt(g_hVIPRank))) || VIP_lvl > 1 )
+				if( (VIP_lvl == 0 && (g_PlayerRank[client][0] <= GetConVarInt(g_hVIPRank))) || VIP_lvl > 0 )
 					g_bVip[client] = true;
 			}else{
-				if(VIP_lvl > 1)
+				if(VIP_lvl > 0)
 					g_bVip[client] = true;
 			}
 		}
@@ -8982,7 +8982,7 @@ public void SQL_CheckVIPAdminCallback(Handle owner, Handle hndl, const char[] er
 		if(GetConVarBool(g_hUseVIPRank) && (g_PlayerRank[client][0] <= GetConVarInt(g_hVIPRank))){
 			char steamid[128];
 			Format(steamid, 128, "%s", g_szSteamID[client]);
-			db_insertVip(steamid, 1);
+			db_insertVip(steamid, 0);
 		}
 	}
 
