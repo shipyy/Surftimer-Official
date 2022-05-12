@@ -5259,26 +5259,12 @@ bool IsPlayerVip(int client, bool admin = true, bool reply = false)
 			return true;
 	}
 
-	if (GetConVarBool(g_hUseVIPRank) && (g_PlayerRank[client][0] <= GetConVarInt(g_hVIPRank)))
-		return true;
-	
-	//if (!g_bVip[client] && !g_iHasEnforcedTitle[client] && g_PlayerRank[client][0] > 10)
-	if (GetConVarBool(g_hUseVIPRank))
-	{
-		if (reply && (g_PlayerRank[client][0] > GetConVarInt(g_hVIPRank)))
-		{
-			CPrintToChat(client, "%t", "Misc43", g_szChatPrefix, GetConVarInt(g_hVIPRank));
-			//PrintToConsole(client, "SurfTimer | This is a VIP feature");
-			PrintToConsole(client, "SurfTimer | This is a TOP %d feature", GetConVarInt(g_hVIPRank));
-		}
-		return false;
-	}
 	else if (!g_bVip[client] && !g_iHasEnforcedTitle[client])
 	{
 		if (reply)
 		{
 			CPrintToChat(client, "%t", "Misc43", g_szChatPrefix, "VIP");
-			PrintToConsole(client, "SurfTimer | This is a VIP feature");
+			PrintToConsole(client, "SurfTimer | This is a TOP %d feature", GetConVarInt(g_hVIPRank));
 		}
 		return false;
 	}
