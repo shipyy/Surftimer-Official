@@ -78,6 +78,7 @@ public Action VIP_GiveCredits(int client, int args)
 public void db_selectVipStatus(char szSteamId[128], int iVip, int type)
 {
 	char szQuery[256];
+	//ADD VIP
 	if (type == 0)
 	{
 		Handle pack = CreateDataPack();
@@ -87,6 +88,7 @@ public void db_selectVipStatus(char szSteamId[128], int iVip, int type)
 		Format(szQuery, 256, "SELECT steamid, vip, active FROM ck_vipadmins WHERE steamid = '%s';", szSteamId);
 		SQL_TQuery(g_hDb, db_selectVipStatusCallback, szQuery, pack, DBPrio_Low);
 	}
+	//REMOVE VIP
 	else
 	{
 		// Find Client
@@ -159,8 +161,11 @@ public void db_removeVipCallback(Handle owner, Handle hndl, const char[] error, 
 		return;
 	}
 
-	g_bCheckCustomTitle[client] = true;
-	db_CheckVIPAdmin(client, g_szSteamID[client]);
+	if (client != -1)
+	{
+		g_bCheckCustomTitle[client] = true;
+		db_CheckVIPAdmin(client, g_szSteamID[client]);
+	}
 }
 
 public void db_insertVip(char szSteamId[128], int iVip)

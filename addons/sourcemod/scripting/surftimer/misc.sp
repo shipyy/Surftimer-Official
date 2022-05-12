@@ -4392,7 +4392,7 @@ public void totalTimeForHumans(int unix, char[] buffer, int size)
 	}
 }
 
-bool IsPlayerVip(int client, bool admin = true, bool reply = false)
+bool IsPlayerVip(int client, bool admin = true, bool reply = true)
 {
 	if (admin)
 	{
@@ -4400,7 +4400,7 @@ bool IsPlayerVip(int client, bool admin = true, bool reply = false)
 			return true;
 	}
 
-	else if (!g_bVip[client] && !g_iHasEnforcedTitle[client])
+	if (!g_bVip[client] && !g_iHasEnforcedTitle[client])
 	{
 		if (reply)
 		{

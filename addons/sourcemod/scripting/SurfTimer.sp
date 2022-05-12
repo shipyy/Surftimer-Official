@@ -1890,11 +1890,7 @@ public void OnMapEnd()
 }
 
 public void OnConfigsExecuted()
-{	
-	if(GetConVarBool(g_hUseVIPRank))
-		db_ManageVIP_Tables();
-	LogToFileEx(g_szLogFile, "[SurfTimer] Finished Managing VIP Table");
-
+{
 	// Get Chat Prefix
 	GetConVarString(g_hChatPrefix, g_szChatPrefix, sizeof(g_szChatPrefix));
 	GetConVarString(g_hChatPrefix, g_szMenuPrefix, sizeof(g_szMenuPrefix));
