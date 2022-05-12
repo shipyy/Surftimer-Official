@@ -310,6 +310,9 @@ void CreateConVars()
 	}
 	HookConVarChange(g_hAutoVipFlag, OnSettingChanged);
 
+	g_hVIPRank = AutoExecConfig_CreateConVar("ck_VIP_Rank", "10", "Server Rank VIP threshold", FCVAR_NOTIFY, true, 0.0, false);
+	HookConVarChange(g_hVIPRank, OnSettingChanged);
+
 	// Prestige Server
 	g_hPrestigeRank = AutoExecConfig_CreateConVar("ck_prestige_rank", "0", "Rank of players who can join the server, 0 to disable");
 	g_hPrestigeStyles = AutoExecConfig_CreateConVar("ck_prestige_all_styles", "1", "If enabled, players must be the rank of ck_prestige_rank in ANY style");
