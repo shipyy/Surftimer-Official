@@ -10076,29 +10076,14 @@ public int PrMenuHandler(Menu menu, MenuAction action, int param1, int param2)
 	return 0;
 }
 
-// VIP
-public void db_ManageVIP_Tables()
-{
-	char szQuery[1024];
-	if(GetConVarBool(g_hUseVIPRank)){
-		//DELETE THE SPECIFIED TOP OF PLAYERS TO THE VIP TABLE
-		Format(szQuery, 1024, "DELETE FROM ck_vipadmins WHERE vip IN (0,1);");
-		SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, DBPrio_Low);
-
-		//ADD THE SPECIFIED TOP OF PLAYERS TO THE VIP TABLE
-		Format(szQuery, 1024, "INSERT INTO ck_vipadmins(steamid,vip) (SELECT steamid,1 FROM ck_playerrank ORDER BY points DESC LIMIT %i);", GetConVarInt(g_hVIPRank));
-		PrintToServer(szQuery);
-		SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, DBPrio_Low);
-	}
-
-}
+//VIP
 
 // fluffys start vip & admins
 
 public void db_CheckVIPAdmin(int client, char[] szSteamID)
 {
 	char szQuery[1024];
-	Format(szQuery, 1024, "SELECT vip, admin, zoner FROM ck_vipadmins WHERE steamid = '%s';", szSteamID);
+	Format(szQuery, 1024, "SELECT vip, zoner, active  FROM ck_vipadmins WHERE steamid = '%s';", szSteamID);
 	SQL_TQuery(g_hDb, SQL_CheckVIPAdminCallback, szQuery, client, DBPrio_Low);
 }
 
@@ -10122,8 +10107,28 @@ public void SQL_CheckVIPAdminCallback(Handle owner, Handle hndl, const char[] er
 
 	if (SQL_HasResultSet(hndl) && SQL_FetchRow(hndl))
 	{
-		g_bVip[client] = view_as<bool>(SQL_FetchInt(hndl, 0));
-		g_bZoner[client] = view_as<bool>(SQL_FetchInt(hndl, 2));
+		int VIP_lvl = SQL_FetchInt(hndl, 0);
+		g_bZoner[client] = view_as<bool>(SQL_FetchInt(hndl, 1));
+		int active = view_as<bool>(SQL_FetchInt(hndl, 2));
+
+		if(active == 1){
+			if(GetConVarBool(g_hUseVIPRank)){
+				if( (VIP_lvl == 1 && (g_PlayerRank[client][0] <= GetConVarInt(g_hVIPRank))) || VIP_lvl > 1 )
+					g_bVip[client] = true;
+			}else{
+				if(VIP_lvl > 1)
+					g_bVip[client] = true;
+			}
+		}
+		else{
+			g_bVip[client] = false;
+		}
+	}else{
+		if(GetConVarBool(g_hUseVIPRank) && (g_PlayerRank[client][0] <= GetConVarInt(g_hVIPRank))){
+			char steamid[128];
+			Format(steamid, 128, "%s", g_szSteamID[client]);
+			db_insertVip(steamid, 1);
+		}
 	}
 
 	if (!g_bVip[client] || !g_bZoner[client]) // No VIP or Zoner from database, let's check flags
