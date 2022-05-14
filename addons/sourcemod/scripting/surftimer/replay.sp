@@ -116,7 +116,7 @@ public void StartRecording(int client)
 		return;
 	}
 
-	g_StoppedRecording = false; //SINCE WE STARTED RECORDING WE SET THE VALUE OF "g_StoppedRecording" TO TRUE
+	g_Recording = true; 
 	g_iRecordedTicks[client] = 0;
 }
 
@@ -126,6 +126,8 @@ public void StopRecording(int client)
 	{
 		return;
 	}
+
+	g_Recording = false;
 
 	ClearFrame(client);
 }
@@ -1350,7 +1352,8 @@ public void Stage_StartRecording(int client)
 		return;
 	}
 
-	g_StoppedRecording = false; //SINCE WE STARTED RECORDING WE SET THE VALUE OF "g_StoppedRecording" TO TRUE
+	g_StageRecording = true;
+
 	g_iStageStartFrame[client] = g_iRecordedTicks[client];
 
 	char szName[MAX_NAME_LENGTH];

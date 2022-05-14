@@ -4015,6 +4015,13 @@ public void db_viewMapRankBonusCallback(Handle owner, Handle hndl, const char[] 
 	if (SQL_HasResultSet(hndl) && SQL_FetchRow(hndl))
 	{
 		g_MapRankBonus[zgroup][client] = SQL_GetRowCount(hndl);
+
+		char szUName[MAX_NAME_LENGTH * 2 + 1];
+		GetClientName(client,szUName, MAX_NAME_LENGTH * 2 + 1);
+
+		char szName[MAX_NAME_LENGTH * 2 + 1];
+		SQL_EscapeString(g_hDb, szUName, szName, MAX_NAME_LENGTH * 2 + 1);
+
 	}
 	else
 	{

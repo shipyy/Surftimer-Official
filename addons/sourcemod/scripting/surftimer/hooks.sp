@@ -1029,23 +1029,33 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
 				int speed = RoundToNearest(g_fLastSpeed[client]);
 
+				//MAP START
+
 				//IF PLAYER IS IN STARTZONE/STAGESTART , NOT MOVING, NOT ON A RUN AND NOT RECORDING ,WE CAN STOP RECORDING WHEN HE STOPS MOVING
-				if(speed == 0 && g_aRecording[client] != null && !g_bTimerRunning[client] && !g_StoppedRecording){
-					g_StoppedRecording = true;
+				if(speed == 0 && g_aRecording[client] != null && !g_bTimerRunning[client] && g_Recording){
 					StopRecording(client);
 				}
-				//IF THE PLAYER GETS A WRCP DURING A RUN BUT STOPS AT THE STARTZONE WE TRIM THE FRAMES
-				else if(speed == 0 && g_aRecording[client] != null && g_bTimerRunning[client]){
-					if(g_bhasStages)
-						g_iStageStartFrame[client] = g_iRecordedTicks[client];
-				}
 				//IF THE PLAYER IS NOT BEING RECORDED BUT STARTS MOVING AGAIN, START RECORDING PLAYER
-				else if(speed > 0 && g_StoppedRecording){
+				if(speed > 0 && !g_Recording && !g_bTimerRunning[client]){
+					StopRecording(client);
 					StartRecording(client);
 					if (g_bhasStages)
 					{
 						Stage_StartRecording(client);
 					}
+				}
+
+				//STAGE START
+				//IF THE PLAYER GETS A WRCP DURING A RUN BUT STOPS AT THE STARTZONE WE TRIM THE FRAMES
+				if(speed == 0 && g_aRecording[client] != null && g_bTimerRunning[client] && g_StageRecording && g_bInStageZone[client]){
+					PrintToChatAll("TRIM");
+					if(g_bhasStages)
+						g_StageRecording = false;
+				}
+				if(speed > 0 && g_aRecording[client] != null && g_bTimerRunning[client] && !g_StageRecording && g_bInStageZone[client]){
+					PrintToChatAll("TRIM_2");
+					if(g_bhasStages)
+						Stage_StartRecording(client);
 				}
 			}
 
