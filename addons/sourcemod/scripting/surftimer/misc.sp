@@ -3332,7 +3332,7 @@ public void MinimalHudAlive(int client){
 
 		displayColor = GetMinimalHUDColour(client, g_MinimalHUDSpeedGradient[client]);
 		SetHudTextParams(-1.0, 1.0, 0.5, displayColor[0],displayColor[1] , displayColor[2], 255, 0, 0.0, 0.0, 0.0);
-		ShowHudText(client,4,final_string);
+		ShowHudText(client,3,final_string);
 		
 	}
 
@@ -3524,7 +3524,7 @@ public void MinimalHudDead(int client){
 
 				displayColor = GetMinimalHUDColour(client, g_MinimalHUDSpeedGradient[client]);
 				SetHudTextParams(-1.0, 1.0, 0.5, displayColor[0],displayColor[1] , displayColor[2], 255, 0, 0.0, 0.0, 0.0);
-				ShowHudText(client,4,final_string);
+				ShowHudText(client,3,final_string);
 			}
 			else{
 
@@ -3573,7 +3573,7 @@ public void MinimalHudDead(int client){
 
 				displayColor = GetMinimalHUDColour(client, g_MinimalHUDSpeedGradient[client]);
 				SetHudTextParams(-1.0, 1.0, 0.5, displayColor[0],displayColor[1] , displayColor[2], 255, 0, 0.0, 0.0, 0.0);
-				ShowHudText(client,4,final_string);
+				ShowHudText(client,3,final_string);
 			}
 		}
 	}
