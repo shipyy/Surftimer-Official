@@ -169,6 +169,11 @@ public void db_insertVip(char szSteamId[128], int iVip)
 	int colour;
 	switch (iVip)
 	{
+		case 0:
+		{
+			Format(szTitle, sizeof(szTitle), "[{blue}VIT{default}]");
+			colour = 4;
+		}
 		case 1:
 		{
 			Format(szTitle, sizeof(szTitle), "[{lime}VIP{default}]");
