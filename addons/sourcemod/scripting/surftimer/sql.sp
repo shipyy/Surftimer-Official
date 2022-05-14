@@ -10105,30 +10105,35 @@ public void SQL_CheckVIPAdminCallback(Handle owner, Handle hndl, const char[] er
 	g_bVip[client] = false;
 	g_bZoner[client] = false;
 
+	char steamid[128];
+	Format(steamid, 128, "%s", g_szSteamID[client]);
+
 	if (SQL_HasResultSet(hndl) && SQL_FetchRow(hndl))
 	{
 		int VIP_lvl = SQL_FetchInt(hndl, 0);
 		g_bZoner[client] = view_as<bool>(SQL_FetchInt(hndl, 1));
 		int active = view_as<bool>(SQL_FetchInt(hndl, 2));
 
-		if(active == 1){
-			if(GetConVarBool(g_hUseVIPRank)){
-				if( (VIP_lvl == 0 && (g_PlayerRank[client][0] <= GetConVarInt(g_hVIPRank))) || VIP_lvl > 0 )
+		//ADD NORMAL VIP
+		if(active == 1 && VIP_lvl > 0)
+			g_bVip[client] = true;
+
+		//MANAGE TOP VIP
+		if(GetConVarBool(g_hUseVIPRank)){
+			if(active == 1){
+				//ADD TOP VIP
+				if( VIP_lvl == 0 && (g_PlayerRank[client][0] <= GetConVarInt(g_hVIPRank)) )
 					g_bVip[client] = true;
-			}else{
-				if(VIP_lvl > 0)
-					g_bVip[client] = true;
+				//REMOVE TOP VIP
+				else if( VIP_lvl == 0 && (g_PlayerRank[client][0] > GetConVarInt(g_hVIPRank)) )
+					db_selectVipStatus(steamid, 0, 1);
 			}
 		}
-		else{
-			g_bVip[client] = false;
-		}
+
 	}else{
-		if(GetConVarBool(g_hUseVIPRank) && (g_PlayerRank[client][0] <= GetConVarInt(g_hVIPRank))){
-			char steamid[128];
-			Format(steamid, 128, "%s", g_szSteamID[client]);
+		//ADD NEW TOP VIP PLAYER
+		if(GetConVarBool(g_hUseVIPRank) && (g_PlayerRank[client][0] <= GetConVarInt(g_hVIPRank)))
 			db_insertVip(steamid, 0);
-		}
 	}
 
 	if (!g_bVip[client] || !g_bZoner[client]) // No VIP or Zoner from database, let's check flags
