@@ -8938,7 +8938,7 @@ public int PrMenuHandler(Menu menu, MenuAction action, int param1, int param2)
 public void db_CheckVIPAdmin(int client, char[] szSteamID)
 {
 	char szQuery[1024];
-	Format(szQuery, 1024, "SELECT vip, zoner, active  FROM ck_vipadmins WHERE steamid = '%s';", szSteamID);
+	Format(szQuery, sizeof(szQuery), "SELECT vip, admin, zoner FROM ck_vipadmins WHERE steamid = '%s';", szSteamID);
 	SQL_TQuery(g_hDb, SQL_CheckVIPAdminCallback, szQuery, client, DBPrio_Low);
 }
 
