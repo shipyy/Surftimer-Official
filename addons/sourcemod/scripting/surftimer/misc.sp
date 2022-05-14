@@ -227,7 +227,7 @@ public void teleportClient(int client, int zonegroup, int zone, bool stopTime)
 				g_iTeleportingZoneId[client] = zId;
 
 			teleportEntitySafe(client, g_fStartposLocation[client][zonegroup], g_fStartposAngle[client][zonegroup], view_as<float>( { 0.0, 0.0, 0.0 } ), stopTime);
-
+			
 			return;
 		}
 	}
@@ -283,9 +283,11 @@ public void teleportClient(int client, int zonegroup, int zone, bool stopTime)
 	{
 		// Check if the map has zones
 		if (g_mapZonesCount > 0)
-		{
+		{	
 			// Search for the zoneid we're teleporting to:
-			int destinationZoneId = getZoneID(zonegroup, zone);
+			int destinationZoneId;
+			destinationZoneId = getZoneID(zonegroup, zone);
+
 			g_iTeleportingZoneId[client] = destinationZoneId;
 
 			// Check if zone was found
@@ -350,7 +352,13 @@ public void teleportClient(int client, int zonegroup, int zone, bool stopTime)
 
 					// Set spawn location to the destination zone:
 					if (destinationFound)
-						Array_Copy(origin, g_fTeleLocation[client], 3);
+						if(zone != 1)
+							if(g_bStageStartposUsed[client][zone-2] && g_fCurrentRunTime[client] <= 0.0)
+								Array_Copy(g_fStageStartposLocation[client][zone-2] , g_fTeleLocation[client], 3);
+							else
+								Array_Copy(origin, g_fTeleLocation[client], 3);
+						else
+							Array_Copy(origin, g_fTeleLocation[client], 3);
 					else
 						Array_Copy(g_mapZones[destinationZoneId].CenterPoint, g_fTeleLocation[client], 3);
 
@@ -374,7 +382,13 @@ public void teleportClient(int client, int zonegroup, int zone, bool stopTime)
 
 					float fLocation[3];
 					if (destinationFound)
-						Array_Copy(origin, fLocation, 3);
+						if(zone != 1)
+							if(g_bStageStartposUsed[client][zone-2] && g_fCurrentRunTime[client] <= 0.0)
+								Array_Copy(g_fStageStartposLocation[client][zone-2], fLocation, 3);
+							else
+								Array_Copy(origin, fLocation, 3);
+						else
+							Array_Copy(origin, fLocation, 3);
 					else
 						Array_Copy(g_mapZones[destinationZoneId].CenterPoint, fLocation, 3);
 
@@ -753,7 +767,7 @@ public void checkSpawnPoints()
 	{
 		// Check if spawn point has been added to the database with !addspawn
 		char szQuery[256];
-		Format(szQuery, 256, "SELECT pos_x, pos_y, pos_z, ang_x, ang_y, ang_z FROM ck_spawnlocations WHERE mapname = '%s' AND zonegroup = 0;", g_szMapName);
+		Format(szQuery, sizeof(szQuery), "SELECT pos_x, pos_y, pos_z, ang_x, ang_y, ang_z FROM ck_spawnlocations WHERE mapname = '%s' AND zonegroup = 0;", g_szMapName);
 		Handle query = SQL_Query(g_hDb, szQuery);
 		if (query == INVALID_HANDLE)
 		{
@@ -1339,6 +1353,9 @@ public void SetClientDefaults(int client)
 	// Goose Start Pos
 	for (int i = 0; i < MAXZONEGROUPS; i++)
 		g_bStartposUsed[client][i] = false;
+	
+	for (int i = 0; i < CPLIMIT; i++)
+		g_bStageStartposUsed[client][i] = false;
 
 	// Save loc
 	g_iLastSaveLocIdClient[client] = 0;
@@ -2037,17 +2054,6 @@ public void CheckMapRanks(int client)
 					g_MapRank[i]++;
 			}
 		}
-
-		char szName[128];
-		GetClientName(client, szName, 128);
-
-		if(g_OldMapRank[client] == 99999)
-			db_InsertTrack(g_szSteamID[client], szName, g_szMapName, 0, 0, g_MapRank[client]);
-		else
-			db_InsertTrack(g_szSteamID[client], szName, g_szMapName, 0, g_OldMapRank[client], g_MapRank[client]);
-
-		db_UpdateTrack(g_szMapName, szName, g_MapRank[client], 0, false);
-
 	}
 }
 
@@ -2064,15 +2070,6 @@ public void CheckBonusRanks(int client, int zGroup)
 					g_MapRankBonus[zGroup][i]++;
 			}
 		}
-		char szName[128];
-		GetClientName(client, szName, 128);
-
-		if(g_OldMapRankBonus[zGroup][client] == 9999999)
-			db_InsertTrack(g_szSteamID[client], szName, g_szMapName, zGroup, 0, g_MapRankBonus[zGroup][client]);
-		else
-			db_InsertTrack(g_szSteamID[client], szName, g_szMapName, zGroup, g_OldMapRankBonus[zGroup][client], g_MapRankBonus[zGroup][client]);
-
-		db_UpdateTrack(g_szMapName, szName, g_MapRankBonus[zGroup][client], zGroup, false);
 	}
 }
 
@@ -3376,7 +3373,7 @@ public void MinimalHudAlive(int client){
 
 		displayColor = GetMinimalHUDColour(client, g_MinimalHUDSpeedGradient[client]);
 		SetHudTextParams(-1.0, 1.0, 0.5, displayColor[0],displayColor[1] , displayColor[2], 255, 0, 0.0, 0.0, 0.0);
-		ShowHudText(client,4,final_string);
+		ShowHudText(client,3,final_string);
 		
 	}
 
@@ -3568,7 +3565,7 @@ public void MinimalHudDead(int client){
 
 				displayColor = GetMinimalHUDColour(client, g_MinimalHUDSpeedGradient[client]);
 				SetHudTextParams(-1.0, 1.0, 0.5, displayColor[0],displayColor[1] , displayColor[2], 255, 0, 0.0, 0.0, 0.0);
-				ShowHudText(client,4,final_string);
+				ShowHudText(client,3,final_string);
 			}
 			else{
 
@@ -3617,7 +3614,7 @@ public void MinimalHudDead(int client){
 
 				displayColor = GetMinimalHUDColour(client, g_MinimalHUDSpeedGradient[client]);
 				SetHudTextParams(-1.0, 1.0, 0.5, displayColor[0],displayColor[1] , displayColor[2], 255, 0, 0.0, 0.0, 0.0);
-				ShowHudText(client,4,final_string);
+				ShowHudText(client,3,final_string);
 			}
 		}
 	}

@@ -630,7 +630,6 @@ public void CL_OnEndTimerPress(int client)
 				db_insertBonus(client, g_szSteamID[client], szName, g_fFinalTime[client], zGroup);
 
 			}
-
 			else if (diff > 0.0)
 			{
 				// client's new record
@@ -907,7 +906,7 @@ public void CL_OnEndWrcpTimerPress(int client, float time2)
 		// Make a new stage replay bot?
 		if (GetConVarBool(g_hReplaceReplayTime) && (!g_bStageReplay[stage] || g_fFinalWrcpTime[client] < g_fStageReplayTimes[stage]))
 		{
-			//PrintToConsole(client,"SAVING STAGE RECORD");
+			PrintToConsole(client,"NEW BOT");
 			Stage_SaveRecording(client, stage, g_szFinalWrcpTime[client]);
 		}
 		else
@@ -930,6 +929,10 @@ public void CL_OnEndWrcpTimerPress(int client, float time2)
 		db_selectWrcpRecord(client, 0, stage);
 		
 		g_bWrcpTimeractivated[client] = false;
+
+		if(g_aRecording[client] != null && g_bTimerRunning[client] && g_Recording){
+			Stage_StartRecording(client);
+		}
 	}
 	else if (g_bWrcpTimeractivated[client] && g_iCurrentStyle[client] != 0) // styles
 	{
