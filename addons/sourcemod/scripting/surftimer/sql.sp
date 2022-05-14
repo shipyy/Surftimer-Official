@@ -2552,12 +2552,14 @@ public void sql_selectRecordCallback(Handle owner, Handle hndl, const char[] err
 		WritePackCell(pack, data);
 
 		//Add values to ck_track
-		if(g_OldMapRank[data] == 99999)
+		if(g_OldMapRank[data] == 99999){
 			db_InsertTrack(g_szSteamID[data], szName, g_szMapName, 0, 0, g_MapRank[data]);
-		else
+			db_UpdateTrack(g_szMapName, szName, g_MapRank[data], 0, false);
+		}
+		else if(g_OldMapRank[data] != g_MapRank[data]){
 			db_InsertTrack(g_szSteamID[data], szName, g_szMapName, 0, g_OldMapRank[data], g_MapRank[data]);
-
-		db_UpdateTrack(g_szMapName, szName, g_MapRank[data], 0, false);
+			db_UpdateTrack(g_szMapName, szName, g_MapRank[data], 0, false);
+		}
 
 		// "INSERT INTO ck_playertimes (steamid, mapname, name, runtimepro, style) VALUES('%s', '%s', '%s', '%f', %i);";
 		Format(szQuery, 512, sql_insertPlayerTime, g_szSteamID[data], g_szMapName, szName, g_fFinalTime[data], 0, g_iPreStrafe[0][0][0][data], g_iPreStrafe[1][0][0][data], g_iPreStrafe[2][0][0][data]);
@@ -2587,12 +2589,14 @@ public void db_updateRecordPro(int client)
 	WritePackCell(pack, client);
 	
 	//Add values to ck_track
-	if(g_OldMapRank[client] == 99999)
+	if(g_OldMapRank[client] == 99999){
 		db_InsertTrack(g_szSteamID[client], szName, g_szMapName, 0, 0, g_MapRank[client]);
-	else
+		db_UpdateTrack(g_szMapName, szName, g_MapRank[client], 0, false);
+	}
+	else if(g_OldMapRank[client] != g_MapRank[client]){
 		db_InsertTrack(g_szSteamID[client], szName, g_szMapName, 0, g_OldMapRank[client], g_MapRank[client]);
-
-	db_UpdateTrack(g_szMapName, szName, g_MapRank[client], 0, false);
+		db_UpdateTrack(g_szMapName, szName, g_MapRank[client], 0, false);
+	}
 
 	char szQuery[1024];
 	// "UPDATE ck_playertimes SET name = '%s', runtimepro = '%f' WHERE steamid = '%s' AND mapname = '%s' AND style = %i;";
@@ -4082,6 +4086,23 @@ public void db_viewMapRankBonusCallback(Handle owner, Handle hndl, const char[] 
 	if (SQL_HasResultSet(hndl) && SQL_FetchRow(hndl))
 	{
 		g_MapRankBonus[zgroup][client] = SQL_GetRowCount(hndl);
+
+		char szUName[MAX_NAME_LENGTH * 2 + 1];
+		GetClientName(client,szUName, MAX_NAME_LENGTH * 2 + 1);
+
+		char szName[MAX_NAME_LENGTH * 2 + 1];
+		SQL_EscapeString(g_hDb, szUName, szName, MAX_NAME_LENGTH * 2 + 1);
+
+		//add values to ck_track
+		if(g_OldMapRankBonus[zgroup][client] == 9999999){
+			db_InsertTrack(g_szSteamID[client], szName, g_szMapName, zgroup, 0, g_MapRankBonus[zgroup][client]);
+			db_UpdateTrack(g_szMapName, szName, g_MapRankBonus[zgroup][client], zgroup, false);
+		}
+		else if(g_OldMapRankBonus[zgroup][client] != g_MapRankBonus[zgroup][client]){
+			db_InsertTrack(g_szSteamID[client], szName, g_szMapName, zgroup, g_OldMapRankBonus[zgroup][client], g_MapRankBonus[zgroup][client]);
+			db_UpdateTrack(g_szMapName, szName, g_MapRankBonus[zgroup][client], zgroup, false);
+		}
+
 	}
 	else
 	{
@@ -4327,13 +4348,6 @@ public void db_insertBonus(int client, char szSteamId[32], char szUName[128], fl
 	char szName[MAX_NAME_LENGTH * 2 + 1];
 	SQL_EscapeString(g_hDb, szUName, szName, MAX_NAME_LENGTH * 2 + 1);
 
-	if(g_OldMapRankBonus[zoneGrp][client] == 9999999)
-		db_InsertTrack(g_szSteamID[client], szName, g_szMapName, zoneGrp, 0, g_MapRankBonus[zoneGrp][client]);
-	else
-		db_InsertTrack(g_szSteamID[client], szName, g_szMapName, zoneGrp, g_OldMapRankBonus[zoneGrp][client], g_MapRankBonus[zoneGrp][client]);
-
-	db_UpdateTrack(g_szMapName, szName, g_MapRankBonus[zoneGrp][client], zoneGrp, false);
-
 	Handle pack = CreateDataPack();
 	WritePackCell(pack, client);
 	WritePackCell(pack, zoneGrp);
@@ -4366,14 +4380,6 @@ public void db_updateBonus(int client, char szSteamId[32], char szUName[128], fl
 {
 	char szQuery[1024];
 	char szName[MAX_NAME_LENGTH * 2 + 1];
-
-	//add values to ck_track
-	if(g_OldMapRankBonus[zoneGrp][client] == 9999999)
-		db_InsertTrack(g_szSteamID[client], szName, g_szMapName, zoneGrp, 0, g_MapRankBonus[zoneGrp][client]);
-	else
-		db_InsertTrack(g_szSteamID[client], szName, g_szMapName, zoneGrp, g_OldMapRankBonus[zoneGrp][client], g_MapRankBonus[zoneGrp][client]);
-
-	db_UpdateTrack(g_szMapName, szName, g_MapRankBonus[zoneGrp][client], zoneGrp, false);
 
 	Handle datapack = CreateDataPack();
 	WritePackCell(datapack, client);
