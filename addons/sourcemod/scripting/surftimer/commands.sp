@@ -157,6 +157,7 @@ void CreateCommands()
 	RegConsoleCmd("sm_mhud", Command_MinimalHUD, "[surftimer] Use Minimal HUD");
 	RegConsoleCmd("sm_chud", Command_CentreSpeedHud, "[surftimer] Use Center HUD");
 	RegConsoleCmd("sm_prinfo_help", Command_PRinfo_help, "[surftimer] Show in console how to use the command");
+	RegConsoleCmd("sm_csd", Command_CenterSpeed, "[surftimer] [settings] on/off - toggle center speed display");
 
 
 	// New Commands
