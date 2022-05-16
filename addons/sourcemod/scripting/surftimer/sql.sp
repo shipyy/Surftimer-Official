@@ -10402,7 +10402,7 @@ public void db_viewPRinfoMapRankCallback(Handle owner, Handle hndl, const char[]
 	{
 		g_iPRinfoMapRank[client] = SQL_FetchInt(hndl, 0);
 
-		if( g_iPRinfoMapRankBonus[client] == 0)
+		if( g_iPRinfoMapRank[client] == 0)
 			db_selectPRinfo(client, g_iPRinfoMapRank[client], szMapName, 0);
 		else
 			db_selectPRinfoUnknown(client, g_iPRinfoMapRank[client], szMapName, 0);
