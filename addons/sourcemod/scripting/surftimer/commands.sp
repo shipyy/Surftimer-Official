@@ -2538,7 +2538,7 @@ void CenterSpeedDisplay(int client, bool menu = false)
 								displayColor[1] = g_iCSD_G[client];
 								displayColor[2] = g_iCSD_B[client];
 							}
-
+							
 							SetHudTextParams(fCSD_PosX, fCSD_PosY, update_rate/g_fTickrate, displayColor[0], displayColor[1], displayColor[2], 255, 0, 0.0, 0.0, 0.0);
 
 							Format(szSpeed, sizeof(szSpeed), "%i", RoundToNearest(fSpeedHUD));
