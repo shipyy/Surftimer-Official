@@ -136,7 +136,6 @@ char sql_updatePrinfo_withruntime[] = "UPDATE ck_prinfo SET PRtimeinzone = '%f',
 
 char sql_clearPRruntime[] = "UPDATE ck_prinfo SET runtime = '0.0' WHERE steamid = '%s' AND mapname = '%s' AND zonegroup = '%i';";
 
-
 //ck_recentlylost
 char sql_InsertTrack[] = "INSERT INTO ck_track (steamid, name, mapname, zonegroup, previous_rank, new_rank ) VALUES('%s', '%s', '%s', '%i', '%i', '%i');";
 char sql_InsertTrack_All[] = "UPDATE ck_track SET previous_rank = new_rank, new_rank = 999999 WHERE steamid = '%s';";
@@ -146,6 +145,5 @@ char sql_RecentlyLost[] = "SELECT mapname, zonegroup, previous_rank, new_rank FR
 char sql_Tracking[] = "SELECT mapname, zonegroup, previous_rank, new_rank FROM ck_track WHERE steamid = '%s' ORDER BY RegDate DESC LIMIT 50;";
 //char sql_RemovePlayerTrack[] = "DELETE FROM ck_track WHERE steamid = '%s' AND mapname = '%s' AND zonegroup = '%i'";
 char sql_UpdatePlayersRanks[] = "UPDATE ck_track SET previous_rank = new_rank, new_rank = new_rank - 1 WHERE mapname = '%s' AND zonegroup = '%i' AND new_rank >= %i";
-
 
 
