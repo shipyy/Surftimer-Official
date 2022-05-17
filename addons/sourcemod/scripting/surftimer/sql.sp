@@ -3604,7 +3604,7 @@ public void db_viewBonusPRinfo(int client,  char szSteamID[32], char szMapName[3
 	if (!IsValidClient(client))
 		return;
 
-	for(int zonegroup = 1; zonegroup < MAXZONEGROUPS; zonegroup++){
+	for(int zonegroup = 1; zonegroup < g_mapZoneGroupCount; zonegroup++){
 		Format(szQuery, 1024, sql_selectBonusPR, szSteamID, szMapName, zonegroup);
 		//PrintToConsole(client,szQuery);
 
