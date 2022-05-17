@@ -2290,7 +2290,7 @@ public void ToggleTimer(int client)
 
 void SpeedGradient(int client, bool menu = false)
 {
-	if (g_SpeedGradient[client] != 5)
+	if (g_SpeedGradient[client] != 6)
 		g_SpeedGradient[client]++;
 	else
 		g_SpeedGradient[client] = 0;
@@ -2474,7 +2474,7 @@ void CenterSpeedDisplay(int client, bool menu = false)
 			if (IsPlayerAlive(client))
 			{	
 
-				if(g_SpeedGradient[client] != 5)
+				if(g_SpeedGradient[client] != 6)
 					displayColor = GetSpeedColourCSD(client, RoundToNearest(g_fLastSpeed[client]), g_SpeedGradient[client]);
 				else{
 					displayColor[0] = g_iCSD_R[client];
@@ -2532,16 +2532,15 @@ void CenterSpeedDisplay(int client, bool menu = false)
 								}
 							}
 
-              if(g_SpeedGradient[client] != 6)
+							if(g_SpeedGradient[client] != 6)
 								displayColor = GetSpeedColourCSD(client, RoundToNearest(fSpeedHUD), g_SpeedGradient[client]);
 							else{
 								displayColor[0] = g_iCSD_R[client];
 								displayColor[1] = g_iCSD_G[client];
 								displayColor[2] = g_iCSD_B[client];
 							}
-
+							
 							SetHudTextParams(fCSD_PosX, fCSD_PosY, update_rate/g_fTickrate, displayColor[0], displayColor[1], displayColor[2], 255, 0, 0.0, 0.0, 0.0);
-
 
 							Format(szSpeed, sizeof(szSpeed), "%i", RoundToNearest(fSpeedHUD));
 						}

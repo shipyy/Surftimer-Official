@@ -4851,7 +4851,7 @@ public void GetSpeedColour(int client, int speed, int type)
 		// RED
 		if (type == 1 && g_SpeedMode[client] == 0) 
 		{
-			Format(g_szSpeedColour[client], sizeof(g_szSpeedColour[]), "#f00
+			Format(g_szSpeedColour[client], sizeof(g_szSpeedColour[]), "#f00");
 		}
 		// GREEN
 		else if (type == 2 && g_SpeedMode[client] == 0)
