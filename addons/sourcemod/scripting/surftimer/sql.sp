@@ -3701,6 +3701,394 @@ public void sql_selectCheckpointsSpeedsTypeCallback(Handle owner, Handle hndl, c
 		LogError("[SurfTimer] SQL Error (sql_selectCheckpointsSpeedsTypeCallback): %s", error);
 		return;
 	}
+	ResetPack(data);
+	int client = ReadPackCell(data);
+	int zonegrp = ReadPackCell(data);
+	CloseHandle(data);
+
+	db_viewCheckpointsinZoneGroup(client, g_szSteamID[client], g_szMapName, zonegrp);
+}
+
+public void db_deleteCheckpoints()
+{
+	char szQuery[258];
+	Format(szQuery, 258, sql_deleteCheckpoints, g_szMapName);
+	SQL_TQuery(g_hDb, SQL_deleteCheckpointsCallback, szQuery, 1, DBPrio_Low);
+}
+
+public void SQL_deleteCheckpointsCallback(Handle owner, Handle hndl, const char[] error, any data)
+{
+	if (hndl == null)
+	{
+		LogError("[SurfTimer] SQL Error (SQL_deleteCheckpointsCallback): %s", error);
+		return;
+	}
+}
+
+public void db_viewPRinfo(int client,  char szSteamID[32], char szMapName[128])
+{
+	Handle pack = CreateDataPack();
+	WritePackCell(pack, client);
+	WritePackString(pack, szSteamID);
+	WritePackString(pack, szMapName);
+
+	if (!IsValidClient(client))
+		return;
+
+	char szQuery[1024];
+	Format(szQuery, 1024, sql_selectPR, szSteamID, szMapName, 0);
+	//PrintToConsole(client,szQuery);
+	SQL_TQuery(g_hDb, db_viewPRinfoCallback, szQuery, pack, DBPrio_Low);
+}
+
+public void db_viewPRinfoCallback(Handle owner, Handle hndl, const char[] error, any pack)
+{	
+
+	ResetPack(pack);
+	int client = ReadPackCell(pack);
+
+	char szSteamID[32];
+	ReadPackString(pack, szSteamID, 32);
+	
+	char szMapName[32];
+	ReadPackString(pack, szMapName, 32);
+
+	if (hndl == null)
+	{
+		LogError("[SurfTimer] SQL Error (db_viewPRinfoCallback): %s", error);
+		return;
+	}
+
+	if (!IsValidClient(client))
+		return;
+
+	if(SQL_HasResultSet(hndl) && SQL_FetchRow(hndl)){
+
+		g_fTimeinZone[client][0] = SQL_FetchFloat(hndl, 4);
+		g_fCompletes[client][0] = SQL_FetchFloat(hndl, 5);
+		g_fAttempts[client][0] = SQL_FetchFloat(hndl, 6);
+		g_fstComplete[client][0] = SQL_FetchFloat(hndl, 7);
+
+	}
+	else{
+		char szQuery[1024];
+
+		g_fTimeinZone[client][0] = 0.0;
+		g_fCompletes[client][0] = 0.0;
+		g_fAttempts[client][0] = 0.0;
+		g_fstComplete[client][0] = 0.0;
+
+		Format(szQuery, 1024, "SELECT runtimepro FROM ck_playertimes WHERE steamid = '%s' AND style = 0 AND mapname = '%s';", szSteamID, szMapName);
+		//PrintToConsole(client,szQuery);
+		SQL_TQuery(g_hDb, db_prinforuntimecallback, szQuery, pack, DBPrio_Low);
+	}
+
+	//SETUP BONUS PRINFO
+	if(g_bhasBonus){
+		db_viewBonusPRinfo(client, szSteamID, szMapName);
+	}
+	else{
+		if (!g_bSettingsLoaded[client])
+		{
+			g_fTick[client][1] = GetGameTime();
+			float tick = g_fTick[client][1] - g_fTick[client][0];
+			LogToFileEx(g_szLogFile, "[SurfTimer] %s: Finished db_viewPRinfo in %fs", g_szSteamID[client], tick);
+			g_fTick[client][0] = GetGameTime();
+
+			// Print a VIP's custom join msg to all
+			if (g_bEnableJoinMsgs && !StrEqual(g_szCustomJoinMsg[client], "none") && IsPlayerVip(client, true, false))
+				CPrintToChatAll("%s", g_szCustomJoinMsg[client]);
+
+			// CalculatePlayerRank(client);
+			g_bSettingsLoaded[client] = true;
+			g_bLoadingSettings[client] = false;
+
+			db_UpdateLastSeen(client);
+
+			if (GetConVarBool(g_hTeleToStartWhenSettingsLoaded))
+			{
+				Command_Restart(client, 1);
+				CreateTimer(0.1, RestartPlayer, client);
+			}
+
+			// Seach for next client to load
+			for (int i = 1; i < MAXPLAYERS + 1; i++)
+			{
+				if (IsValidClient(i) && !IsFakeClient(i) && !g_bSettingsLoaded[i] && !g_bLoadingSettings[i])
+				{
+					szSteamID = "";
+					GetClientAuthId(i, AuthId_Steam2, szSteamID, 32, true);
+					g_iSettingToLoad[i] = 0;
+					LoadClientSetting(i, g_iSettingToLoad[i]);
+					g_bLoadingSettings[i] = true;
+					break;
+				}
+			}
+
+			float time = g_fTick[client][1] - g_fClientsLoading[client][0];
+			char szName[32];
+			GetClientName(client, szName, sizeof(szName));
+			LogToFileEx(g_szLogFile, "[SurfTimer] Finished loading %s - %s settings in %fs", g_szSteamID[client], szName, time);
+		}
+	}
+
+	return;
+}
+
+public void db_prinforuntimecallback(Handle owner, Handle hndl, const char[] error, any pack)
+{
+
+	ResetPack(pack);
+	int client = ReadPackCell(pack);
+
+	char szSteamID[32];
+	ReadPackString(pack, szSteamID, 32);
+
+	char szMapName[32];
+	ReadPackString(pack, szMapName, 32);
+
+	if (hndl == null)
+	{
+		LogError("[SurfTimer] SQL Error (db_prinforuntimecallback): %s", error);
+		return;
+	}
+
+	if (!IsValidClient(client))
+		return;
+
+	if(SQL_HasResultSet(hndl) && SQL_FetchRow(hndl)){
+
+		float runtime = SQL_FetchFloat(hndl, 0);
+
+		char szName[32];
+		GetClientName(client, szName, sizeof(szName));
+
+		char szQuery[1024];
+		Format(szQuery, 1024, sql_insertPR, szSteamID, szName, szMapName, runtime, 0, 0.0, 0.0, 0.0, 0.0);
+		SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, pack, DBPrio_Low);
+	}
+	else{
+
+		char szName[32];
+		GetClientName(client, szName, sizeof(szName));
+
+		char szQuery[1024];
+		Format(szQuery, 1024, sql_insertPR, szSteamID, szName, szMapName, 0.0, 0, 0.0, 0.0, 0.0, 0.0);
+		SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, pack, DBPrio_Low);
+	}
+	return;
+}
+
+public void db_viewBonusPRinfo(int client,  char szSteamID[32], char szMapName[32])
+{
+
+	char szQuery[1024];
+
+	if (!IsValidClient(client))
+		return;
+
+	for(int zonegroup = 1; zonegroup < g_mapZoneGroupCount; zonegroup++){
+		Format(szQuery, 1024, sql_selectBonusPR, szSteamID, szMapName, zonegroup);
+		//PrintToConsole(client,szQuery);
+
+		Handle pack = CreateDataPack();
+		WritePackCell(pack, client);
+		WritePackString(pack, szSteamID);
+		WritePackString(pack, szMapName);
+		WritePackCell(pack, zonegroup);
+
+		SQL_TQuery(g_hDb, db_viewBonusPRinfoCallback, szQuery, pack, DBPrio_Low);
+	}
+}
+
+public void db_viewBonusPRinfoCallback(Handle owner, Handle hndl, const char[] error, any pack)
+{	
+
+	ResetPack(pack);
+	int client = ReadPackCell(pack);
+
+	char szSteamID[32];
+	ReadPackString(pack, szSteamID, 32);
+
+	char szMapName[32];
+	ReadPackString(pack, szMapName, 32);
+
+	if (hndl == null)
+	{
+		LogError("[SurfTimer] SQL Error (db_viewBonusPRinfoCallback): %s", error);
+		return;
+	}
+
+	if (!IsValidClient(client))
+		return;
+
+	if(SQL_HasResultSet(hndl) && SQL_FetchRow(hndl)){
+
+			int zonegroup = SQL_FetchInt(hndl, 3);
+
+			g_fTimeinZone[client][zonegroup] = SQL_FetchFloat(hndl, 4);
+			g_fCompletes[client][zonegroup] = SQL_FetchFloat(hndl, 5);
+			g_fAttempts[client][zonegroup] = SQL_FetchFloat(hndl, 6);
+			g_fstComplete[client][zonegroup] = SQL_FetchFloat(hndl, 7);
+			
+	}
+	else{
+		char szQuery[1024];
+
+		int zonegroup = ReadPackCell(pack);
+
+		g_fTimeinZone[client][zonegroup] = 0.0;
+		g_fCompletes[client][zonegroup] = 0.0;
+		g_fAttempts[client][zonegroup] = 0.0;
+		g_fstComplete[client][zonegroup] = 0.0;
+		
+		Format(szQuery, 1024, "SELECT runtime, zonegroup FROM ck_bonus WHERE steamid = '%s' AND mapname = '%s' AND zonegroup = '%i';", szSteamID, szMapName, zonegroup);
+		//PrintToConsole(client,szQuery);
+
+		SQL_TQuery(g_hDb, db_bonusprinforuntimecallback, szQuery, pack, DBPrio_Low);
+	}
+
+	if (!g_bSettingsLoaded[client])
+	{
+		g_fTick[client][1] = GetGameTime();
+		float tick = g_fTick[client][1] - g_fTick[client][0];
+		LogToFileEx(g_szLogFile, "[SurfTimer] %s: Finished db_viewPRinfo in %fs", g_szSteamID[client], tick);
+		g_fTick[client][0] = GetGameTime();
+
+		// Print a VIP's custom join msg to all
+		if (g_bEnableJoinMsgs && !StrEqual(g_szCustomJoinMsg[client], "none") && IsPlayerVip(client, true, false))
+			CPrintToChatAll("%s", g_szCustomJoinMsg[client]);
+
+		// CalculatePlayerRank(client);
+		g_bSettingsLoaded[client] = true;
+		g_bLoadingSettings[client] = false;
+
+		db_UpdateLastSeen(client);
+
+		if (GetConVarBool(g_hTeleToStartWhenSettingsLoaded))
+		{
+			Command_Restart(client, 1);
+			CreateTimer(0.1, RestartPlayer, client);
+		}
+
+		// Seach for next client to load
+		for (int i = 1; i < MAXPLAYERS + 1; i++)
+		{
+			if (IsValidClient(i) && !IsFakeClient(i) && !g_bSettingsLoaded[i] && !g_bLoadingSettings[i])
+			{
+				szSteamID = "";
+				GetClientAuthId(i, AuthId_Steam2, szSteamID, 32, true);
+				g_iSettingToLoad[i] = 0;
+				LoadClientSetting(i, g_iSettingToLoad[i]);
+				g_bLoadingSettings[i] = true;
+				break;
+			}
+		}
+
+		float time = g_fTick[client][1] - g_fClientsLoading[client][0];
+		char szName[32];
+		GetClientName(client, szName, sizeof(szName));
+		LogToFileEx(g_szLogFile, "[SurfTimer] Finished loading %s - %s settings in %fs", g_szSteamID[client], szName, time);
+	}
+
+	return;
+}
+
+public void db_bonusprinforuntimecallback(Handle owner, Handle hndl, const char[] error, any pack)
+{
+
+	ResetPack(pack);
+	int client = ReadPackCell(pack);
+
+	char szSteamID[32];
+	ReadPackString(pack, szSteamID, 32);
+
+	char szMapName[32];
+	ReadPackString(pack, szMapName, 32);
+
+	if (hndl == null)
+	{
+		LogError("[SurfTimer] SQL Error (db_prinforuntimecallback): %s", error);
+		return;
+	}
+
+	if (!IsValidClient(client))
+		return;
+
+	if(SQL_HasResultSet(hndl) && SQL_FetchRow(hndl)){
+		//PrintToConsole(client,"ALREADY EXISTS");
+
+		float runtime;
+		int zonegroup;
+
+		char szName[32];
+		GetClientName(client, szName, sizeof(szName));
+		
+		char szQuery[1024];
+		runtime = SQL_FetchFloat(hndl, 0);
+		zonegroup = SQL_FetchInt(hndl, 1);
+
+		Format(szQuery, 1024, sql_insertPR, szSteamID, szName, szMapName, runtime, zonegroup, 0.0, 0.0, 0.0, 0.0);
+		SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, pack, DBPrio_Low);
+
+	}
+	else{
+		//PrintToConsole(client,"NEW ENTRY");
+
+		char szName[32];
+		GetClientName(client, szName, sizeof(szName));
+
+		int zonegroup = ReadPackCell(pack);
+
+		char szQuery[1024];
+
+		Format(szQuery, 1024, sql_insertPR, szSteamID, szName, szMapName, 0.0, zonegroup, 0.0, 0.0, 0.0, 0.0);
+		SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, pack, DBPrio_Low);
+
+	}
+	return;
+}
+
+public void db_UpdatePRinfo_WithRuntime(int client, char szSteamID[32], int zGroup, float runtime)
+{	
+	if (!IsValidClient(client))
+		return;
+
+	char szQuery[2048];
+	//PrintToConsole(client, "%f || %f || %f || %f || %f\n", g_fTimeinZone[client][zGroup], g_fCompletes[client][zGroup], g_fAttempts[client][zGroup], g_fstComplete[client][zGroup], runtime);
+	Format(szQuery, 2048, sql_updatePrinfo_withruntime, g_fTimeinZone[client][zGroup], g_fCompletes[client], g_fAttempts[client][zGroup], g_fstComplete[client][zGroup], runtime, szSteamID, g_szMapName, zGroup);
+	SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, DBPrio_Low);
+}
+//this is called whenever the player's time stops and he is not in a end zone (map/bonus/stage)
+public void db_UpdatePRinfo(int client, char szSteamID[32], int zGroup)
+{	
+	if (!IsValidClient(client))
+		return;
+
+	char szQuery[2048];
+	//PrintToConsoleAll("%f || %f || %f || %f\n", g_fTimeinZone[client][zGroup], g_fCompletes[client][zGroup], g_fAttempts[client][zGroup], g_fstComplete[client][zGroup]);
+	Format(szQuery, 2048, sql_updatePrinfo, g_fPersonalRecord[client], g_fTimeinZone[client][zGroup], g_fCompletes[client][zGroup], g_fAttempts[client][zGroup], g_fstComplete[client][zGroup], szSteamID, g_szMapName, zGroup);
+	SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, DBPrio_Low);
+}
+
+/*===================================
+=              MAPTIER              =
+===================================*/
+
+public void db_insertMapTier(int tier)
+{
+	char szQuery[256];
+	if (g_bTierEntryFound)
+	{
+		Format(szQuery, 256, sql_updatemaptier, tier, g_szMapName);
+		SQL_TQuery(g_hDb, db_insertMapTierCallback, szQuery, 1, DBPrio_Low);
+	}
+	else
+	{
+		Format(szQuery, 256, sql_insertmaptier, g_szMapName, tier);
+		SQL_TQuery(g_hDb, db_insertMapTierCallback, szQuery, 1, DBPrio_Low);
+	}
+}
 
 	if (SQL_HasResultSet(hndl) && SQL_FetchRow(hndl))
 	{	
