@@ -182,6 +182,8 @@ void CreateCommands()
 	// CPR
 	RegConsoleCmd("sm_cpr", Command_CPR, "[surftimer] Compare clients time to another clients time");
 	
+	//CCP
+	RegConsoleCmd("sm_ccp", Command_CCP, "[surftimer] Information about checkpoints info on a map");
 
 	// reload map
 	RegAdminCmd("sm_rm", Command_ReloadMap, ADMFLAG_ROOT, "[surftimer] Reloads the current map");
@@ -4949,6 +4951,48 @@ public Action Command_CPR(int client, int args)
 			}
 			if (!found)
 				CReplyToCommand(client, "%t", "Commands85", g_szChatPrefix);
+		}
+	}
+
+	return Plugin_Handled;
+}
+
+public Action Command_CCP(int client, int args)
+{
+
+	if (!IsValidClient(client))
+		return Plugin_Handled;
+
+	//CCP MENU
+	ccp_menu = new Menu(CCPMenuHandler);
+
+	switch(args){
+		case 0:{
+			if(g_bhasStages)
+				db_viewCCP_GetMapRank(client, g_szSteamID[client], g_szMapName);
+			else
+				CPrintToChat(client, "%t", "CCP_01", g_szChatPrefix);
+		}
+		//TODO CCP FOR OTHERMAPS AND RANKS
+		case 1:{
+			char arg1[32];
+			GetCmdArg(1, arg1, sizeof(arg1));
+
+			if (StrContains(arg1, "surf_", true) != -1)
+			{	
+				isLinear(client, g_szSteamID[client], arg1);
+			}
+			else if (StrContains(arg1, "@") != -1)
+			{
+				ReplaceString(arg1, 32, "@", "");
+				int rank = StringToInt(arg1);
+
+				if(g_bhasStages)
+					db_viewCCP_WithMapRank(client, g_szSteamID[client], g_szMapName, rank);
+				else
+					CPrintToChat(client, "%t", "CCP_01", g_szChatPrefix);
+
+			}
 		}
 	}
 
