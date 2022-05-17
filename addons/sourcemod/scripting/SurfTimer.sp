@@ -330,6 +330,9 @@ float g_fCheckpointTimesNew[MAXZONEGROUPS][MAXPLAYERS + 1][CPLIMIT];
 // Clients current run's speed's
 float g_fCheckpointSpeedsNew[MAXZONEGROUPS][MAXPLAYERS + 1][CPLIMIT];
 
+// Clients current run's stage times
+float g_fStageTimesNew[MAXZONEGROUPS][MAXPLAYERS + 1][CPLIMIT];
+
 // Server record checkpoint times
 float g_fCheckpointServerRecord[MAXZONEGROUPS][CPLIMIT];
 
