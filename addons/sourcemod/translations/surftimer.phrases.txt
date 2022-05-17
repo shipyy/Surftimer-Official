@@ -1732,7 +1732,7 @@
 	"SpeedGradientWhite"
 	{
 		"#format"	"{1:s}"
-		"en"		"{1} Your speed gradient is now {white}white"
+		"en"		"{1} Your speed gradient is now white"
 	}
 	"SpeedGradientRed"
 	{
@@ -1757,12 +1757,12 @@
 	"SpeedGradientRainbow"
 	{
 		"#format"	"{1:s}"
-		"en"		"{1} Your speed gradient is now {pink}r{purple}a{darkblue}i{green}n{yellow}b{orange}o{red}w"
+		"en"		"{1} Your speed gradient is now {yellow}yellow"
 	}
 	"SpeedGradientMomentum"
 	{
 		"#format"	"{1:s}"
-		"en"		"{1} Your speed gradient is now {green}{green}m{red}e{green}n{red}t{green}u{red}m"
+		"en"		"{1} Your speed gradient is now {green}momen{red}tum"
 	}
 	"SpeedModeXY"
 	{

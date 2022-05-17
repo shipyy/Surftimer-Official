@@ -153,11 +153,11 @@ void CreateCommands()
 	RegConsoleCmd("sm_surftimer", Client_OptionMenu, "[surftimer] opens options menu");
 	RegConsoleCmd("sm_bhoptimer", Client_OptionMenu, "[surftimer] opens options menu");
 	RegConsoleCmd("sm_knife", Command_GiveKnife, "[surftimer] Give players a knife");
+	RegConsoleCmd("sm_csd", Command_CenterSpeed, "[surftimer] [settings] on/off - toggle center speed display");
 	RegConsoleCmd("sm_timeleft", Command_Timeleft, "[surftimer] Display Timeleft on bottom of screen");
 	RegConsoleCmd("sm_mhud", Command_MinimalHUD, "[surftimer] Use Minimal HUD");
 	RegConsoleCmd("sm_chud", Command_CentreSpeedHud, "[surftimer] Use Center HUD");
 	RegConsoleCmd("sm_prinfo_help", Command_PRinfo_help, "[surftimer] Show in console how to use the command");
-
 
 	// New Commands
 	RegConsoleCmd("sm_mrank", Command_SelectMapTime, "[surftimer] prints a players map record in chat.");
@@ -259,7 +259,7 @@ public Action Command_CenterSpeed(int client, int args) {
 		g_bCenterSpeedDisplay[client] = true;
 		CPrintToChat(client, "%t", "CenterSpeedOn", g_szChatPrefix);
 	}
-		
+  
 	CenterSpeedDisplay(client, false);
 	return Plugin_Handled;
 }
@@ -2290,7 +2290,7 @@ public void ToggleTimer(int client)
 
 void SpeedGradient(int client, bool menu = false)
 {
-	if (g_SpeedGradient[client] != 6)
+	if (g_SpeedGradient[client] != 5)
 		g_SpeedGradient[client]++;
 	else
 		g_SpeedGradient[client] = 0;
@@ -2473,7 +2473,8 @@ void CenterSpeedDisplay(int client, bool menu = false)
 			// player alive
 			if (IsPlayerAlive(client))
 			{	
-				if(g_SpeedGradient[client] != 6)
+
+				if(g_SpeedGradient[client] != 5)
 					displayColor = GetSpeedColourCSD(client, RoundToNearest(g_fLastSpeed[client]), g_SpeedGradient[client]);
 				else{
 					displayColor[0] = g_iCSD_R[client];
@@ -2531,7 +2532,7 @@ void CenterSpeedDisplay(int client, bool menu = false)
 								}
 							}
 
-							if(g_SpeedGradient[client] != 6)
+              if(g_SpeedGradient[client] != 6)
 								displayColor = GetSpeedColourCSD(client, RoundToNearest(fSpeedHUD), g_SpeedGradient[client]);
 							else{
 								displayColor[0] = g_iCSD_R[client];
@@ -2541,10 +2542,12 @@ void CenterSpeedDisplay(int client, bool menu = false)
 
 							SetHudTextParams(fCSD_PosX, fCSD_PosY, update_rate/g_fTickrate, displayColor[0], displayColor[1], displayColor[2], 255, 0, 0.0, 0.0, 0.0);
 
+
 							Format(szSpeed, sizeof(szSpeed), "%i", RoundToNearest(fSpeedHUD));
 						}
 						// spec'ing player
 						else {
+
 							if(g_SpeedGradient[client] != 6)
 								displayColor = GetSpeedColourCSD(client, RoundToNearest(g_fLastSpeed[ObservedUser]), g_SpeedGradient[client]);
 							else{
@@ -2554,6 +2557,7 @@ void CenterSpeedDisplay(int client, bool menu = false)
 							}
 
 							SetHudTextParams(fCSD_PosX, fCSD_PosY, update_rate/g_fTickrate, displayColor[0], displayColor[1], displayColor[2], 255, 0, 0.0, 0.0, 0.0);
+
 
 							Format(szSpeed, sizeof(szSpeed), "%i", RoundToNearest(g_fLastSpeed[ObservedUser]));
 						}
@@ -3698,7 +3702,7 @@ public void MiscellaneousOptions(int client)
 		AddMenuItem(menu, "", "[LEFT] Start Side");
 	else
 		AddMenuItem(menu, "", "[RIGHT] Start Side");
-
+    
 	// Hide Chat
 	if (g_bHideChat[client])
 		AddMenuItem(menu, "", "[ON] Hide Chat");
