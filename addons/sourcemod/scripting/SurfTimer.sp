@@ -224,6 +224,7 @@ enum ResponseType
   MaxVelocity,
   TargetName,
   ClientEdit,
+  ColorValue,
 }
 
 /*===================================
@@ -320,17 +321,49 @@ bool g_bhasBonus;
 // Clients best run's times
 float g_fCheckpointTimesRecord[MAXZONEGROUPS][MAXPLAYERS + 1][CPLIMIT];
 
+// Clients best run's speed's
+float g_fCheckpointSpeedsRecord[MAXZONEGROUPS][MAXPLAYERS + 1][CPLIMIT];
+
 // Clients current run's times
 float g_fCheckpointTimesNew[MAXZONEGROUPS][MAXPLAYERS + 1][CPLIMIT];
+
+// Clients current run's speed's
+float g_fCheckpointSpeedsNew[MAXZONEGROUPS][MAXPLAYERS + 1][CPLIMIT];
 
 // Server record checkpoint times
 float g_fCheckpointServerRecord[MAXZONEGROUPS][CPLIMIT];
 
-// Last difference to the server record checkpoint
+// Server record checkpoint speed's
+float g_fCheckpointSpeedServerRecord[MAXZONEGROUPS][CPLIMIT];
+
+// Last difference to the server record checkpoint time
 char g_szLastSRDifference[MAXPLAYERS + 1][64];
+char g_szLastSRDifferenceMinimalHUD[MAXPLAYERS + 1][64];
 
 // Last difference to clients own record checkpoint
 char g_szLastPBDifference[MAXPLAYERS + 1][64];
+char g_szLastPBDifferenceMinimalHUD[MAXPLAYERS + 1][64];
+
+char g_szCustomLastTimeDifferenceMinimalHUD[MAXPLAYERS + 1][64];
+//char g_szCustomLastSpeedDifferenceMinimalHUD[MAXPLAYERS + 1][64];
+
+//NOT IMPLEMENTED
+// Last difference to clients own record checkpoint speed
+//char g_szLastPBSpeedDifference[MAXPLAYERS + 1][64];
+
+//VARIABLES FOR THE DIFFERENT TYPES OF CP'S COMPARISONS
+//ONLY ALLOCATE 6 SPACES BECAUSE THERE ARE ALREADY 2 OTHER VARIABLES THAT CONTAIN PB && WR
+float g_fCustomCheckpointsTimes[6][CPLIMIT];
+//NOT IMPLEMENTED
+//float g_fCustomCheckpointsSpeeds[6][CPLIMIT];
+
+//VARIABLES THAT ALLOW TO CHECK IF A CERTAIN TIME EXISTS
+int g_bTOP;
+int g_bG1;
+int g_bG2;
+int g_bG3;
+int g_bG4;
+int g_bG5;
 
 // The time difference was shown, used to show for a few seconds in timer panel
 float g_fLastDifferenceTime[MAXPLAYERS + 1];
@@ -479,6 +512,7 @@ float g_fSrcpPauseTime[MAXPLAYERS + 1];
 
 // Prestrafe records
 int g_iRecordPreStrafe[3][CPLIMIT][MAX_STYLES];
+int g_iRecordPreStrafeStage[3][CPLIMIT][MAX_STYLES];
 int g_iRecordPreStrafeBonus[3][MAXZONEGROUPS][MAX_STYLES];
 
 /*----------  Map Settings Variables ----------*/
@@ -769,6 +803,23 @@ bool g_bSpecListOnly[MAXPLAYERS + 1];
 bool g_bSideHud[MAXPLAYERS + 1];
 int g_iSideHudModule[MAXPLAYERS + 1][5];
 
+//MINIMAL HUD
+bool g_bMinimalHUD[MAXPLAYERS + 1];
+int g_iMinimalHUD_CompareType[MAXPLAYERS + 1];
+//bool g_bMinimalHUD_ComparePB[MAXPLAYERS + 1];
+int g_MinimalHUDSpeedGradient[MAXPLAYERS + 1];
+
+//CSD OPTIONS
+float g_fCSD_POS_X[MAXPLAYERS + 1];
+float g_fCSD_POS_Y[MAXPLAYERS + 1];
+
+int g_iCSD_R[MAXPLAYERS + 1];
+int g_iCSD_G[MAXPLAYERS + 1];
+int g_iCSD_B[MAXPLAYERS + 1];
+int g_iColorChangeIndex[MAXPLAYERS + 1];
+
+int g_iCSDUpdateRate[MAXPLAYERS + 1];
+
 // Custom tele side
 int g_iTeleSide[MAXPLAYERS + 1];
 
@@ -840,6 +891,9 @@ float g_fCurrentRunTime[MAXPLAYERS + 1];
 // PracticeMode total time the run took in 00:00:00 format
 char g_szPracticeTime[MAXPLAYERS + 1][32];
 
+//Rank of the PracticeMode time
+int g_iPracRunTimeRank[MAXPLAYERS + 1];
+
 // Missed personal record time?
 bool g_bMissedMapBest[MAXPLAYERS + 1];
 
@@ -896,6 +950,9 @@ int g_iPreStrafe[3][CPLIMIT][MAX_STYLES][MAXPLAYERS + 1];
 
 // Latest prestrafe speed for bonuses
 int g_iPreStrafeBonus[3][MAXZONEGROUPS][MAX_STYLES][MAXPLAYERS + 1];
+
+// Latest prestrafe speed for stages
+int g_iPreStrafeStage[3][CPLIMIT][MAX_STYLES][MAXPLAYERS + 1];
 
 /*----------  Replay Variables  ----------*/
 
@@ -997,6 +1054,9 @@ int g_iManualBonusToReplay;
 int g_iCurrentlyPlayingStage;
 
 /*----------  Misc  ----------*/
+
+//Show Timeleft Display at the bottom of the screen
+bool g_bTimeleftDisplay[MAXPLAYERS + 1];
 
 // Used to load all the hints
 ArrayList g_aHints;
@@ -1280,6 +1340,10 @@ float g_fStartposLocation[MAXPLAYERS + 1][MAXZONEGROUPS][3];
 float g_fStartposAngle[MAXPLAYERS + 1][MAXZONEGROUPS][3];
 bool g_bStartposUsed[MAXPLAYERS + 1][MAXZONEGROUPS];
 
+float g_fStageStartposLocation[MAXPLAYERS + 1][CPLIMIT][3];
+float g_fStageStartposAngle[MAXPLAYERS + 1][CPLIMIT][3];
+bool g_bStageStartposUsed[MAXPLAYERS + 1][CPLIMIT];
+
 // Strafe Sync (Taken from shavit's bhop timer)
 int g_iGoodGains[MAXPLAYERS + 1];
 int g_iTotalMeasures[MAXPLAYERS + 1];
@@ -1326,6 +1390,11 @@ float g_fstComplete[MAXPLAYERS + 1][MAXZONEGROUPS];
 float g_fTimeIncrement[MAXPLAYERS + 1][MAXZONEGROUPS];
 int g_iPRinfoMapRank[MAXPLAYERS + 1];
 int g_iPRinfoMapRankBonus[MAXPLAYERS + 1];
+
+//CCP COMMAND
+Menu ccp_menu;
+float g_fCCPRecordCheckpointTimes[CPLIMIT];
+float g_fCCPPlayerCheckpointTimes[CPLIMIT];
 
 // surf_christmas2
 bool g_bUsingStageTeleport[MAXPLAYERS + 1];
@@ -1400,89 +1469,13 @@ bool g_bLeftZone[MAXPLAYERS + 1];
 
 int g_iClientTick[MAXPLAYERS + 1];
 
+int g_iCurrentTick[MAXPLAYERS + 1];
+
+int g_iRankToDelete[MAXPLAYERS + 1];
+
 /*===================================
 =         Predefined Arrays         =
 ===================================*/
-
-char g_sz10000mvGradient[][] =
-{
-	"#FFFFFF",
-	"#F4FFF4",
-	"#E9FFE9",
-	"#DFFFDF",
-	"#D4FFD4",
-	"#C9FFC9",
-	"#BFFFBF",
-	"#B4FFB4",
-	"#AAFFAA",
-	"#9FFF9F",
-	"#94FF94",
-	"#8AFF8A",
-	"#7FFF7F",
-	"#74FF74",
-	"#74FF74",
-	"#5FFF5F",
-	"#55FF55",
-	"#4AFF4A",
-	"#3FFF3F",
-	"#35FF35",
-	"#2AFF2A",
-	"#1FFF1F",
-	"#15FF15",
-	"#0AFF0A",
-	"#00FF00"
-};
-
-char g_sz3500mvGradient[][] =
-{
-	"#FFFFFF",
-	"#F7FFF7",
-	"#F0FFF0",
-	"#E8FFE8",
-	"#E1FFE1",
-	"#D9FFD9",
-	"#D2FFD2",
-	"#CAFFCA",
-	"#C3FFC3",
-	"#BBFFBB",
-	"#B4FFB4",
-	"#ACFFAC",
-	"#A5FFA5",
-	"#9DFF9D",
-	"#96FF96",
-	"#8EFF8E",
-	"#87FF87",
-	"#7FFF7F",
-	"#78FF78",
-	"#70FF70",
-	"#69FF69",
-	"#61FF61",
-	"#5AFF5A",
-	"#52FF52",
-	"#4BFF4B",
-	"#43FF43",
-	"#3CFF3C",
-	"#34FF34",
-	"#2DFF2D",
-	"#25FF25",
-	"#1EFF1E",
-	"#16FF16",
-	"#0FFF0F",
-	"#07FF07",
-	"#00FF00"
-};
-
-char g_szRainbowGradient[][] =
-{
-	"#FFFFFF",
-	"#FFD4F0",
-	"#e2aaff",
-	"#e38be6",
-	"#7f7fff",
-	"#55c6ff",
-	"#2affb8",
-	"#00ff00"
-};
 
 char UnallowedTitles[][] =
 {
@@ -1911,12 +1904,14 @@ public void OnConfigsExecuted()
 	else
 		readMultiServerMapcycle();
 
-	if (GetConVarFloat(g_iHintsInterval) != 0.0)
+	if (GetConVarFloat(g_iHintsInterval) > 0.0)
 	{
 		readHints();
 		if (g_aHints.Length != 0)
 			CreateTimer(GetConVarFloat(g_iHintsInterval), ShowHintsTimer, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
 	}
+
+	CreateTimer(1.0, TimeleftTimer, _, TIMER_REPEAT);
 
 	if (GetConVarBool(g_hEnforceDefaultTitles))
 		ReadDefaultTitlesWhitelist();
@@ -1961,13 +1956,6 @@ public void OnClientPutInServer(int client)
 	// Defaults
 	SetClientDefaults(client);
 	Command_Restart(client, 1);
-
-	//display center speed so doesnt have to be re-enabled in options
-	if (g_bCenterSpeedDisplay[client])
-	{
-		SetHudTextParams(-1.0, 0.30, 1.0, 255, 255, 255, 255, 0, 0.25, 0.0, 0.0);
-		CreateTimer(0.1, CenterSpeedDisplayTimer, client, TIMER_FLAG_NO_MAPCHANGE|TIMER_REPEAT);
-	}
 
 	// SDKHooks
 	SDKHook(client, SDKHook_SetTransmit, Hook_SetTransmit);

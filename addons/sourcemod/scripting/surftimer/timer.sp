@@ -122,10 +122,14 @@ public Action CKTimer1(Handle timer)
 				}
 
 				CenterHudAlive(client);
+				MinimalHudAlive(client);
 				MovementCheck(client);
 			}
-			else
+			else{
 				CenterHudDead(client);
+				MinimalHudDead(client);
+			}
+				
 		}
 	}
 	return Plugin_Continue;
@@ -486,6 +490,41 @@ public Action ShowHintsTimer(Handle timer)
 	return Plugin_Continue;
 }
 
+public Action TimeleftTimer(Handle timer,any client)
+{	
+
+	/* 
+	=====
+	Code used from : "https://github.com/FAQU2/timeleft-onscreen"
+	=====
+	*/
+
+	static int time;
+   	static char timeleft[32];
+
+	GetMapTimeLeft(time);
+
+	for (int i = 1; i <= MaxClients; i++)
+		if (IsValidClient(i) && !IsFakeClient(i) && g_bTimeleftDisplay[i] && time > -1){
+
+			if (time > 3600)
+				FormatEx(timeleft, sizeof(timeleft), "Timeleft: %ih %02im", time / 3600, (time / 60) % 60);
+			else if (time < 60)
+				FormatEx(timeleft, sizeof(timeleft), "Timeleft: %02is", time);
+			else 
+				FormatEx(timeleft, sizeof(timeleft), "Timeleft: %im %02is", time / 60, time % 60);
+			
+			int displayColor[3];
+			displayColor = GetMinimalHUDColour(client, g_MinimalHUDSpeedGradient[i]);
+			SetHudTextParams(-1.0, 0.10, 1.0, displayColor[0], displayColor[1], displayColor[2], 255, 0, 0.0, 0.0, 0.0);
+
+			ShowHudText(i, 0, timeleft);
+		}
+
+	return Plugin_Continue;
+
+}
+
 public Action CenterMsgTimer(Handle timer, any client)
 {
 	if (IsValidClient(client) && !IsFakeClient(client))
@@ -608,24 +647,6 @@ public Action AnnouncementTimer(Handle timer)
 {
 	if (g_bHasLatestID)
 		db_checkAnnouncements();
-
-	return Plugin_Continue;
-}
-
-public Action CenterSpeedDisplayTimer(Handle timer, any client)
-{
-	if (IsValidClient(client) && !IsFakeClient(client) && g_bCenterSpeedDisplay[client])
-	{
-		char szSpeed[128];
-		if (IsPlayerAlive(client))
-			Format(szSpeed, sizeof(szSpeed), "%i", RoundToNearest(g_fLastSpeed[client]));
-		else if (g_SpecTarget[client] != -1)
-			Format(szSpeed, sizeof(szSpeed), "%i", RoundToNearest(g_fLastSpeed[g_SpecTarget[client]]));
-
-		ShowHudText(client, 2, szSpeed);
-	}
-	else
-		return Plugin_Stop;
 
 	return Plugin_Continue;
 }

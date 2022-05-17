@@ -307,7 +307,7 @@ public void StartTouch(int client, int action[3])
 	} */
 
 	if (IsValidClient(client))
-	{
+	{	
 		float fCurrentRunTime = g_fCurrentRunTime[client];
 		float fCurrentWrcpRunTime = g_fCurrentWrcpRunTime[client];
 		float fCurrentPracSrcpRunTime = g_fCurrentPracSrcpRunTime[client];
@@ -407,7 +407,13 @@ public void StartTouch(int client, int action[3])
 				g_bWrcpTimeractivated[client] = false;
 				g_bPracSrcpTimerActivated[client] = false;
 				g_CurrentStage[client] = 0;
+
 			}
+
+			if(g_aRecording[client] != null){
+				StopRecording(client);
+			}
+
 		}
 		else if (action[0] == 2) // End Zone
 		{	
@@ -519,7 +525,7 @@ public void StartTouch(int client, int action[3])
 				
 				if (g_iCurrentStyle[client] == 0)
 				{
-					Checkpoint(client, action[1], g_iClientInZone[client][2], fCurrentRunTime);
+					Checkpoint(client, action[1], g_iClientInZone[client][2], fCurrentRunTime, g_fLastSpeed[client]);
 				}
 				
 				if (!g_bSaveLocTele[client])
@@ -530,6 +536,7 @@ public void StartTouch(int client, int action[3])
 				{
 					lastCheckpoint[g_iClientInZone[client][2]][client] = g_iPlayerPracLocationSnap[client][g_iLastSaveLocIdClient[client]] - 1;
 				}
+
 			}
 			else if (!g_bTimerRunning[client])
 			{
@@ -580,7 +587,7 @@ public void StartTouch(int client, int action[3])
 				// Announcing checkpoint in linear maps
 				if (g_iCurrentStyle[client] == 0)
 				{
-					Checkpoint(client, action[1], g_iClientInZone[client][2], fCurrentRunTime);
+					Checkpoint(client, action[1], g_iClientInZone[client][2], fCurrentRunTime, g_fLastSpeed[client]);
 					
 					if (!g_bSaveLocTele[client])
 					{
