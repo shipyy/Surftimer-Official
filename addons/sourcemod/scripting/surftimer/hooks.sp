@@ -890,7 +890,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 		SetHudTextParams(-1.0, 1.0, 1.0, 255, 255, 0, 255, 0, 0.0, 0.0, 0.0);
 		ShowHudText(client, 6, "%s", timeleft);
 	}
-	*/
+	*/ 
 
 	if (buttons & IN_DUCK && g_bInDuck[client] == true)
 	{
@@ -1054,7 +1054,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 		else
 		{
 			RecordReplay(client, buttons, subtype, seed, impulse, weapon, angles, vel);
-      
+
 			//IF PLAYER IS IN A STARTZONE/STAGE
 			if((g_bInStartZone[client] || g_bInStageZone[client]) && g_iCurrentStyle[client] == 0){
 
@@ -1088,6 +1088,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 						Stage_StartRecording(client);
 				}
 			}
+
 			//PRINFO
 			if (g_iCurrentStyle[client] == 0 && !g_bPracticeMode[client] && (g_bTimerRunning[client] || g_bWrcpTimeractivated[client])){
 				

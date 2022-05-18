@@ -2649,7 +2649,6 @@ public void sql_selectRecordCallback(Handle owner, Handle hndl, const char[] err
 		if ((g_fFinalTime[data] <= time || time <= 0.0))
 		{
 			db_updateRecordPro(data);
-
 		}
 	}
 	else
@@ -3504,7 +3503,7 @@ public void sql_selectRecordCheckpointSpeedsCallback(Handle owner, Handle hndl, 
 			db_CalcAvgRunTime();
 		return;
 	}
-  
+
 	if (SQL_HasResultSet(hndl))
 	{
 		int zonegroup;
@@ -3520,6 +3519,7 @@ public void sql_selectRecordCheckpointSpeedsCallback(Handle owner, Handle hndl, 
 			}
 		}
 	}
+
 	if (!g_bServerDataLoaded)
 		db_CalcAvgRunTime();
 
@@ -3645,7 +3645,7 @@ public void sql_selectCheckpointsTimesTypeCallback(Handle owner, Handle hndl, co
 		LogError("[SurfTimer] SQL Error (sql_selectCheckpointsTimesTypeCallback): %s", error);
 		return;
 	}
-  
+
 	if (SQL_HasResultSet(hndl))
 	{	
 		while(SQL_FetchRow(hndl)){
@@ -3701,7 +3701,6 @@ public void sql_selectCheckpointsSpeedsTypeCallback(Handle owner, Handle hndl, c
 		LogError("[SurfTimer] SQL Error (sql_selectCheckpointsSpeedsTypeCallback): %s", error);
 		return;
 	}
-	
 	if (SQL_HasResultSet(hndl) && SQL_FetchRow(hndl))
 	{	
 		//for(int i = 0; i < 35; i++)
@@ -10304,7 +10303,6 @@ public void SQL_checkCustomPlayerTextColourCallback(Handle owner, Handle hndl, c
 	{
 		LogError("[surftimer] SQL Error (SQL_checkCustomPlayerTextColourCallback): %s", error);
 		CPrintToChat(client, "%t", "SQLTwo3", g_szChatPrefix);
-
 		return;
 	}
 
