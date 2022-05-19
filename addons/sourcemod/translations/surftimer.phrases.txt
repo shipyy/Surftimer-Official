@@ -1767,7 +1767,7 @@
 	"SpeedGradientMomentum"
 	{
 		"#format"	"{1:s}"
-		"en"		"{1} Your speed gradient is now {green}{green}m{red}e{green}n{red}t{green}u{red}m"
+		"en"		"{1} Your speed gradient is now {green}mome{red}ntum"
 	}
 	"SpeedModeXY"
 	{
