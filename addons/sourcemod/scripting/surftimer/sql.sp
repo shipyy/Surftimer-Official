@@ -3938,6 +3938,8 @@ public void db_viewPRinfoCallback(Handle owner, Handle hndl, const char[] error,
 
 	if(SQL_HasResultSet(hndl) && SQL_FetchRow(hndl)){
 
+		CloseHandle(pack);
+
 		g_fTimeinZone[client][0] = SQL_FetchFloat(hndl, 4);
 		g_fCompletes[client][0] = SQL_FetchFloat(hndl, 5);
 		g_fAttempts[client][0] = SQL_FetchFloat(hndl, 6);
@@ -3956,8 +3958,6 @@ public void db_viewPRinfoCallback(Handle owner, Handle hndl, const char[] error,
 		//PrintToConsole(client,szQuery);
 		SQL_TQuery(g_hDb, db_prinforuntimecallback, szQuery, pack, DBPrio_Low);
 	}
-
-	CloseHandle(pack);
 
 	//SETUP BONUS PRINFO
 	if(g_bhasBonus){
