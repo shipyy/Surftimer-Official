@@ -3912,7 +3912,7 @@ public void db_viewPRinfo(int client,  char szSteamID[32], char szMapName[128])
 	SQL_TQuery(g_hDb, db_viewPRinfoCallback, szQuery, pack, DBPrio_Low);
 }
 
-public void db_viewPRinfoCallback(Handle owner, Handle hndl, const char[] error, any pack)
+public void db_viewPRinfoCallback(Handle owner, Handle hndl, const char[] error, DataPack pack)
 {	
 
 	ResetPack(pack);
@@ -3927,11 +3927,14 @@ public void db_viewPRinfoCallback(Handle owner, Handle hndl, const char[] error,
 	if (hndl == null)
 	{
 		LogError("[SurfTimer] SQL Error (db_viewPRinfoCallback): %s", error);
+		CloseHandle(pack);
 		return;
 	}
 
-	if (!IsValidClient(client))
+	if (!IsValidClient(client)){
+		CloseHandle(pack);
 		return;
+	}
 
 	if(SQL_HasResultSet(hndl) && SQL_FetchRow(hndl)){
 
@@ -3953,6 +3956,8 @@ public void db_viewPRinfoCallback(Handle owner, Handle hndl, const char[] error,
 		//PrintToConsole(client,szQuery);
 		SQL_TQuery(g_hDb, db_prinforuntimecallback, szQuery, pack, DBPrio_Low);
 	}
+
+	CloseHandle(pack);
 
 	//SETUP BONUS PRINFO
 	if(g_bhasBonus){
@@ -4006,7 +4011,7 @@ public void db_viewPRinfoCallback(Handle owner, Handle hndl, const char[] error,
 	return;
 }
 
-public void db_prinforuntimecallback(Handle owner, Handle hndl, const char[] error, any pack)
+public void db_prinforuntimecallback(Handle owner, Handle hndl, const char[] error, DataPack pack)
 {
 
 	ResetPack(pack);
@@ -4021,11 +4026,14 @@ public void db_prinforuntimecallback(Handle owner, Handle hndl, const char[] err
 	if (hndl == null)
 	{
 		LogError("[SurfTimer] SQL Error (db_prinforuntimecallback): %s", error);
+		CloseHandle(pack);
 		return;
 	}
 
-	if (!IsValidClient(client))
+	if (!IsValidClient(client)){
+		CloseHandle(pack);
 		return;
+	}
 
 	if(SQL_HasResultSet(hndl) && SQL_FetchRow(hndl)){
 
@@ -4047,6 +4055,8 @@ public void db_prinforuntimecallback(Handle owner, Handle hndl, const char[] err
 		Format(szQuery, sizeof(szQuery), sql_insertPR, szSteamID, szName, szMapName, 0.0, 0, 0.0, 0.0, 0.0, 0.0);
 		SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, pack, DBPrio_Low);
 	}
+
+	CloseHandle(pack);
 	return;
 }
 
@@ -4072,7 +4082,7 @@ public void db_viewBonusPRinfo(int client,  char szSteamID[32], char szMapName[3
 	}
 }
 
-public void db_viewBonusPRinfoCallback(Handle owner, Handle hndl, const char[] error, any pack)
+public void db_viewBonusPRinfoCallback(Handle owner, Handle hndl, const char[] error, DataPack pack)
 {	
 
 	ResetPack(pack);
@@ -4087,13 +4097,18 @@ public void db_viewBonusPRinfoCallback(Handle owner, Handle hndl, const char[] e
 	if (hndl == null)
 	{
 		LogError("[SurfTimer] SQL Error (db_viewBonusPRinfoCallback): %s", error);
+		CloseHandle(pack);
 		return;
 	}
 
-	if (!IsValidClient(client))
+	if (!IsValidClient(client)){
+		CloseHandle(pack);
 		return;
+	}
 
 	if(SQL_HasResultSet(hndl) && SQL_FetchRow(hndl)){
+
+			CloseHandle(pack);
 
 			int zonegroup = SQL_FetchInt(hndl, 3);
 
@@ -4165,7 +4180,7 @@ public void db_viewBonusPRinfoCallback(Handle owner, Handle hndl, const char[] e
 	return;
 }
 
-public void db_bonusprinforuntimecallback(Handle owner, Handle hndl, const char[] error, any pack)
+public void db_bonusprinforuntimecallback(Handle owner, Handle hndl, const char[] error, DataPack pack)
 {
 
 	ResetPack(pack);
@@ -4180,11 +4195,14 @@ public void db_bonusprinforuntimecallback(Handle owner, Handle hndl, const char[
 	if (hndl == null)
 	{
 		LogError("[SurfTimer] SQL Error (db_prinforuntimecallback): %s", error);
+		CloseHandle(pack);
 		return;
 	}
 
-	if (!IsValidClient(client))
+	if (!IsValidClient(client)){
+		CloseHandle(pack);
 		return;
+	}
 
 	if(SQL_HasResultSet(hndl) && SQL_FetchRow(hndl)){
 		//PrintToConsole(client,"ALREADY EXISTS");
@@ -4217,6 +4235,8 @@ public void db_bonusprinforuntimecallback(Handle owner, Handle hndl, const char[
 		SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, pack, DBPrio_Low);
 
 	}
+
+	CloseHandle(pack);
 	return;
 }
 
