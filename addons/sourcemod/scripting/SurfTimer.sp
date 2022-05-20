@@ -445,6 +445,8 @@ bool g_bVip[MAXPLAYERS + 1];
 bool g_bCheckCustomTitle[MAXPLAYERS + 1];
 bool g_bEnableJoinMsgs;
 char g_szCustomJoinMsg[MAXPLAYERS + 1][256];
+ConVar g_hUseVIPRank; // ALLOWS TO USE AUTOMATIC VIP ATTRIBUTION
+ConVar g_hVIPRank; //THE THRESHOLD OF PLAYER RANKS THAT HAVE VIP (i.e -- if g_iVipRank == 10 then the TOP 10 players from the server are automatically VIP)
 
 // 1 = PB Sound, 2 = Top 10 Sound, 3 = WR sound
 // char g_szCustomSounds[MAXPLAYERS + 1][3][256];

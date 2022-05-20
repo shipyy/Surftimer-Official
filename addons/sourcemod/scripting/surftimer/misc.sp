@@ -5248,7 +5248,7 @@ public void totalTimeForHumans(int unix, char[] buffer, int size)
 	}
 }
 
-bool IsPlayerVip(int client, bool admin = true, bool reply = false)
+bool IsPlayerVip(int client, bool admin = true, bool reply = true)
 {
 	if (admin)
 	{
@@ -5260,8 +5260,14 @@ bool IsPlayerVip(int client, bool admin = true, bool reply = false)
 	{
 		if (reply)
 		{
-			CPrintToChat(client, "%t", "Misc43", g_szChatPrefix);
-			PrintToConsole(client, "SurfTimer | This is a VIP feature");
+			if(GetConVarBool(g_hUseVIPRank)){
+				CPrintToChat(client, "%t", "Misc48", g_szChatPrefix, GetConVarInt(g_hVIPRank));
+				PrintToConsole(client, "SurfTimer | This is a TOP %i feature", GetConVarInt(g_hVIPRank));
+			}
+			else{
+				CPrintToChat(client, "%t", "Misc43", g_szChatPrefix);
+				PrintToConsole(client, "SurfTimer | This is a VIP feature");
+			}
 		}
 		return false;
 	}

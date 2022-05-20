@@ -555,7 +555,11 @@ public Action Client_TargetName(int client, int args)
 }
 
 public Action Command_Vip(int client, int args)
-{
+{	
+	if (!IsPlayerVip(client))
+		return Plugin_Handled;
+
+	CustomTitleMenu(client);
 	return Plugin_Handled;
 }
 
