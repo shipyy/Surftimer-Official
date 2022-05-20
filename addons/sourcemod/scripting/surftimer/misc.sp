@@ -1755,7 +1755,7 @@ stock void MapFinishedMsgs(int client, int rankThisRun = 0)
 	if (IsValidClient(client))
 	{
 		char szName[128];
-		GetClientName(client, szName, 128);
+		GetClientName(client,szName, sizeof(szName));
 		int count = g_MapTimesCount;
 
 		if (rankThisRun == 0)
