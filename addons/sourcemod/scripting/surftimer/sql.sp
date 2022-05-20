@@ -322,8 +322,8 @@ public int callback_Confirm(Menu menu, MenuAction action, int client, int key)
 					char szName[MAX_NAME_LENGTH * 2 + 1];
 					SQL_EscapeString(g_hDb, szUName, szName, MAX_NAME_LENGTH * 2 + 1);
 
-					db_InsertTrack(steamID, szName, g_szMapName, g_SelectedType[client], g_iRankToDelete[client], 999999);
-					db_UpdateTrack(g_szMapName, szName, g_iRankToDelete[client], g_SelectedType[client], true);
+					db_InsertTrack(steamID, szName, g_szMapName, 0, g_iRankToDelete[client] + 1, 999999);
+					db_UpdateTrack(g_szMapName, szName, g_iRankToDelete[client] + 1, 0, true);
 				}
 				case 1:
 				{
@@ -2546,16 +2546,6 @@ public void sql_selectRecordCallback(Handle owner, Handle hndl, const char[] err
 		WritePackFloat(pack, g_fFinalTime[data]);
 		WritePackCell(pack, data);
 
-		//Add values to ck_track
-		if(g_OldMapRank[data] == 99999){
-			db_InsertTrack(g_szSteamID[data], szName, g_szMapName, 0, 0, g_MapRank[data]);
-			db_UpdateTrack(g_szMapName, szName, g_MapRank[data], 0, false);
-		}
-		else if(g_OldMapRank[data] != g_MapRank[data]){
-			db_InsertTrack(g_szSteamID[data], szName, g_szMapName, 0, g_OldMapRank[data], g_MapRank[data]);
-			db_UpdateTrack(g_szMapName, szName, g_MapRank[data], 0, false);
-		}
-
 		// "INSERT INTO ck_playertimes (steamid, mapname, name, runtimepro, style) VALUES('%s', '%s', '%s', '%f', %i);";
 		Format(szQuery, 512, sql_insertPlayerTime, g_szSteamID[data], g_szMapName, szName, g_fFinalTime[data], 0, g_iPreStrafe[0][0][0][data], g_iPreStrafe[1][0][0][data], g_iPreStrafe[2][0][0][data]);
 		SQL_TQuery(g_hDb, SQL_UpdateRecordProCallback, szQuery, pack, DBPrio_Low);
@@ -2582,16 +2572,6 @@ public void db_updateRecordPro(int client)
 	Handle pack = CreateDataPack();
 	WritePackFloat(pack, g_fFinalTime[client]);
 	WritePackCell(pack, client);
-	
-	//Add values to ck_track
-	if(g_OldMapRank[client] == 99999){
-		db_InsertTrack(g_szSteamID[client], szName, g_szMapName, 0, 0, g_MapRank[client]);
-		db_UpdateTrack(g_szMapName, szName, g_MapRank[client], 0, false);
-	}
-	else if(g_OldMapRank[client] != g_MapRank[client]){
-		db_InsertTrack(g_szSteamID[client], szName, g_szMapName, 0, g_OldMapRank[client], g_MapRank[client]);
-		db_UpdateTrack(g_szMapName, szName, g_MapRank[client], 0, false);
-	}
 
 	char szQuery[1024];
 	// "UPDATE ck_playertimes SET name = '%s', runtimepro = '%f' WHERE steamid = '%s' AND mapname = '%s' AND style = %i;";
@@ -2632,17 +2612,31 @@ public void SQL_UpdateRecordProCallback2(Handle owner, Handle hndl, const char[]
 	}
 	// Get players rank, 9999999 = error
 	int rank = 9999999;
+	int client = data;
 	if (SQL_HasResultSet(hndl) && SQL_FetchRow(hndl))
 	{
 		rank = (SQL_FetchInt(hndl, 0)+1);
 	}
-	g_MapRank[data] = rank;
+	g_MapRank[client] = rank;
 	if (rank <= 10 && rank > 1)
-		g_bTop10Time[data] = true;
+		g_bTop10Time[client] = true;
 	else
-		g_bTop10Time[data] = false;
+		g_bTop10Time[client] = false;
+	
+	//Add values to ck_track
+	char szUName[MAX_NAME_LENGTH * 2 + 1];
+	GetClientName(client, szUName, sizeof(szUName));
+	char szEscName[MAX_NAME_LENGTH * 2 + 1];
+	SQL_EscapeString(g_hDb, szUName, szEscName, MAX_NAME_LENGTH * 2 + 1);
 
-	MapFinishedMsgs(data);
+	if(g_OldMapRank[client] == 99999)
+		db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, 0, 0, g_MapRank[client]);
+	else
+		db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, 0, g_OldMapRank[client], g_MapRank[client]);
+
+	db_UpdateTrack(g_szMapName, szEscName, g_MapRank[client], 0, false);
+
+	MapFinishedMsgs(client);
 
 	if (g_bInsertNewTime)
 	{
@@ -4108,28 +4102,23 @@ public void db_viewMapRankBonusCallback(Handle owner, Handle hndl, const char[] 
 	if (SQL_HasResultSet(hndl) && SQL_FetchRow(hndl))
 	{
 		g_MapRankBonus[zgroup][client] = SQL_GetRowCount(hndl);
-
-		char szUName[MAX_NAME_LENGTH * 2 + 1];
-		GetClientName(client,szUName, MAX_NAME_LENGTH * 2 + 1);
-
-		char szName[MAX_NAME_LENGTH * 2 + 1];
-		SQL_EscapeString(g_hDb, szUName, szName, MAX_NAME_LENGTH * 2 + 1);
-
-		//add values to ck_track
-		if(g_OldMapRankBonus[zgroup][client] == 9999999){
-			db_InsertTrack(g_szSteamID[client], szName, g_szMapName, zgroup, 0, g_MapRankBonus[zgroup][client]);
-			db_UpdateTrack(g_szMapName, szName, g_MapRankBonus[zgroup][client], zgroup, false);
-		}
-		else if(g_OldMapRankBonus[zgroup][client] != g_MapRankBonus[zgroup][client]){
-			db_InsertTrack(g_szSteamID[client], szName, g_szMapName, zgroup, g_OldMapRankBonus[zgroup][client], g_MapRankBonus[zgroup][client]);
-			db_UpdateTrack(g_szMapName, szName, g_MapRankBonus[zgroup][client], zgroup, false);
-		}
-
 	}
 	else
 	{
 		g_MapRankBonus[zgroup][client] = 9999999;
 	}
+
+	char szUName[MAX_NAME_LENGTH * 2 + 1];
+	GetClientName(client, szUName, MAX_NAME_LENGTH * 2 + 1);
+	char szEscName[MAX_NAME_LENGTH * 2 + 1];
+	SQL_EscapeString(g_hDb, szUName, szEscName, MAX_NAME_LENGTH * 2 + 1);
+
+	if(g_OldMapRankBonus[zgroup][client] == 9999999)
+		db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, zgroup, 0, g_MapRankBonus[zgroup][client]);
+	else
+		db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, zgroup, g_OldMapRankBonus[zgroup][client], g_MapRankBonus[zgroup][client]);
+
+	db_UpdateTrack(g_szMapName, szEscName, g_MapRankBonus[zgroup][client], zgroup, false);
 
 	switch (type)
 	{
@@ -5517,7 +5506,7 @@ public void sql_selectRecentlyLostCallback(Handle owner, Handle hndl, const char
 			if(previous_rank == 0)
 				Format(szItem, sizeof(szItem), "%s | %s | N/A -> %s | N/A -> R%i", szMapName, sz_ZoneGroupFormatted, new_rank_szGroup, new_rank);
 			else
-				if(new_rank != 999999)
+				if(new_rank != 999999 && new_rank != 99999)
 					Format(szItem, sizeof(szItem), "%s | %s | %s -> %s | R%i -> R%i", szMapName, sz_ZoneGroupFormatted, previous_rank_szGroup, new_rank_szGroup, previous_rank, new_rank);
 				else
 					Format(szItem, sizeof(szItem), "%s | %s | R%i -> Removed", szMapName, sz_ZoneGroupFormatted, previous_rank, new_rank);
@@ -5630,7 +5619,7 @@ public void sql_selectTrackingCallback(Handle owner, Handle hndl, const char[] e
 			if(previous_rank == 0)
 				Format(szItem, sizeof(szItem), "%s | %s | N/A -> %s | N/A -> R%i", szMapName, sz_ZoneGroupFormatted, new_rank_szGroup, new_rank);
 			else
-				if(new_rank != 999999)
+				if(new_rank != 999999 && new_rank != 99999)
 					Format(szItem, sizeof(szItem), "%s | %s | %s -> %s | R%i -> R%i", szMapName, sz_ZoneGroupFormatted, previous_rank_szGroup, new_rank_szGroup, previous_rank, new_rank);
 				else
 					Format(szItem, sizeof(szItem), "%s | %s | R%i -> Removed", szMapName, sz_ZoneGroupFormatted, previous_rank, new_rank);
