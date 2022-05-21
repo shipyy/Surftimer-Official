@@ -96,6 +96,7 @@ void CreateCommands()
 	RegConsoleCmd("sm_refreshprofile", Admin_RefreshProfile, "[surftimer] Recalculates player profile for given steam id");
 	RegConsoleCmd("sm_clearassists", Admin_ClearAssists, "[surftimer] Clears assist points (map progress) from all players");// reload map
 	RegConsoleCmd("sm_refreshranks", Admin_RefreshPlayerRankTable, "[surftimer] Refresh player rank table");
+	RegAdminCmd("sm_pop_ck_track", Admin_Populate_CK_TRACK, ADMFLAG_ROOT, "[surfTimer] Populates ck_track table with the times set before sm_track was added");
 
 	// Zoning/Mapsetting Commands
 	RegConsoleCmd("sm_zones", Command_Zones, "[surftimer] [zoner] Opens up the zone creation menu.");
