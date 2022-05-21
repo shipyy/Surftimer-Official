@@ -2747,12 +2747,14 @@ public void SQL_UpdateRecordProCallback2(Handle owner, Handle hndl, const char[]
 	char szEscName[MAX_NAME_LENGTH * 2 + 1];
 	SQL_EscapeString(g_hDb, szUName, szEscName, MAX_NAME_LENGTH * 2 + 1);
 
-	if(g_OldMapRank[client] == 99999)
-		db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, 0, 0, g_MapRank[client]);
-	else
-		db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, 0, g_OldMapRank[client], g_MapRank[client]);
+	if(g_MapRank[client] <= g_OldMapRank[client]){
+		if(g_OldMapRank[client] == 99999)
+			db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, 0, 0, g_MapRank[client]);
+		else
+			db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, 0, g_OldMapRank[client], g_MapRank[client]);
 
-	db_UpdateTrack(g_szMapName, szEscName, g_MapRank[client], 0, false);
+		db_UpdateTrack(g_szMapName, szEscName, g_MapRank[client], 0, false);
+	}
 
 	MapFinishedMsgs(client);
 
@@ -4477,12 +4479,15 @@ public void db_viewMapRankBonusCallback(Handle owner, Handle hndl, const char[] 
 	char szEscName[MAX_NAME_LENGTH * 2 + 1];
 	SQL_EscapeString(g_hDb, szUName, szEscName, MAX_NAME_LENGTH * 2 + 1);
 
-	if(g_OldMapRankBonus[zgroup][client] == 9999999)
-		db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, zgroup, 0, g_MapRankBonus[zgroup][client]);
-	else
-		db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, zgroup, g_OldMapRankBonus[zgroup][client], g_MapRankBonus[zgroup][client]);
+	//ONLY INSERT WHEN PLAYER IMPROVES OR GETS SAME TIME
+	if(g_MapRankBonus[zgroup][client] <= g_OldMapRankBonus[zgroup][client]){
+		if(g_OldMapRankBonus[zgroup][client] == 9999999)
+			db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, zgroup, 0, g_MapRankBonus[zgroup][client]);
+		else
+			db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, zgroup, g_OldMapRankBonus[zgroup][client], g_MapRankBonus[zgroup][client]);
 
-	db_UpdateTrack(g_szMapName, szEscName, g_MapRankBonus[zgroup][client], zgroup, false);
+		db_UpdateTrack(g_szMapName, szEscName, g_MapRankBonus[zgroup][client], zgroup, false);
+	}
 
 	switch (type)
 	{
@@ -6018,6 +6023,182 @@ public int TrackingMenuHandler(Handle menu, MenuAction action, int param1, int p
 	return 0;
 }
 
+public void db_Populate_ck_track(){
+
+	PrintToServer("----------POPULATING----------");
+
+	char szQuery[2048];
+
+	char map[128];
+	for (int i = 0; i < GetArraySize(g_MapList); i++)
+	{
+		GetArrayString(g_MapList, i, map, sizeof(map));
+
+		Format(szQuery, sizeof(szQuery), sql_Poulate_ck_track, map);
+		Handle pack = CreateDataPack();
+		WritePackString(pack, map);
+		SQL_TQuery(g_hDb, db_Populate_ck_track_Callback, szQuery, pack, DBPrio_Low);
+	}
+
+}
+
+public void db_Populate_ck_track_Callback(Handle owner, Handle hndl, const char[] error, any data)
+{
+	if (hndl == null)
+	{
+		LogError("[SurfTimer] SQL Error (db_Populate_ck_track_Callback): %s", error);
+		CloseHandle(data);
+		return;
+	}
+
+	char map[128];
+	ResetPack(data);
+	ReadPackString(data, map, sizeof(map));
+	CloseHandle(data);
+
+	int rank;
+	char szSteamID[32];
+	char szName[MAX_NAME_LENGTH * 2 + 1];
+	char szMapName[128];
+	int prev_rank;
+
+	if(SQL_HasResultSet(hndl)){
+		
+		if(SQL_GetRowCount(hndl) > 0)
+			PrintToServer("----------DATA FOR MAP %s FOUND----------", map);
+
+		while (SQL_FetchRow(hndl)){
+
+			prev_rank = SQL_FetchInt(hndl, 5);
+			SQL_FetchString(hndl, 3, szMapName, sizeof(szMapName));
+
+			//IF THE PLAYER HAS NOT RECORD IN CK_TRACK WE NEED TO ADD IT	
+			if(prev_rank == -1){
+
+				rank = SQL_FetchInt(hndl, 0);
+				SQL_FetchString(hndl, 1, szSteamID, sizeof(szSteamID));
+				SQL_FetchString(hndl, 2, szName, sizeof(szName));
+
+				PrintToServer("(M) -> INSERTING NEW ENTRY");
+
+				db_InsertTrack(szSteamID, szName, szMapName, 0, rank, rank);
+
+			}
+		}
+
+		db_Populate_ck_track_bonus(map);
+
+	}
+
+}
+
+public void db_Populate_ck_track_bonus(char szMapName[128]){
+
+	char szQuery[2048];
+
+	Handle pack = CreateDataPack();
+	WritePackString(pack, szMapName);
+
+	//GET THE BONUS COUNT FOR THE MAP ON THE ITERAION LIST
+	Format(szQuery, sizeof(szQuery), "SELECT mapname, MAX(zonegroup) as bonus_count FROM ck_zones WHERE mapname = '%s';", szMapName);
+	SQL_TQuery(g_hDb, SQL_bonuscount_Callback, szQuery, pack, DBPrio_Low);
+
+}
+
+public void SQL_bonuscount_Callback(Handle owner, Handle hndl, const char[] error, any data)
+{
+	if (hndl == null)
+	{
+		LogError("[SurfTimer] SQL Error (SQL_bonuscount_Callback): %s", error);
+		CloseHandle(data);
+		return;
+	}
+
+	char map[128];
+	ResetPack(data);
+	ReadPackString(data, map, sizeof(map));
+	CloseHandle(data);
+
+	int bonus_count;
+	char szMapName[128];
+	char szQuery[2048];
+
+	if(SQL_HasResultSet(hndl) && SQL_FetchRow(hndl)){
+		
+		SQL_FetchString(hndl, 0, szMapName, sizeof(szMapName));
+		bonus_count = SQL_FetchInt(hndl, 1);
+
+		//INSERT VALUES INTO CK_TRACK FOR EACH BONUS
+		if(bonus_count > 0){
+
+			for(int i = 1; i <= bonus_count; i++)
+			{
+				Format(szQuery, sizeof(szQuery), sql_Poulate_ck_track_bonus, i, szMapName, i);
+
+				Handle pack = CreateDataPack();
+				WritePackCell(pack, i);
+				WritePackString(pack, szMapName);
+
+				SQL_TQuery(g_hDb, db_Populate_ck_track_bonus_Callback, szQuery, pack, DBPrio_Low);
+			}
+		}
+
+	}
+	else{
+		PrintToServer("BONUS DATA FOR %s NOT FOUND OR DOES NOT EXIST", map);
+	}
+
+}
+
+public void db_Populate_ck_track_bonus_Callback(Handle owner, Handle hndl, const char[] error, any data)
+{
+	if (hndl == null)
+	{
+		LogError("[SurfTimer] SQL Error (db_Populate_ck_track_bonus_Callback): %s", error);
+		CloseHandle(data);
+		return;
+	}
+
+	ResetPack(data);
+	int zonegroup = ReadPackCell(data);
+	char map[128];
+	ReadPackString(data, map, sizeof(map));
+	CloseHandle(data);
+
+	int rank;
+	char szSteamID[32];
+	char szName[MAX_NAME_LENGTH * 2 + 1];
+	char szMapName[128];
+	int prev_rank;
+
+	if(SQL_HasResultSet(hndl)){
+
+		if(SQL_GetRowCount(hndl) > 0)
+			PrintToServer("----------BONUS %d DATA FOR MAP %s FOUND----------", zonegroup, map);
+
+		while(SQL_FetchRow(hndl)){
+
+			prev_rank = SQL_FetchInt(hndl, 6);
+
+			//IF THE PLAYER HAS NOT RECORD IN CK_TRACK WE NEED TO ADD IT	
+			if(prev_rank == -1){
+				
+				rank = SQL_FetchInt(hndl, 0);
+				SQL_FetchString(hndl, 1, szSteamID, sizeof(szSteamID));
+				SQL_FetchString(hndl, 2, szName, sizeof(szName));
+				SQL_FetchString(hndl, 3, szMapName, sizeof(szMapName));
+
+				PrintToServer("(B) -> INSERTING NEW ENTRY FOR BONUS %d", zonegroup);
+
+				db_InsertTrack(szSteamID, szName, szMapName, zonegroup, rank, rank);
+			}
+		}
+
+	}
+
+
+}
+
 public void db_InsertLatestRecords(char szSteamID[32], char szName[128], float FinalTime)
 {
 	char szQuery[512];
@@ -6088,7 +6269,8 @@ public void db_UpdateTrack(char szMapName[128],char szName[MAX_NAME_LENGTH * 2 +
 	WritePackCell(pack, deleting);
 	
 	char szQuery[1024];
-	Format(szQuery, sizeof(szQuery), sql_GetPlayersToUpdate, szMapName, zonegroup);
+	Format(szQuery, 1024, sql_GetPlayersToUpdate, szMapName, zonegroup, rank, g_MapTimesCount);
+	PrintToServer(szQuery);
 	SQL_TQuery(g_hDb, sql_GetPlayersToUpdateCallback, szQuery, pack, DBPrio_Low);
 }
 

@@ -691,3 +691,11 @@ public Action Admin_ResetRecords(int client, int args)
 	}
 	return Plugin_Handled;
 }
+
+public Action Admin_Populate_CK_TRACK(int client, int args)
+{
+	db_Populate_ck_track();
+
+	return Plugin_Handled;
+
+}
