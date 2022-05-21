@@ -142,5 +142,5 @@ char sql_Tracking[] = "SELECT mapname, zonegroup, previous_rank, new_rank FROM c
 //char sql_RemovePlayerTrack[] = "DELETE FROM ck_track WHERE steamid = '%s' AND mapname = '%s' AND zonegroup = '%i'";
 char sql_UpdatePlayersRanks[] = "UPDATE ck_track SET previous_rank = new_rank, new_rank = new_rank - 1 WHERE mapname = '%s' AND zonegroup = '%i' AND new_rank >= %i";
 
-
-
+char sql_Poulate_ck_track[] = "SELECT (ROW_NUMBER() OVER(ORDER BY pt.runtimepro)) AS rank_nr, pt.steamid, pt.name, pt.mapname, COALESCE(tr.previous_rank, -1) as prev_rank, COALESCE(tr.new_rank, -1) as new_rank, COALESCE(tr.RegDate, -1) as Date FROM ck_playertimes pt LEFT JOIN ck_track tr ON pt.mapname = tr.mapname AND pt.steamid = tr.steamid AND tr.zonegroup = 0 WHERE pt.mapname = '%s' AND pt.style = 0 GROUP BY pt.steamid HAVING new_rank <> 999999 ORDER BY pt.runtimepro";
+char sql_Poulate_ck_track_bonus[] = "SELECT (ROW_NUMBER() OVER(ORDER BY pt.runtime)) AS rank_nr, pt.steamid, pt.name, pt.mapname, pt.runtime, pt.zonegroup, COALESCE(tr.previous_rank, -1) as prev_rank, COALESCE(tr.new_rank, -1) as new_rank, COALESCE(tr.RegDate, -1) as Date FROM ck_bonus pt LEFT JOIN ck_track tr ON pt.mapname = tr.mapname AND pt.steamid = tr.steamid AND tr.zonegroup = '%i' WHERE pt.mapname = '%s' AND pt.zonegroup = '%i' AND pt.style = 0 GROUP BY pt.steamid HAVING new_rank <> 999999 ORDER BY pt.runtime;";
