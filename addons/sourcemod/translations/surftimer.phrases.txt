@@ -1769,6 +1769,11 @@
 		"#format"	"{1:s}"
 		"en"		"{1} Your speed gradient is now {green}mome{red}ntum"
 	}
+	"SpeedGradientCustom"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} Your speed gradient is now {green}C{orange}u{red}s{blue}t{yellow}o{grey}m"
+	}
 	"SpeedModeXY"
 	{
 		"#format"	"{1:s}"
