@@ -5905,7 +5905,7 @@ public void db_UpdateTrack(char szMapName[128],char szName[MAX_NAME_LENGTH * 2 +
 	WritePackCell(pack, deleting);
 	
 	char szQuery[1024];
-	Format(szQuery, 1024, sql_GetPlayersToUpdate, szMapName, zonegroup, rank, g_MapTimesCount);
+	Format(szQuery, 1024, sql_GetPlayersToUpdate, szMapName, zonegroup);
 	PrintToServer(szQuery);
 	SQL_TQuery(g_hDb, sql_GetPlayersToUpdateCallback, szQuery, pack, DBPrio_Low);
 }
@@ -10734,7 +10734,7 @@ public void db_selectCPR(int client, int rank, const char szMapName[128], const 
 	WritePackString(pack, szSteamId);
 
 	char szQuery[512];
-	Format(szQuery, sizeof(szQuery), "SELECT `steamid`, `name`, `mapname`, `runtimepro` FROM `ck_playertimes` WHERE `steamid` = '%s' AND `mapname` LIKE '%c%s%c' AND style = 0", g_szSteamID[client], PERCENT, szMapName, PERCENT);
+	Format(szQuery, sizeof(szQuery), "SELECT `steamid`, `name`, `mapname`, `runtimepro` FROM `ck_playertimes` WHERE `steamid` = '%s' AND `mapname` = '%s' AND style = 0", g_szSteamID[client], szMapName);
 	SQL_TQuery(g_hDb, SQL_SelectCPRTimeCallback, szQuery, pack, DBPrio_Low);
 }
 
@@ -10756,7 +10756,7 @@ public void SQL_SelectCPRTimeCallback(Handle owner, Handle hndl, const char[] er
 		g_fClientCPs[client][0] = SQL_FetchFloat(hndl, 3);
 
 		char szQuery[512];
-		Format(szQuery, sizeof(szQuery), "SELECT cp1, cp2, cp3, cp4, cp5, cp6, cp7, cp8, cp9, cp10, cp11, cp12, cp13, cp14, cp15, cp16, cp17, cp18, cp19, cp20, cp21, cp22, cp23, cp24, cp25, cp26, cp27, cp28, cp29, cp30, cp31, cp32, cp33, cp34, cp35 FROM ck_checkpoints WHERE steamid = '%s' AND mapname LIKE '%c%s%c' AND zonegroup = 0;", g_szSteamID[client], PERCENT, g_szCPRMapName[client], PERCENT);
+		Format(szQuery, sizeof(szQuery), "SELECT cp1, cp2, cp3, cp4, cp5, cp6, cp7, cp8, cp9, cp10, cp11, cp12, cp13, cp14, cp15, cp16, cp17, cp18, cp19, cp20, cp21, cp22, cp23, cp24, cp25, cp26, cp27, cp28, cp29, cp30, cp31, cp32, cp33, cp34, cp35 FROM ck_checkpoints WHERE steamid = '%s' AND mapname = '%s' AND zonegroup = 0;", g_szSteamID[client], g_szCPRMapName[client]);
 		SQL_TQuery(g_hDb, SQL_SelectCPRCallback, szQuery, pack, DBPrio_Low);
 	}
 	else
@@ -10800,10 +10800,10 @@ public void db_selectCPRTarget(any pack)
 	{
 		char szSteamId[32];
 		ReadPackString(pack, szSteamId, 32);
-		Format(szQuery, sizeof(szQuery), "SELECT `steamid`, `name`, `mapname`, `runtimepro` FROM `ck_playertimes` WHERE `mapname` LIKE '%c%s%c' AND steamid = '%s' AND style = 0", PERCENT, g_szCPRMapName[client], PERCENT, szSteamId);
+		Format(szQuery, sizeof(szQuery), "SELECT `steamid`, `name`, `mapname`, `runtimepro` FROM `ck_playertimes` WHERE `mapname` = '%s' AND steamid = '%s' AND style = 0", g_szCPRMapName[client], szSteamId);
 	}
 	else
-		Format(szQuery, sizeof(szQuery), "SELECT `steamid`, `name`, `mapname`, `runtimepro` FROM `ck_playertimes` WHERE `mapname` LIKE '%c%s%c' AND style = 0 ORDER BY `runtimepro` ASC LIMIT %i, 1;", PERCENT, g_szCPRMapName[client], PERCENT, rank);
+		Format(szQuery, sizeof(szQuery), "SELECT `steamid`, `name`, `mapname`, `runtimepro` FROM `ck_playertimes` WHERE `mapname` = '%s' AND style = 0 ORDER BY `runtimepro` ASC LIMIT %i, 1;", g_szCPRMapName[client], rank);
 	SQL_TQuery(g_hDb, SQL_SelectCPRTargetCallback, szQuery, pack, DBPrio_Low);
 }
 
@@ -10835,7 +10835,7 @@ public void db_selectCPRTargetCPs(const char[] szSteamId, any pack)
 	int client = ReadPackCell(pack);
 
 	char szQuery[512];
-	Format(szQuery, sizeof(szQuery), "SELECT cp1, cp2, cp3, cp4, cp5, cp6, cp7, cp8, cp9, cp10, cp11, cp12, cp13, cp14, cp15, cp16, cp17, cp18, cp19, cp20, cp21, cp22, cp23, cp24, cp25, cp26, cp27, cp28, cp29, cp30, cp31, cp32, cp33, cp34, cp35 FROM ck_checkpoints WHERE steamid = '%s' AND mapname LIKE '%c%s%c' AND zonegroup = 0;", szSteamId, PERCENT, g_szCPRMapName[client], PERCENT);
+	Format(szQuery, sizeof(szQuery), "SELECT cp1, cp2, cp3, cp4, cp5, cp6, cp7, cp8, cp9, cp10, cp11, cp12, cp13, cp14, cp15, cp16, cp17, cp18, cp19, cp20, cp21, cp22, cp23, cp24, cp25, cp26, cp27, cp28, cp29, cp30, cp31, cp32, cp33, cp34, cp35 FROM ck_checkpoints WHERE steamid = '%s' AND `mapname` = '%s' AND zonegroup = 0;", szSteamId, g_szCPRMapName[client]);
 	SQL_TQuery(g_hDb, SQL_SelectCPRTargetCPsCallback, szQuery, pack, DBPrio_Low);
 }
 
@@ -11385,7 +11385,7 @@ public void db_viewCCP_GetMapRank(int client, char szSteamID[32], char szMapName
 	WritePackString(pack, szSteamID);
 	WritePackString(pack, szMapName);
 	
-	Format(szQuery, 2048, "SELECT COUNT(*), runtimepro, steamid FROM ck_playertimes WHERE runtimepro <= (SELECT runtimepro FROM ck_playertimes WHERE steamid = '%s' AND mapname LIKE '%c%s%c' AND style = 0 AND runtimepro > -1.0) AND mapname LIKE '%c%s%c' AND style = 0 AND runtimepro > -1.0;", szSteamID, PERCENT, szMapName, PERCENT, PERCENT, szMapName, PERCENT);
+	Format(szQuery, sizeof(szQuery), "SELECT COUNT(*), runtimepro, steamid FROM ck_playertimes WHERE runtimepro <= (SELECT runtimepro FROM ck_playertimes WHERE steamid = '%s' AND mapname = '%s' AND style = 0 AND runtimepro > -1.0) AND mapname = '%s' AND style = 0 AND runtimepro > -1.0;", szSteamID, szMapName, szMapName);
 	SQL_TQuery(g_hDb, SQL_viewCCP_GetMapRankCallback, szQuery, pack, DBPrio_Low);
 }
 
@@ -11686,12 +11686,17 @@ public void SQL_viewCCP_GetMapStageTimes_PlayerPracCallback(Handle owner, Handle
 			g_fCCPPlayerCheckpointTimes[i] = SQL_FetchFloat(hndl, i);
 		}
 
-		char szStageTimeFormatted[32];
+		if(g_fCCPPlayerCheckpointTimes[0] != 0){
+			char szStageTimeFormatted[32];
 
-		//GET EACH STAGE TIME AND FORMAT IT
-		for(int i=0; i < g_TotalStages; i++){
-			FormatTimeFloat(client, g_fCCPPlayerCheckpointTimes[i], 3, szStageTimeFormatted, 32);
-			db_viewCCP_GetMapStageRank(client, szSteamID, szMapName, map_rank, total_map_completions, szMapTimeFormatted, szMapTimeDiffFormatted, i+1, g_fCCPPlayerCheckpointTimes[i], szStageTimeFormatted);
+			//GET EACH STAGE TIME AND FORMAT IT
+			for(int i=0; i < g_TotalStages; i++){
+				FormatTimeFloat(client, g_fCCPPlayerCheckpointTimes[i], 3, szStageTimeFormatted, 32);
+				db_viewCCP_GetMapStageRank(client, szSteamID, szMapName, map_rank, total_map_completions, szMapTimeFormatted, szMapTimeDiffFormatted, i+1, g_fCCPPlayerCheckpointTimes[i], szStageTimeFormatted);
+			}
+		}
+		else{
+			CPrintToChat(client, "%t", "CCP_05", g_szChatPrefix);	
 		}
 
 	}
