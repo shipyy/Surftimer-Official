@@ -2764,7 +2764,6 @@ public void SQL_UpdateRecordProCallback2(Handle owner, Handle hndl, const char[]
 	SQL_EscapeString(g_hDb, szUName, szEscName, MAX_NAME_LENGTH * 2 + 1);
 
 	if(g_MapRank[client] <= g_OldMapRank[client]){
-		PrintToChatAll("HERE_02");
 		if(g_OldMapRank[client] == 99999)
 			db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, 0, 0, g_MapRank[client]);
 		else
@@ -4506,7 +4505,6 @@ public void db_viewMapRankBonusCallback(Handle owner, Handle hndl, const char[] 
 	SQL_EscapeString(g_hDb, szUName, szEscName, MAX_NAME_LENGTH * 2 + 1);
 
 	//ONLY INSERT WHEN PLAYER IMPROVES OR GETS SAME TIME
-	PrintToChatAll("new %d | old %d", g_MapRankBonus[zgroup][client], g_OldMapRankBonus[zgroup][client]);
 	if(g_MapRankBonus[zgroup][client] <= g_OldMapRankBonus[zgroup][client]){
 		if(g_OldMapRankBonus[zgroup][client] == 9999999)
 			db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, zgroup, 0, g_MapRankBonus[zgroup][client]);
