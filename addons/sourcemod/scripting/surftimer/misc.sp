@@ -3271,7 +3271,7 @@ public void MinimalHudAlive(int client){
 
 		SetHudTextParams(-1.0, 0.55, 0.5, displayColor[0],displayColor[1] , displayColor[2], 255, 0, 0.0, 0.0, 0.0);
 
-		if ( (GetGameTime() - g_fLastDifferenceTime[client] <= 5.0) && g_bTimerRunning[client]){
+		if ( (GetGameTime() - g_fLastDifferenceTime[client] <= 5.0) && g_bTimerRunning[client] && g_iCurrentStyle[client] == 0){
 
 			if(g_iMinimalHUD_CompareType[client] == 1)
 				Format(s_Timer, 64, "%s\n%s", s_Timer, g_szLastPBDifferenceMinimalHUD[client]);
@@ -3464,14 +3464,15 @@ public void MinimalHudDead(int client){
 					Format(s_Timer, 64, "[00:00:00]");
 				}
 
-				if (GetGameTime() - g_fLastDifferenceTime[ObservedUser] <= 5.0){
+				if ( (GetGameTime() - g_fLastDifferenceTime[ObservedUser] <= 5.0) && g_iCurrentStyle[ObservedUser] == 0){
 
-					if(g_iMinimalHUD_CompareType[client] == 1){
+					if(g_iMinimalHUD_CompareType[client] == 1)
 						Format(s_Timer, 64, "%s\n%s", s_Timer, g_szLastPBDifferenceMinimalHUD[ObservedUser]);
-					}
-					else if(g_iMinimalHUD_CompareType[client] == 2){
+					else if(g_iMinimalHUD_CompareType[client] == 2)
 						Format(s_Timer, 64, "%s\n%s", s_Timer, g_szLastSRDifferenceMinimalHUD[ObservedUser]);
-					}
+					else
+						Format(s_Timer, 64, "%s\n%s", s_Timer, g_szCustomLastTimeDifferenceMinimalHUD[ObservedUser]);
+
 				}
 
 				displayColor = GetMinimalHUDColour(client, g_MinimalHUDSpeedGradient[client]);
