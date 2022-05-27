@@ -3687,6 +3687,7 @@ public void db_viewMapRankBonusCallback(Handle owner, Handle hndl, const char[] 
 	SQL_EscapeString(g_hDb, szUName, szEscName, MAX_NAME_LENGTH * 2 + 1);
 
 	//ONLY INSERT WHEN PLAYER IMPROVES OR GETS SAME TIME
+	PrintToChatAll("new %d | old %d", g_MapRankBonus[zgroup][client], g_OldMapRankBonus[zgroup][client]);
 	if(g_MapRankBonus[zgroup][client] <= g_OldMapRankBonus[zgroup][client]){
 		if(g_OldMapRankBonus[zgroup][client] == 9999999)
 			db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, zgroup, 0, g_MapRankBonus[zgroup][client]);
