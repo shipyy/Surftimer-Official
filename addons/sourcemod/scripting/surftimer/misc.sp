@@ -4665,56 +4665,55 @@ public void Checkpoint(int client, int zone, int zonegroup, float time, float sp
 		// Saving difference time for next checkpoint
 		tmpDiff[client] = diff;
 	}
-	else // if first run
-		if (g_bTimerRunning[client])
+	// if first run
+	else if (g_bTimerRunning[client]){
+		// Set percent of completion to assist
+		if (CS_GetMVPCount(client) < 1)
+			CS_SetClientAssists(client, RoundToFloor(g_fMaxPercCompleted[client]));
+		else
+			CS_SetClientAssists(client, 100);
+
+		Format(g_szLastPBDifferenceMinimalHUD[client], 64, "[PB: N/A]");
+
+		char szTime[32];
+		FormatTimeFloat(client, time, 3, szTime, 32);
+
+		char szSpeed[32];
+		Format(szSpeed, 32, "%i", RoundToNearest(speed));
+
+		Call_StartForward(g_MapCheckpointForward);
+
+		/* Push parameters one at a time */
+		Call_PushCell(client);
+		Call_PushFloat(time);
+		Call_PushString(szTime);
+		Call_PushFloat(-1.0);
+		Call_PushString("N/A");
+		Call_PushFloat(g_fCheckpointServerRecord[zonegroup][zone]);
+		Call_PushString(sz_srDiff_colorless);
+		Call_PushFloat(speed);
+		Call_PushString(szSpeed);
+		Call_PushFloat(420.0);
+		Call_PushString("N/A");
+		Call_PushFloat(g_fCheckpointSpeedServerRecord[zonegroup][zone]);
+		Call_PushString(sz_srSpeedDiff_colorless);
+
+		/* Finish the call, get the result */
+		Call_Finish();
+
+		if (percent > -1.0)
 		{
-			// Set percent of completion to assist
-			if (CS_GetMVPCount(client) < 1)
-				CS_SetClientAssists(client, RoundToFloor(g_fMaxPercCompleted[client]));
-			else
-				CS_SetClientAssists(client, 100);
+			if (g_bCheckpointsEnabled[client] && g_iCpMessages[client]){
+				
+				CPrintToChat(client, "%t", "Misc32", g_szChatPrefix, g_iClientInZone[client][1] + 1, szTime, sz_srDiff);
+				CPrintToChat(client, "%t", "Misc47", g_szChatPrefix, g_iClientInZone[client][1] + 1, szSpeed, sz_srSpeedDiff);
 
-			Format(g_szLastPBDifferenceMinimalHUD[client], 64, "[PB: N/A]");
-
-			char szTime[32];
-			FormatTimeFloat(client, time, 3, szTime, 32);
-
-			char szSpeed[32];
-			Format(szSpeed, 32, "%i", RoundToNearest(speed));
-
-			Call_StartForward(g_MapCheckpointForward);
-
-			/* Push parameters one at a time */
-			Call_PushCell(client);
-			Call_PushFloat(time);
-			Call_PushString(szTime);
-			Call_PushFloat(-1.0);
-			Call_PushString("N/A");
-			Call_PushFloat(g_fCheckpointServerRecord[zonegroup][zone]);
-			Call_PushString(sz_srDiff_colorless);
-			Call_PushFloat(speed);
-			Call_PushString(szSpeed);
-			Call_PushFloat(420.0);
-			Call_PushString("N/A");
-			Call_PushFloat(g_fCheckpointSpeedServerRecord[zonegroup][zone]);
-			Call_PushString(sz_srSpeedDiff_colorless);
-
-			/* Finish the call, get the result */
-			Call_Finish();
-
-			if (percent > -1.0)
-			{
-				if (g_bCheckpointsEnabled[client] && g_iCpMessages[client]){
-					
-					CPrintToChat(client, "%t", "Misc32", g_szChatPrefix, g_iClientInZone[client][1] + 1, szTime, sz_srDiff);
-					CPrintToChat(client, "%t", "Misc47", g_szChatPrefix, g_iClientInZone[client][1] + 1, szSpeed, sz_srSpeedDiff);
-
-				}
-
-				Format(szSpecMessage, sizeof(szSpecMessage), "%t", "Misc33", g_szChatPrefix, szName, g_iClientInZone[client][1] + 1, szTime, sz_srDiff, sz_srSpeedDiff);
-				CheckpointToSpec(client, szSpecMessage);
 			}
+
+			Format(szSpecMessage, sizeof(szSpecMessage), "%t", "Misc33", g_szChatPrefix, szName, g_iClientInZone[client][1] + 1, szTime, sz_srDiff, sz_srSpeedDiff);
+			CheckpointToSpec(client, szSpecMessage);
 		}
+	}
 }
 
 public void CheckpointToSpec(int client, char[] buffer)
