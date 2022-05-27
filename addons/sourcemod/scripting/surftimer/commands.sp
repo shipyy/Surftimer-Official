@@ -512,13 +512,18 @@ public int ShowMainDeleteMenuHandler(Menu menu, MenuAction action, int client, i
 
 void CreateCommandListeners()
 {
-	//IF SURFTIMER CHAT PROCESSOR IS ENABLED
-	if (GetConVarBool(g_henableChatProcessing)){
-		// Chat command listener
+	
+	// Chat command listener
+	if(GetConVarBool(g_henableChatProcessing)){
+		PrintToServer("\n\n\nUSING SURFTIMER CHAT-PROCESSOR\n\n\n");
 		AddCommandListener(Say_Hook, "say");
-		HookUserMessage(GetUserMessageId("SayText2_here"), SayText2_here, true);
 		AddCommandListener(Say_Hook, "say_team");
 	}
+	else{
+		PrintToServer("\n\n\nNOT USING SURFTIMER CHAT-PROCESSOR\n\n\n");
+	}
+
+	HookUserMessage(GetUserMessageId("SayText2"), SayText2, true);
 
 	AddCommandListener(Command_JoinTeam, "jointeam");
 	AddCommandListener(Command_ext_Menu, "radio1");

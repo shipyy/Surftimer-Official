@@ -25,7 +25,7 @@ void CreateHooks()
 	AddNormalSoundHook(Hook_FootstepCheck);
 }
 
-public Action SayText2_here(UserMsg msg_id, Handle bf, int[] players, int playersNum, bool reliable, bool init)
+public Action SayText2(UserMsg msg_id, Handle bf, int[] players, int playersNum, bool reliable, bool init)
 {
 	if (!reliable)return Plugin_Continue;
 	char buffer[25];
@@ -292,7 +292,7 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 		return Plugin_Handled;
 	}
 
-	if (IsValidClient(client))
+	if (IsValidClient(client) && !GetConVarBool(g_henableChatProcessing))
 	{
 		if (client > 0)
 			if (BaseComm_IsClientGagged(client))
