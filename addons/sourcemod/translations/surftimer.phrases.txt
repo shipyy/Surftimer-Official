@@ -1347,7 +1347,7 @@
 	"Misc31"
 	{
 		"#format"	"{1:s},{2:s},{3:i},{4:s},{5:s},{6:s},{7:s}"
-		"en"		"{1} {yellow}{2} {default}| CP [{lightgreen}{3}{default}]: {lightgreen}{4} {default}[PB: {5}{default} | {6}{default}] \n [{lightgreen}Speed:{default}{6} | SR: {7}{default}]"
+		"en"		"{1} {yellow}{2} {default}| CP [{lightgreen}{3}{default}]: {lightgreen}{4} {default}[PB: {5}{default} | {6}{default}] \n [{lightgreen}Speed:{default}{6} | {7}{default}]"
 	}
 	"Misc32"
 	{
@@ -1357,7 +1357,7 @@
 	"Misc33"
 	{
 		"#format"	"{1:s},{2:s},{3:i},{4:s},{5:s},{6:s}"
-		"en"		"{1} {yellow}{2} {default}| CP [{lightgreen}{3}{default}]: {lightgreen}{4} {default}[PB: {lightgreen}N/A{default} | {5}{default}] \n [PB: {lightgreen}N/A{default} | SR: {6}{default}]"
+		"en"		"{1} {yellow}{2} {default}| CP [{lightgreen}{3}{default}]: {lightgreen}{4} {default}[PB: {lightgreen}N/A{default} | {5}{default}] \n [{lightgreen}Speed:{default}PB: {lightgreen}N/A{default} | {6}{default}]"
 	}
 	"Misc34"
 	{
@@ -1897,5 +1897,10 @@
 	{
 		"#format"	"{1:s}"
 		"en"		"{1} No map record found"
+	}
+	"CCP_05"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} Old Personal Record, Improve your time"
 	}
 }
