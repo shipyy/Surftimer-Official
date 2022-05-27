@@ -2731,7 +2731,7 @@ public void SQL_UpdateRecordProCallback(Handle owner, Handle hndl, const char[] 
 
 		// Find out how many times are are faster than the players time
 		char szQuery[512];
-		Format(szQuery, sizeof(szQuery), "SELECT count(runtimepro) FROM `ck_playertimes` WHERE `mapname` = '%s' AND `runtimepro` < %f AND style = 0;", g_szMapName, time);
+		Format(szQuery, sizeof(szQuery), "SELECT count(runtimepro) FROM `ck_playertimes` WHERE `mapname` = '%s' AND `runtimepro` < %.4f AND style = 0;", g_szMapName, time);
 		SQL_TQuery(g_hDb, SQL_UpdateRecordProCallback2, szQuery, client, DBPrio_Low);
 
 	}
@@ -2763,7 +2763,10 @@ public void SQL_UpdateRecordProCallback2(Handle owner, Handle hndl, const char[]
 	char szEscName[MAX_NAME_LENGTH * 2 + 1];
 	SQL_EscapeString(g_hDb, szUName, szEscName, MAX_NAME_LENGTH * 2 + 1);
 
+	PrintToChatAll("HERE_01");
+	PrintToChatAll("new : %d | old : %d",rank ,g_OldMapRank[client]);
 	if(g_MapRank[client] <= g_OldMapRank[client]){
+		PrintToChatAll("HERE_02");
 		if(g_OldMapRank[client] == 99999)
 			db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, 0, 0, g_MapRank[client]);
 		else
