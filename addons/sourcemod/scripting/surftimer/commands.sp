@@ -512,10 +512,13 @@ public int ShowMainDeleteMenuHandler(Menu menu, MenuAction action, int client, i
 
 void CreateCommandListeners()
 {
-	// Chat command listener
-	AddCommandListener(Say_Hook, "say");
-	HookUserMessage(GetUserMessageId("SayText2"), SayText2, true);
-	AddCommandListener(Say_Hook, "say_team");
+	//IF SURFTIMER CHAT PROCESSOR IS ENABLED
+	if (GetConVarBool(g_henableChatProcessing)){
+		// Chat command listener
+		AddCommandListener(Say_Hook, "say");
+		HookUserMessage(GetUserMessageId("SayText2_here"), SayText2_here, true);
+		AddCommandListener(Say_Hook, "say_team");
+	}
 
 	AddCommandListener(Command_JoinTeam, "jointeam");
 	AddCommandListener(Command_ext_Menu, "radio1");
