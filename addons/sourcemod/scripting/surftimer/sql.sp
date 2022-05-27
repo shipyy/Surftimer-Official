@@ -6343,14 +6343,14 @@ public void sql_GetPlayersToUpdateCallback(Handle owner, Handle hndl, const char
 			previous_rank = new_rank;
 
 			if(deleting){
-				if(player_rank <= new_rank){
+				if(new_rank >= player_rank){
 					char szQuery[1024];
 					Format(szQuery, sizeof(szQuery), sql_InsertTrack, szSteamID, szName, szMapName, zonegroup,  previous_rank, new_rank - 1);
 					SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, DBPrio_Low);
 				}
 			}
 			else{
-				if(player_rank <= new_rank){
+				if(new_rank <= player_rank){
 					char szQuery[1024];
 					Format(szQuery, sizeof(szQuery), sql_InsertTrack, szSteamID, szName, szMapName, zonegroup, previous_rank, new_rank + 1);
 					SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, DBPrio_Low);
