@@ -141,7 +141,7 @@ char sql_clearPRruntime[] = "UPDATE ck_prinfo SET runtime = '0.0' WHERE steamid 
 //ck_recentlylost
 char sql_InsertTrack[] = "INSERT INTO ck_track (steamid, name, mapname, zonegroup, previous_rank, new_rank ) VALUES('%s', '%s', '%s', '%i', '%i', '%i');";
 char sql_InsertTrack_All[] = "UPDATE ck_track SET previous_rank = new_rank, new_rank = 999999 WHERE steamid = '%s';";
-char sql_GetPlayersToUpdate[] = "SELECT steamid, name, mapname, zonegroup, previous_rank, new_rank FROM ck_track WHERE new_rank > mapname = '%s' AND zonegroup = '%i' ORDER BY RegDate DESC;";
+char sql_GetPlayersToUpdate[] = "SELECT steamid, name, mapname, zonegroup, previous_rank, new_rank FROM ck_track WHERE mapname = '%s' AND zonegroup = '%i' ORDER BY RegDate DESC;";
 char sql_GetPlayerWipedRanks[] = "SELECT mapname, zonegroup, previous_rank FROM ck_track WHERE steamid = '%s' AND new_rank = 999999;";
 char sql_RecentlyLost[] = "SELECT mapname, zonegroup, previous_rank, new_rank FROM ck_track WHERE previous_rank < new_rank AND previous_rank <> 0 AND steamid = '%s' ORDER BY RegDate DESC LIMIT 50;";
 char sql_Tracking[] = "SELECT mapname, zonegroup, previous_rank, new_rank FROM ck_track WHERE steamid = '%s' ORDER BY RegDate DESC LIMIT 50;";
