@@ -207,8 +207,9 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 void Register_Forwards()
 {
 	g_MapFinishForward = new GlobalForward("surftimer_OnMapFinished", ET_Event, Param_Cell, Param_Float, Param_String, Param_Cell, Param_Cell);
+	//g_MapCheckpointForward = new GlobalForward("surftimer_OnCheckpoint", ET_Event, Param_Cell, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String);
 	//g_MapCheckpointForward = new GlobalForward("surftimer_OnCheckpoint", ET_Event, Param_Cell, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_String, Param_String);
-	g_MapCheckpointForward = new GlobalForward("surftimer_OnCheckpoint", ET_Event, Param_Cell, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String);
+	g_MapCheckpointForward = new GlobalForward("surftimer_OnCheckpoint", ET_Event, Param_Cell, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_String, Param_String);
 	g_BonusFinishForward = new GlobalForward("surftimer_OnBonusFinished", ET_Event, Param_Cell, Param_Float, Param_String, Param_Cell, Param_Cell, Param_Cell);
 	g_PracticeFinishForward = new GlobalForward("surftimer_OnPracticeFinished", ET_Event, Param_Cell, Param_Float, Param_String);
 	g_NewRecordForward = new GlobalForward("surftimer_OnNewRecord", ET_Event, Param_Cell, Param_Cell, Param_String, Param_String, Param_Cell);
@@ -253,11 +254,11 @@ void SendMapCheckpointForward(
 	int zonegroup, 
 	int zone, 
 	float time, 
-	float speed, 
-	const char[] szTime, 
-	const char[] szSpeed, 
+	const char[] szTime,
 	const char[] szDiff_colorless, 
 	const char[] sz_srDiff_colorless,
+	float speed, 
+	const char[] szSpeed,
 	const char[] sz_SpeedDiff_colorless,
 	const char[] sz_srSpeedDiff_colorless)
 {
