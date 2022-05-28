@@ -1404,6 +1404,8 @@ int g_iClientTick[MAXPLAYERS + 1];
 
 int g_iCurrentTick[MAXPLAYERS + 1];
 
+Handle HUD_Handle;
+
 /*===================================
 =         Predefined Arrays         =
 ===================================*/
@@ -1765,6 +1767,9 @@ public void OnMapStart()
 
 	// Save Locs
 	ResetSaveLocs();
+
+	//CSD Hud Synchronizer
+	HUD_Handle = CreateHudSynchronizer();
 }
 
 public void OnMapEnd()
