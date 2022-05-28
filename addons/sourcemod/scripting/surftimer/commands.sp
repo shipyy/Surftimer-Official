@@ -514,9 +514,11 @@ void CreateCommandListeners()
 {
 	
 	// Chat command listener
-	AddCommandListener(Say_Hook, "say");
-	HookUserMessage(GetUserMessageId("SayText2"), SayText2, true);
-	AddCommandListener(Say_Hook, "say_team");
+	if(GetConVarBool(g_henableChatProcessing)){
+		AddCommandListener(Say_Hook, "say");
+		HookUserMessage(GetUserMessageId("SayText2"), SayText2, true);
+		AddCommandListener(Say_Hook, "say_team");
+	}
 
 	AddCommandListener(Command_JoinTeam, "jointeam");
 	AddCommandListener(Command_ext_Menu, "radio1");

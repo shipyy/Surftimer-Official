@@ -24,6 +24,7 @@
 #include <dhooks>
 #include <mapchooser>
 #include <surftimer>
+#include <chat-processor>
 
 /*===================================
 =            Definitions            =

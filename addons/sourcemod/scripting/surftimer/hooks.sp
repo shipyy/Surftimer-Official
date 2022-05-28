@@ -290,9 +290,6 @@ public Action Say_Hook(int client, const char[] command, int argc)
 		return Plugin_Handled;
 	}
 
-	if(!GetConVarBool(g_henableChatProcessing))
-		return Plugin_Continue;
-
 	if (IsValidClient(client))
 	{
 		if (client > 0)
@@ -508,6 +505,270 @@ public Action Say_Hook(int client, const char[] command, int argc)
 		}
 	}
 	return Plugin_Continue;
+}
+
+public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstring, char[] name, char[] message, bool& processcolors, bool& removecolors)
+{
+
+	int client = view_as<int>(author);
+
+	// Call Admin - Own Reason
+	if (g_bClientOwnReason[client])
+	{
+		g_bClientOwnReason[client] = false;
+		return Plugin_Changed;
+	}
+
+	if (IsValidClient(client) && g_ClientRenamingZone[client])
+	{
+		Admin_renameZone(client, message);
+		return Plugin_Changed;
+	}
+
+	if (IsValidClient(client) && (!GetConVarBool(g_henableChatProcessing)))
+	{
+		if (client > 0)
+			if (BaseComm_IsClientGagged(client))
+				return Plugin_Changed;
+
+		// Blocked Commands
+		for (int i = 0; i < sizeof(g_BlockedChatText); i++)
+		{
+			if (StrEqual(g_BlockedChatText[i], message, true))
+			{
+				return Plugin_Changed;
+			}
+		}
+
+		// Functions that require the client to input something via the chat box
+		if (g_iWaitingForResponse[client] > None)
+		{
+			// Check if client is cancelling
+			if (StrEqual(message, "cancel"))
+			{
+				Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks1", g_szChatPrefix);
+				recipients.Clear();
+				recipients.Push(GetClientUserId(client));
+				//CPrintToChat(client, "%t", "Hooks1", g_szChatPrefix);
+				g_iWaitingForResponse[client] = None;
+				return Plugin_Changed;
+			}
+
+			// Check which function we're waiting for
+			switch (g_iWaitingForResponse[client])
+			{
+				case PreSpeed: 
+				{
+					// Set zone Prespeed
+					float prespeed = StringToFloat(message);
+					if (prespeed < 0.0)
+						prespeed = 0.0;
+					g_mapZones[g_ClientSelectedZone[client]].PreSpeed = prespeed;
+					PrespeedMenu(client);
+				}
+				case ZoneGroup:
+				{
+					// Hook zone zonegroup
+					int zgrp = StringToInt(message);
+					if (zgrp < 1 || zgrp > 35)
+					{
+						Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks2", g_szChatPrefix);
+						recipients.Clear();
+						recipients.Push(GetClientUserId(client));
+						//CPrintToChat(client, "%t", "Hooks2", g_szChatPrefix);
+						return Plugin_Changed;
+					}
+					g_iZonegroupHook[client] = zgrp;
+					Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks3", g_szChatPrefix, zgrp);
+					recipients.Clear();
+					recipients.Push(GetClientUserId(client));
+					//CPrintToChat(client, "%t", "Hooks3", g_szChatPrefix, zgrp);
+				}
+				case MaxVelocity:
+				{
+					// Maxvelocity for map
+					float maxvelocity = StringToFloat(message);
+					if (maxvelocity < 1.0)
+						maxvelocity = 10000.0;
+					g_fMaxVelocity = maxvelocity;
+					db_updateMapSettings();
+					MaxVelocityMenu(client);
+					Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks4", g_szChatPrefix, g_szMapName, maxvelocity);
+					recipients.Clear();
+					recipients.Push(GetClientUserId(client));
+					//CPrintToChat(client, "%t", "Hooks4", g_szChatPrefix, g_szMapName, maxvelocity);
+				}
+				case TargetName:
+				{
+					// Zone set clients Target Name
+					if (StrEqual(message, "reset"))
+						Format(message, sizeof(message[]), "player");
+
+					Format(g_mapZones[g_ClientSelectedZone[client]].TargetName, sizeof(MapZone::TargetName), "%s", message);
+
+					Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks5", g_szChatPrefix, g_szZoneDefaultNames[g_CurrentZoneType[client]], g_mapZones[g_ClientSelectedZone[client]].ZoneTypeId, message);
+					recipients.Clear();
+					recipients.Push(GetClientUserId(client));
+					//CPrintToChat(client, "%t", "Hooks5", g_szChatPrefix, g_szZoneDefaultNames[g_CurrentZoneType[client]], g_mapZones[g_ClientSelectedZone[client]].ZoneTypeId, message);
+
+					EditorMenu(client);
+				}
+				case ClientEdit:
+				{
+					g_SelectedType[client] = StringToInt(message);
+					char szQuery[512];
+
+					switch(g_SelectedEditOption[client])
+					{
+						case 0:
+						{
+							FormatEx(szQuery, 512, sql_MainEditQuery, "runtimepro", "ck_playertimes", g_EditingMap[client], g_SelectedStyle[client], "", "runtimepro");
+						}
+						case 1:
+						{
+							char stageQuery[32];
+							FormatEx(stageQuery, 32, "AND stage='%i' ", g_SelectedType[client]);
+							FormatEx(szQuery, 512, sql_MainEditQuery, "runtimepro", "ck_wrcps", g_EditingMap[client], g_SelectedStyle[client], stageQuery, "runtimepro");
+						}
+						case 2:
+						{
+							char stageQuery[32];
+							FormatEx(stageQuery, 32, "AND zonegroup='%i' ", g_SelectedType[client]);
+							FormatEx(szQuery, 512, sql_MainEditQuery, "runtime", "ck_bonus", g_EditingMap[client], g_SelectedStyle[client], stageQuery, "runtime");
+						}
+					}
+
+					SQL_TQuery(g_hDb, sql_DeleteMenuView, szQuery, GetClientSerial(client));
+				}
+				case ColorValue:
+				{
+					//COLOR VALUE FOR CENTER SPEED
+					int color_value = StringToInt(message);
+
+					//KEEP VALUES BETWEEN 0-255
+					if(color_value > 255)
+						color_value = 255;
+					else if(color_value < 0)
+						color_value = 0;
+
+					switch(g_iColorChangeIndex[client]){
+						case 0: g_iCSD_R[client] = color_value;
+						case 1: g_iCSD_G[client] = color_value;
+						case 2: g_iCSD_B[client] = color_value;
+					}
+					CSDOptions(client);
+				}
+			}
+
+			g_iWaitingForResponse[client] = None;
+			return Plugin_Changed;
+		}
+
+		// !s & !stage Commands
+		if (StrContains(message, "!s", false) == 0 || StrContains(message, "!stage", false) == 0)
+			return Plugin_Changed;
+
+		// !b & !bonus Commands
+		if (StrContains(message, "!b", false) == 0 || StrContains(message, "!bonus", false) == 0)
+			return Plugin_Changed;
+
+		// Empty Message
+		if (StrEqual(message, " ") || !message[0])
+			return Plugin_Changed;
+
+		if (checkSpam(client))
+			return Plugin_Changed;
+
+		parseColorsFromString(message, 1024);
+
+		// Lowercase
+		if ((message[0] == '/') || (message[0] == '!'))
+		{
+			if (IsCharUpper(message[1]))
+			{
+				for (int i = 0; i <= strlen(message); ++i)
+					message[i] = CharToLower(message[i]);
+				FakeClientCommand(client, "say %s", message);
+				return Plugin_Changed;
+			}
+		}
+
+		// Hide ! commands
+		if (StrContains(message, "!", false) == 0)
+		return Plugin_Changed;
+
+		if ((IsChatTrigger() && message[0] == '/') || (message[0] == '@' && (GetUserFlagBits(client) & ADMFLAG_ROOT || GetUserFlagBits(client) & ADMFLAG_GENERIC)))
+		{
+			return Plugin_Changed;
+		}
+
+		char szName[64];
+		GetClientName(client, szName, 64);
+		RemoveColors(szName, 64);
+
+		// log the chat of the player to the server so that tools such as HLSW/HLSTATX see it and also it remains logged in the log file
+		WriteChatLog(client, "say", message);
+		PrintToServer("%s: %s", szName, message);
+
+		if (GetConVarBool(g_hPointSystem) && GetConVarBool(g_hColoredNames) && g_bDbCustomTitleInUse[client])
+			setNameColor(szName, g_iCustomColours[client][0], 64);
+
+		if (GetConVarBool(g_hPointSystem) && GetConVarBool(g_hColoredNames) && g_bDbCustomTitleInUse[client] && g_bHasCustomTextColour[client])
+			setTextColor(message, g_iCustomColours[client][1], 1024);
+
+		if (GetClientTeam(client) == 1)
+		{
+			PrintSpecMessageAll(client);
+			return Plugin_Changed;
+		}
+		else
+		{
+			char szChatRank[1024];
+			Format(szChatRank, sizeof(szChatRank), "%s", g_pr_chat_coloredrank[client]);
+
+			char szChatRankColor[1024];
+			Format(szChatRankColor, sizeof(szChatRankColor), "%s", g_pr_chat_coloredrank[client]);
+			CGetRankColor(szChatRankColor, sizeof(szChatRankColor));
+
+			if (GetConVarBool(g_hPointSystem) && GetConVarBool(g_hColoredNames) && !g_bDbCustomTitleInUse[client])
+				Format(szName, sizeof(szName), "{%s}%s", szChatRankColor, szName);
+
+			if (GetConVarBool(g_hCountry) && (GetConVarBool(g_hPointSystem)))
+			{
+
+				if (IsPlayerAlive(client)){
+					Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks6", g_szCountryCode[client], szChatRank, szName, message);
+					//PrintToChatAll("%t", "Hooks6", g_szCountryCode[client], szChatRank, szName, message);
+				}
+				else{
+					Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks7", g_szCountryCode[client], szChatRank, szName, message);
+					//PrintToChatAll("%t", "Hooks7", g_szCountryCode[client], szChatRank, szName, message);
+				}
+				return Plugin_Changed;
+			}
+			else
+			{
+				if (GetConVarBool(g_hPointSystem))
+				{
+					if (IsPlayerAlive(client)){
+						Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks8", szChatRank, szName, message);
+						//PrintToChatAll("%t", "Hooks8", szChatRank, szName, message);
+					}
+					else{
+						Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks9", szChatRank, szName, message);
+						//PrintToChatAll("%t", "Hooks9", szChatRank, szName, message);
+					}
+					return Plugin_Changed;
+				}
+			}
+		}
+	}
+	return Plugin_Changed;
+}
+
+public void CP_OnChatMessagePost(int author, ArrayList recipients, const char[] flagstring, const char[] formatstring, const char[] name, const char[] message, bool processcolors, bool removecolors)
+{
+	PrintToServer("total recipients %d ", recipients.Length);
 }
 
 public void CGetRankColor(char[] sMsg, int iSize) // edit from CProcessVariables - colorvars
