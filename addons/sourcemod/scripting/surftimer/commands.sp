@@ -514,16 +514,9 @@ void CreateCommandListeners()
 {
 	
 	// Chat command listener
-	if(GetConVarBool(g_henableChatProcessing)){
-		PrintToServer("\n\n\nUSING SURFTIMER CHAT-PROCESSOR\n\n\n");
-		AddCommandListener(Say_Hook, "say");
-		AddCommandListener(Say_Hook, "say_team");
-	}
-	else{
-		PrintToServer("\n\n\nNOT USING SURFTIMER CHAT-PROCESSOR\n\n\n");
-	}
-
+	AddCommandListener(Say_Hook, "say");
 	HookUserMessage(GetUserMessageId("SayText2"), SayText2, true);
+	AddCommandListener(Say_Hook, "say_team");
 
 	AddCommandListener(Command_JoinTeam, "jointeam");
 	AddCommandListener(Command_ext_Menu, "radio1");
