@@ -2,8 +2,8 @@ void CreateCommandsNewMap()
 {
 	RegConsoleCmd("sm_newmap", Client_NewMap, "[surftimer] shows new maps");
 	RegConsoleCmd("sm_nm", Client_NewMap, "[surftimer] shows new maps");
-	RegAdminCmd("sm_addnewmap", Client_AddNewMap, ADMFLAG_ROOT, "[surftimer] add a new map");
-	RegAdminCmd("sm_anm", Client_AddNewMap, ADMFLAG_ROOT, "[surftimer] add a new map");
+	RegConsoleCmd("sm_addnewmap", Client_AddNewMap, "[surftimer] add a new map");
+	RegConsoleCmd("sm_anm", Client_AddNewMap, "[surftimer] add a new map");
 
 	db_present();
 }
@@ -16,7 +16,8 @@ public Action Client_NewMap(int client, int args)
 
 public Action Client_AddNewMap(int client, int args)
 {
-	db_InsertNewestMaps();
+	if (IsPlayerZoner(client))
+		db_InsertNewestMaps();
 	return Plugin_Handled;
 }
 
