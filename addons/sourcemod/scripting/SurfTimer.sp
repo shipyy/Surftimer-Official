@@ -344,9 +344,6 @@ int lastCheckpoint[MAXZONEGROUPS][MAXPLAYERS + 1];
 // Clients checkpoints have been found?
 bool g_bCheckpointsFound[MAXZONEGROUPS][MAXPLAYERS + 1];
 
-// Clients Stage Times have been found?
-bool g_bStageTimesFound[MAXPLAYERS + 1];
-
 // Map record checkpoints found?
 bool g_bCheckpointRecordFound[MAXZONEGROUPS];
 
@@ -482,6 +479,7 @@ float g_fSrcpPauseTime[MAXPLAYERS + 1];
 
 // Prestrafe records
 int g_iRecordPreStrafe[3][CPLIMIT][MAX_STYLES];
+int g_iRecordPreStrafeStage[3][CPLIMIT][MAX_STYLES];
 int g_iRecordPreStrafeBonus[3][MAXZONEGROUPS][MAX_STYLES];
 
 /*----------  Map Settings Variables ----------*/
@@ -904,6 +902,9 @@ int g_iPreStrafe[3][CPLIMIT][MAX_STYLES][MAXPLAYERS + 1];
 
 // Latest prestrafe speed for bonuses
 int g_iPreStrafeBonus[3][MAXZONEGROUPS][MAX_STYLES][MAXPLAYERS + 1];
+
+// Latest prestrafe speed for stages
+int g_iPreStrafeStage[3][CPLIMIT][MAX_STYLES][MAXPLAYERS + 1];
 
 /*----------  Replay Variables  ----------*/
 
