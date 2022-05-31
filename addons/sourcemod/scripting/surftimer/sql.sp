@@ -12430,7 +12430,7 @@ public void db_viewCCP_GetMapStageRank(int client, char szSteamID[32], char szMa
 	WritePackString(stage_pack, szStageTimeFormatted);
 
 	char szQuery[2048];
-	Format(szQuery, sizeof(szQuery), "SELECT count(runtimepro) FROM ck_wrcps WHERE mapname = '%s' AND stage = '%i' AND style = '0' AND runtimepro <= %f;", szMapName, stage, stage_time);
+	Format(szQuery, sizeof(szQuery), "SELECT count(runtimepro)+1 FROM ck_wrcps WHERE mapname = '%s' AND stage = '%i' AND style = '0' AND runtimepro < %f;", szMapName, stage, stage_time);
 	PrintToServer(szQuery);
 	SQL_TQuery(g_hDb, SQL_viewCCP_GetMapStageRankCallback, szQuery, stage_pack, DBPrio_Low);
 
