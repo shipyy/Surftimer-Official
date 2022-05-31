@@ -515,7 +515,7 @@ public Action TimeleftTimer(Handle timer,any client)
 				FormatEx(timeleft, sizeof(timeleft), "Timeleft: %im %02is", time / 60, time % 60);
 			
 			int displayColor[3];
-			displayColor = GetMinimalHUDColour(client, g_MinimalHUDSpeedGradient[i]);
+			displayColor = GetMinimalHUDColour(g_MinimalHUDSpeedGradient[i]);
 			SetHudTextParams(-1.0, 0.10, 1.0, displayColor[0], displayColor[1], displayColor[2], 255, 0, 0.0, 0.0, 0.0);
 
 			ShowHudText(i, 0, timeleft);

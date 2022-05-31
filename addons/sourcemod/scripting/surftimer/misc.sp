@@ -3293,10 +3293,6 @@ public void MinimalHudAlive(int client){
 			Format(s_Timer, 64, "[00:00:00]");
 		}
 
-		displayColor = GetMinimalHUDColour(client, g_MinimalHUDSpeedGradient[client]);
-
-		SetHudTextParams(-1.0, 0.55, 0.5, displayColor[0],displayColor[1] , displayColor[2], 255, 0, 0.0, 0.0, 0.0);
-
 		if ( (GetGameTime() - g_fLastDifferenceTime[client] <= 5.0) && g_bTimerRunning[client] && g_iCurrentStyle[client] == 0){
 
 			if(g_iMinimalHUD_CompareType[client] == 1)
@@ -3308,7 +3304,7 @@ public void MinimalHudAlive(int client){
 
 		}
 
-		displayColor = GetMinimalHUDColour(client, g_MinimalHUDSpeedGradient[client]);
+		displayColor = GetMinimalHUDColour(g_MinimalHUDSpeedGradient[client]);
 
 		SetHudTextParams(-1.0, 0.55, 0.5, displayColor[0], displayColor[1] , displayColor[2], 255, 0, 0.0, 0.0, 0.0);
 		ShowHudText(client,2,"%s", s_Timer);
@@ -3434,7 +3430,7 @@ public void MinimalHudAlive(int client){
 		char final_string[256];
 		Format(final_string, 256, "[%s]\n[%s | %s]", s_MapType, s_MapPersonalRecord, s_MapWorldRecord);
 
-		displayColor = GetMinimalHUDColour(client, g_MinimalHUDSpeedGradient[client]);
+		displayColor = GetMinimalHUDColour(g_MinimalHUDSpeedGradient[client]);
 		SetHudTextParams(-1.0, 1.0, 0.5, displayColor[0],displayColor[1] , displayColor[2], 255, 0, 0.0, 0.0, 0.0);
 		ShowHudText(client,3,final_string);
 		
@@ -3501,7 +3497,7 @@ public void MinimalHudDead(int client){
 
 				}
 
-				displayColor = GetMinimalHUDColour(client, g_MinimalHUDSpeedGradient[client]);
+				displayColor = GetMinimalHUDColour(g_MinimalHUDSpeedGradient[client]);
 
 				SetHudTextParams(-1.0, 0.55, 0.5, displayColor[0],displayColor[1] , displayColor[2], 255, 0, 0.0, 0.0, 0.0);
 				ShowHudText(client,2,"%s",s_Timer);
@@ -3627,7 +3623,7 @@ public void MinimalHudDead(int client){
 				char final_string[256];
 				Format(final_string, 256, "[%s]\n[%s | %s]", s_MapType, s_MapPersonalRecord, s_MapWorldRecord);
 
-				displayColor = GetMinimalHUDColour(client, g_MinimalHUDSpeedGradient[client]);
+				displayColor = GetMinimalHUDColour(g_MinimalHUDSpeedGradient[client]);
 				SetHudTextParams(-1.0, 1.0, 0.5, displayColor[0],displayColor[1] , displayColor[2], 255, 0, 0.0, 0.0, 0.0);
 				ShowHudText(client,3,final_string);
 			}
@@ -3676,7 +3672,7 @@ public void MinimalHudDead(int client){
 					else
 						Format(final_string, 256, "[Stage %i Replay]\n[(%s) WRCP : %s]", g_StageReplayCurrentStage, g_szWrcpReplayName[g_StageReplayCurrentStage], g_szWrcpReplayTime[g_StageReplayCurrentStage]);
 
-				displayColor = GetMinimalHUDColour(client, g_MinimalHUDSpeedGradient[client]);
+				displayColor = GetMinimalHUDColour(g_MinimalHUDSpeedGradient[client]);
 				SetHudTextParams(-1.0, 1.0, 0.5, displayColor[0],displayColor[1] , displayColor[2], 255, 0, 0.0, 0.0, 0.0);
 				ShowHudText(client,3,final_string);
 			}
@@ -5105,31 +5101,31 @@ int[] GetSpeedColourCSD(int client, int speed, int type)
 	}
 }
 
-int[] GetMinimalHUDColour(int client, int type)
+int[] GetMinimalHUDColour(int type)
 {	
 	int displayColor[3] = {255, 255, 255};
 	if (g_fMaxVelocity == 10000.0)
 	{	
 		// RED
-		if (type == 1 && g_SpeedMode[client] == 0) // green
+		if (type == 1) // green
 		{
 			displayColor = {255,0,0};
 			return displayColor;
 		}
 		// GREEN
-		else if (type == 2 && g_SpeedMode[client] == 0)
+		else if (type == 2)
 		{
 			displayColor = {0,255,0};
 			return displayColor;
 		}
 		// BLUE
-		else if (type == 3 && g_SpeedMode[client] == 0)
+		else if (type == 3)
 		{
 			displayColor = {0,0,255};
 			return displayColor;
 		}
 		// YELLOW
-		else if (type == 4 && g_SpeedMode[client] == 0)
+		else if (type == 4)
 		{
 			displayColor = {255,255,0};
 			return displayColor;
@@ -5140,25 +5136,25 @@ int[] GetMinimalHUDColour(int client, int type)
 	else
 	{
 		// RED
-		if (type == 1 && g_SpeedMode[client] == 0) // green
+		if (type == 1) // green
 		{
 			displayColor = {255,0,0};
 			return displayColor;
 		}
 		// GREEN
-		else if (type == 2 && g_SpeedMode[client] == 0)
+		else if (type == 2)
 		{
 			displayColor = {0,255,0};
 			return displayColor;
 		}
 		// BLUE
-		else if (type == 3 && g_SpeedMode[client] == 0)
+		else if (type == 3)
 		{
 			displayColor = {0,0,255};
 			return displayColor;
 		}
 		// YELLOW
-		else if (type == 4 && g_SpeedMode[client] == 0)
+		else if (type == 4)
 		{
 			displayColor = {255,255,0};
 			return displayColor;
