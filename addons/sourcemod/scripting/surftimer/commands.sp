@@ -222,6 +222,7 @@ void CreateCommands()
 	RegConsoleCmd("sm_startside", Command_ChangeStartSide, "[surftimer] [settings] left/right - change start side");
 	RegConsoleCmd("sm_speedgradient", Command_ChangeSpeedGradient, "[surftimer] [settings] white/green/rainbow/momentum - change speed gradient");
 	RegConsoleCmd("sm_speedmode", Command_ChangeSpeedMode, "[surftimer] [settings] xy/xyz/z - change speed mode");
+	RegConsoleCmd("sm_prespeedmode", Command_ChangePreSpeedMode, "[surftimer] [settings] xy/xyz/z - change prestrafe speed mode");
 	RegConsoleCmd("sm_centerspeed", Command_CenterSpeed, "[surftimer] [settings] on/off - toggle center speed display");
 	RegConsoleCmd("sm_nctriggers", Command_ToggleNcTriggers, "[surftimer] [settings] on/off - toggle triggers while noclipping");
 	RegConsoleCmd("sm_autoreset", Command_ToggleAutoReset, "[surftimer] [settings] on/off - toggle auto reset for your current map/bonus run if your above your pb");
@@ -275,6 +276,20 @@ public Action Command_ChangeSpeedMode(int client, int args) {
 	} else {
 		g_SpeedMode[client] = 0;
 		CPrintToChat(client, "%t", "SpeedModeXY", g_szChatPrefix);
+	}
+	return Plugin_Handled;
+}
+
+public Action Command_ChangePreSpeedMode(int client, int args) {
+	if (g_PreSpeedMode[client] == 0) { 
+		g_PreSpeedMode[client]++;
+		CPrintToChat(client, "%t", "PreSpeedModeXYZ", g_szChatPrefix);
+	} else if (g_PreSpeedMode[client] == 1) {
+		g_PreSpeedMode[client]++;
+		CPrintToChat(client, "%t", "PreSpeedModeZ", g_szChatPrefix);
+	} else {
+		g_PreSpeedMode[client] = 0;
+		CPrintToChat(client, "%t", "PreSpeedModeXY", g_szChatPrefix);
 	}
 	return Plugin_Handled;
 }
@@ -2566,6 +2581,17 @@ void PrespeedText(int client, bool menu = false)
 		MiscellaneousOptions(client);
 }
 
+void PreSpeedMode(int client, bool menu = false)
+{
+	if (g_PreSpeedMode[client] != 2)
+		g_PreSpeedMode[client]++;
+	else
+		g_PreSpeedMode[client] = 0;
+	
+	if (menu)
+		MiscellaneousOptions(client);
+}
+
 void HintsText(int client, bool menu = false)
 {
 	g_bAllowHints[client] = !g_bAllowHints[client];
@@ -3695,6 +3721,14 @@ public void MiscellaneousOptions(int client)
 	else
 		AddMenuItem(menu, "", "[OFF] Prestrafe Message");
 
+	// Prestrafe Speed Mode
+	if (g_PreSpeedMode[client] == 0)
+		AddMenuItem(menu, "", "[XY] Prestrafe Speed Mode");
+	else if (g_PreSpeedMode[client] == 1)
+		AddMenuItem(menu, "", "[XYZ] Prestrafe Speed Mode");
+	else
+		AddMenuItem(menu, "", "[Z] Prestrafe Speed Mode");
+
 	// Show hints
 	if (g_bAllowHints[client])
 		AddMenuItem(menu, "", "[ON] Hints");
@@ -3723,8 +3757,9 @@ public int MiscellaneousOptionsHandler(Menu menu, MenuAction action, int param1,
 			case 3: HideChat(param1, true);
 			case 4: HideViewModel(param1, true);
 			case 5: PrespeedText(param1, true);
-			case 6: HintsText(param1, true);
-			case 7: TimeleftText(param1, true);
+			case 6: PreSpeedMode(param1, true);
+			case 7: HintsText(param1, true);
+			case 8: TimeleftText(param1, true);
 		}
 	}
 	else if (action == MenuAction_Cancel)

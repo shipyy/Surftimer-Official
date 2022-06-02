@@ -97,8 +97,8 @@ public void CL_OnStartTimerPress(int client)
 					g_SpeedMode[client] == 1 -> XYZ
 					g_SpeedMode[client] == 2 -> Z
 				*/
-				iPrestrafeRecord = g_iRecordPreStrafe[1][0][g_iCurrentStyle[client]];
-				iPersonalPrestrafeRecord = g_iPersonalRecordPreStrafe[client][1][0][g_iCurrentStyle[client]];
+				iPrestrafeRecord = g_iRecordPreStrafe[g_PreSpeedMode[client]][0][g_iCurrentStyle[client]];
+				iPersonalPrestrafeRecord = g_iPersonalRecordPreStrafe[client][g_PreSpeedMode[client]][0][g_iCurrentStyle[client]];
 
 				SetPrestrafe(client, 0, g_iCurrentStyle[client], true, false, false );
 				SetPrestrafe(client, 1, g_iCurrentStyle[client], true, false, false );
@@ -114,8 +114,8 @@ public void CL_OnStartTimerPress(int client)
 					g_SpeedMode[client] == 1 -> XYZ
 					g_SpeedMode[client] == 2 -> Z
 				*/
-				iPrestrafeRecord = g_iRecordPreStrafeBonus[1][g_iClientInZone[client][2]][g_iCurrentStyle[client]];
-				iPersonalPrestrafeRecord = g_iPersonalRecordPreStrafeBonus[client][1][g_iClientInZone[client][2]][g_iCurrentStyle[client]];
+				iPrestrafeRecord = g_iRecordPreStrafeBonus[g_PreSpeedMode[client]][g_iClientInZone[client][2]][g_iCurrentStyle[client]];
+				iPersonalPrestrafeRecord = g_iPersonalRecordPreStrafeBonus[client][g_PreSpeedMode[client]][g_iClientInZone[client][2]][g_iCurrentStyle[client]];
 
 				SetPrestrafe(client, g_iClientInZone[client][2], g_iCurrentStyle[client], false, true, false);
 			}
@@ -133,12 +133,7 @@ public void CL_OnStartTimerPress(int client)
 			int iRecordDifference;
 			int iPersonalDifference;
 
-			//FORCE XYZ UNITS ON PRESTRAFE
-			float fVelocity[3];
-			GetEntPropVector(client, Prop_Data, "m_vecVelocity", fVelocity);
-			float speed = SquareRoot(Pow(fVelocity[0], 2.0) + Pow(fVelocity[1], 2.0) + Pow(fVelocity[2], 2.0));
-
-			int prestrafe = RoundToNearest(speed);
+			int prestrafe = RoundToNearest(GetPreSpeed(client));
 
 			if (iPrestrafeRecord == 0)
 			{
@@ -821,17 +816,12 @@ public void CL_OnStartWrcpTimerPress(int client)
 			//FORCE XYZ UNITS ON PRESTRAFE
 
 			//STAGE PRESTRAFE RECORD
-			int iPrestrafeRecord = g_iRecordPreStrafeStage[1][g_Stage[0][client]][g_iCurrentStyle[client]];
+			int iPrestrafeRecord = g_iRecordPreStrafeStage[g_PreSpeedMode[client]][g_Stage[0][client]][g_iCurrentStyle[client]];
 
 			//PLAYERS PRESTRAFE
-			int iPersonalPrestrafeRecord = g_iPersonalRecordPreStrafeStage[client][1][g_Stage[0][client]][g_iCurrentStyle[client]];
+			int iPersonalPrestrafeRecord = g_iPersonalRecordPreStrafeStage[client][g_PreSpeedMode[client]][g_Stage[0][client]][g_iCurrentStyle[client]];
 
-			float fVelocity[3];
-			GetEntPropVector(client, Prop_Data, "m_vecVelocity", fVelocity);
-			//FORCE XYZ UNITS ON PRESTRAFE
-			float speed = SquareRoot(Pow(fVelocity[0], 2.0) + Pow(fVelocity[1], 2.0) + Pow(fVelocity[2], 2.0));
-
-			int prestrafe = RoundToNearest(speed);
+			int prestrafe = RoundToNearest(GetPreSpeed(client));
 
 			SetPrestrafe(client, g_Stage[0][client], g_iCurrentStyle[client], false, false, true);
 

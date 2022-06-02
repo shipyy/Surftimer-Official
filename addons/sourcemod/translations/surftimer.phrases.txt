@@ -1787,6 +1787,21 @@
 	"SpeedModeZ"
 	{
 		"#format"	"{1:s}"
+		"en"		"{1} Your speed prestrafe mode is now {red}Z"
+	}
+	"PreSpeedModeXY"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} Your prestrafe speed mode is now {yellow}X{orange}Y"
+	}
+	"PreSpeedModeXYZ"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} Your prestrafe speed mode is now {yellow}X{orange}Y{red}Z"
+	}
+	"PreSpeedModeZ"
+	{
+		"#format"	"{1:s}"
 		"en"		"{1} Your speed mode is now {red}Z"
 	}
 	"CenterSpeedOn"
