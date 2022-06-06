@@ -889,7 +889,7 @@ public void CL_OnEndWrcpTimerPress(int client, float time2)
 		
 		g_bWrcpTimeractivated[client] = false;
 
-		if(g_aRecording[client] != null && g_bTimerRunning[client] && g_Recording){
+		if(g_aRecording[client] != null && g_bTimerRunning[client] && g_Recording[client]){
 			Stage_StartRecording(client);
 		}
 	}
