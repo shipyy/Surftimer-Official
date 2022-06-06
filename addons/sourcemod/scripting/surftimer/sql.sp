@@ -7725,8 +7725,9 @@ public void SQL_UpdateWrcpRecordCallback2(Handle owner, Handle hndl, const char[
 		Format(szDiff, 128, "%cPB: %c%s%c", WHITE, LIMEGREEN, g_szFinalWrcpTime[client], WHITE);
 	}
 
+	//ADD ADITIONAL CHECK TO MAKE SURE THE PRE IS == 0.0
 	if (g_fWrcpRecord[client][stage][style] != -1.0){ // Existing stage time
-		if (fDiff >= 0){
+		if (fDiff >= 0 || g_iPersonalRecordPreStrafeStage[client][0][stage][style] == 0.0){ //IF THE DIFF IS != 0 OR IF THE PLAYER AS A OLD STAGE TIME BUT NO PRESTRAFE DATA
 			SetNewPersonalRecordPrestrafe(client, stage, style, false, false, true);
 		}
 	}
