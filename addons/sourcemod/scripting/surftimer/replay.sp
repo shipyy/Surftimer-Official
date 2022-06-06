@@ -116,7 +116,7 @@ public void StartRecording(int client)
 		return;
 	}
 
-	g_Recording = true; 
+	g_Recording[client] = true; 
 	g_iRecordedTicks[client] = 0;
 }
 
@@ -127,7 +127,7 @@ public void StopRecording(int client)
 		return;
 	}
 
-	g_Recording = false;
+	g_Recording[client] = false;
 
 	ClearFrame(client);
 }
@@ -1329,7 +1329,7 @@ public void Stage_StartRecording(int client)
 		return;
 	}
 
-	g_StageRecording = true;
+	g_StageRecording[client] = true;
 
 	g_iStageStartFrame[client] = g_iRecordedTicks[client];
 
