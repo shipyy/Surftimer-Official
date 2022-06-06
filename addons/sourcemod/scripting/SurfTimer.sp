@@ -902,6 +902,9 @@ int g_iPreStrafeBonus[3][MAXZONEGROUPS][MAX_STYLES][MAXPLAYERS + 1];
 
 /*----------  Replay Variables  ----------*/
 
+bool g_Recording[MAXPLAYERS + 1] = false; //THIS VAR ALOWS TO STOP LOOPING THE CALL TO THE FUNCTION
+bool g_StageRecording[MAXPLAYERS + 1] = false; //THIS VAR ALOWS TO STOP LOOPING THE CALL TO THE FUNCTION
+
 // Checks if the bot is new, if so, set weapon
 bool g_bNewRecordBot;
 
