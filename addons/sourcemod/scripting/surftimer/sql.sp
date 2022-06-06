@@ -1954,6 +1954,9 @@ public void sql_selectPlayerProfileCallback(Handle owner, Handle hndl, const cha
 		Menu menu = CreateMenu(ProfileMenuHandler);
 		SetMenuTitle(menu, szTitle);
 		AddMenuItem(menu, "Finished maps", szCompleted);
+
+		AddMenuItem(menu, "Recently Lost Times", "Recently Lost");
+
 		AddMenuItem(menu, szSteamId, "Player Info");
 
 		if (IsValidClient(client))
@@ -1972,13 +1975,14 @@ public int ProfileMenuHandler(Handle menu, MenuAction action, int client, int it
 		switch (item)
 		{
 			case 0: completionMenu(client);
-			case 1:
+			case 1: db_ViewRecentlyLost(client);
+			case 2:
 			{
 				char szSteamId[32];
 				GetMenuItem(menu, item, szSteamId, 32);
 				db_viewPlayerInfo(client, szSteamId);
 			}
-			case 2:
+			case 3:
 			{
 				if (g_bRecalcRankInProgess[client])
 				{
