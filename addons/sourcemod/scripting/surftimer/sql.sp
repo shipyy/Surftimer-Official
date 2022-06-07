@@ -1369,7 +1369,7 @@ public void sql_CountFinishedMapsCallback(Handle owner, Handle hndl, const char[
 	
 	// Next up: Average Map Rank
 	char szQuery[512];
-	Format(szQuery, 512, sql_AVGMapRank, g_szSteamID[client], g_szSteamID[client]);
+	Format(szQuery, 512, sql_AVGMapRank, g_szSteamID[client], g_SelectedStyle[client], g_SelectedStyle[client] ,g_szSteamID[client], g_SelectedStyle[client]);
 	PrintToServer(szQuery);
 	SQL_TQuery(g_hDb, sql_AVGMapRankCallback, szQuery, pack, DBPrio_Low);
 }
