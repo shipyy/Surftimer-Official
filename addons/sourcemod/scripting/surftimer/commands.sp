@@ -3550,6 +3550,49 @@ public void MiscellaneousOptions(int client)
 	else
 		AddMenuItem(menu, "", "[RIGHT] Start Side");
 
+	// Speed Gradient
+	if (g_SpeedGradient[client] == 0)
+		AddMenuItem(menu, "", "[WHITE] Speed Gradient");
+	else if (g_SpeedGradient[client] == 1)
+		AddMenuItem(menu, "", "[GREEN] Speed Gradient");
+	else if (g_SpeedGradient[client] == 2)
+		AddMenuItem(menu, "", "[RAINBOW] Speed Gradient");
+	else
+		AddMenuItem(menu, "", "[MOMENTUM] Speed Gradient");
+	
+	// Speed Mode
+	if (g_SpeedMode[client] == 0)
+		AddMenuItem(menu, "", "[XY] Speed Mode");
+	else if (g_SpeedMode[client] == 1)
+		AddMenuItem(menu, "", "[XYZ] Speed Mode");
+	else
+		AddMenuItem(menu, "", "[Z] Speed Mode");
+
+	//Comparison Type
+	//COMPARISON MODE
+	if (g_iCustomCheckpointsType[client] == 1)
+		AddMenuItem(menu, "", "Compare To : [WR]");
+	else if(g_iCustomCheckpointsType[client] == 2)
+		AddMenuItem(menu, "", "Compare To : [PB]");
+	else if(g_iCustomCheckpointsType[client] == 3)
+		AddMenuItem(menu, "", "Compare To : [TOP 10]");
+	else if(g_iCustomCheckpointsType[client] == 4)
+		AddMenuItem(menu, "", "Compare To : [G1]");
+	else if(g_iCustomCheckpointsType[client] == 5)
+		AddMenuItem(menu, "", "Compare To : [G2]");
+	else if(g_iCustomCheckpointsType[client] == 6)
+		AddMenuItem(menu, "", "Compare To : [G3]");
+	else if(g_iCustomCheckpointsType[client] == 7)
+		AddMenuItem(menu, "", "Compare To : [G4]");
+	else if(g_iCustomCheckpointsType[client] == 8)
+		AddMenuItem(menu, "", "Compare To : [G5]");
+
+	// Centre Speed Display
+	if (g_bCenterSpeedDisplay[client])
+		AddMenuItem(menu, "", "[ON] Centre Speed Display");
+	else
+		AddMenuItem(menu, "", "[OFF] Centre Speed Display");
+
 	// Hide Chat
 	if (g_bHideChat[client])
 		AddMenuItem(menu, "", "[ON] Hide Chat");
@@ -3587,10 +3630,11 @@ public int MiscellaneousOptionsHandler(Menu menu, MenuAction action, int param1,
 			case 0: HideMethod(param1, true);
 			case 1: QuakeSounds(param1, true);
 			case 2: TeleSide(param1, true);
-			case 3: HideChat(param1, true);
-			case 4: HideViewModel(param1, true);
-			case 5: PrespeedText(param1, true);
-			case 6: HintsText(param1, true);
+			case 3: SetComparisons(param1, true);
+			case 4: HideChat(param1, true);
+			case 5: HideViewModel(param1, true);
+			case 6: PrespeedText(param1, true);
+			case 7: HintsText(param1, true);
 		}
 	}
 	else if (action == MenuAction_Cancel)

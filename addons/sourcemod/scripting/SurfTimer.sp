@@ -333,7 +333,6 @@ char g_szLastSRDifference[MAXPLAYERS + 1][64];
 // Last difference to clients own record checkpoint
 char g_szLastPBDifference[MAXPLAYERS + 1][64];
 
-char g_szCustomLastTimeDifferenceMinimalHUD[MAXPLAYERS + 1][64];
 //char g_szCustomLastSpeedDifferenceMinimalHUD[MAXPLAYERS + 1][64];
 
 //NOT IMPLEMENTED
@@ -342,17 +341,13 @@ char g_szCustomLastTimeDifferenceMinimalHUD[MAXPLAYERS + 1][64];
 
 //VARIABLES FOR THE DIFFERENT TYPES OF CP'S COMPARISONS
 //ONLY ALLOCATE 6 SPACES BECAUSE THERE ARE ALREADY 2 OTHER VARIABLES THAT CONTAIN PB && WR
-float g_fCustomCheckpointsTimes[6][CPLIMIT];
+float g_fCustomCheckpointsTimes[8][CPLIMIT];
+char g_szCustomCheckpointsTimesRecords[8][MAXZONEGROUPS][64];
 //NOT IMPLEMENTED
 //float g_fCustomCheckpointsSpeeds[6][CPLIMIT];
 
 //VARIABLES THAT ALLOW TO CHECK IF A CERTAIN TIME EXISTS
-int g_bTOP;
-int g_bG1;
-int g_bG2;
-int g_bG3;
-int g_bG4;
-int g_bG5;
+bool g_bCustomGroupExists[8][MAXZONEGROUPS];
 
 // The time difference was shown, used to show for a few seconds in timer panel
 float g_fLastDifferenceTime[MAXPLAYERS + 1];
@@ -801,6 +796,10 @@ int g_iCSD_B[MAXPLAYERS + 1];
 int g_iColorChangeIndex[MAXPLAYERS + 1];
 
 int g_iCSDUpdateRate[MAXPLAYERS + 1];
+
+//CUSTOM CHECKPOINTS TYPE
+char g_szCustomCheckpointDifferenceCHUD[MAXPLAYERS + 1][64];
+int g_iCustomCheckpointsType[MAXPLAYERS + 1];
 
 // Custom tele side
 int g_iTeleSide[MAXPLAYERS + 1];

@@ -1274,6 +1274,7 @@ public void SetClientDefaults(int client)
 	g_fMaxPercCompleted[client] = 0.0;
 	Format(g_szLastSRDifference[client], 64, "");
 	Format(g_szLastPBDifference[client], 64, "");
+	Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "");
 
 	Format(g_szPersonalRecord[client], 64, "");
 
@@ -3408,18 +3409,79 @@ public void CenterHudAlive(int client)
 				// server records (change from WR)
 				if (GetGameTime() - g_fLastDifferenceTime[client] > 5.0)
 				{
+					char szGroup[4];
+		
+					switch(g_iCustomCheckpointsType[client]){
+						case 1: Format(szGroup , sizeof(szGroup), "WR");
+						case 2: Format(szGroup , sizeof(szGroup), "PB");
+						case 3: Format(szGroup , sizeof(szGroup), "R10");
+						case 4: Format(szGroup , sizeof(szGroup), "G1");
+						case 5: Format(szGroup , sizeof(szGroup), "G2");
+						case 6: Format(szGroup , sizeof(szGroup), "G3");
+						case 7: Format(szGroup , sizeof(szGroup), "G4");
+						case 8: Format(szGroup , sizeof(szGroup), "G5");
+					}
+
+					//MAP
+					if (g_iClientInZone[client][2] == 0 && style == 0)
+						if(strcmp(szGroup, "PB") == 0)
+							if(g_MapRank[client] != 99999)
+								Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fc0'>%s</font>", szGroup, g_szPersonalRecord[client]);
+							else
+								Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fc0'>N/A</font>", szGroup);
+						else
+							if(g_bCustomGroupExists[g_iCustomCheckpointsType[client]-1][0])
+								Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fc0'>%s</font>", szGroup, g_szCustomCheckpointsTimesRecords[g_iCustomCheckpointsType[client]-1][0]);
+							else
+								Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fc0'>N/A</font>", szGroup);
+					//MAP STYLES
+					/*else if (g_iClientInZone[client][2] == 0 && g_iCurrentStyle[client] != 0) // Styles
+						if (g_fRecordStyleMapTime[style] != 9999999.0)
+						{
+							// fluffys
+							if (g_bPracticeMode[client])
+								Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fc0'>%s</font>", szGroup, g_szRecordStyleMapTime[style]);
+							else
+								Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fc0'>%s</font>", szGroup, g_szRecordStyleMapTime[style]);
+						}
+						else
+							Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: N/A", szGroup);
+					*/
+					//BONUS
+					else
+						if (g_iCurrentStyle[client] == 0)
+							if(strcmp(szGroup, "PB") == 0)
+								if(g_MapRankBonus[g_iClientInZone[client][2]][client] != 9999999)
+									Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fc0'>%s</font>", szGroup, g_szPersonalRecordBonus[g_iClientInZone[client][2]][client]);
+								else
+									Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fc0'>N/A</font>", szGroup);
+							else
+								if(g_bCustomGroupExists[g_iCustomCheckpointsType[client]-1][g_iClientInZone[client][2]])
+									Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fc0'>%s</font>", szGroup, g_szCustomCheckpointsTimesRecords[g_iCustomCheckpointsType[client]-1][g_iClientInZone[client][2]]);
+								else
+									Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fc0'>N/A</font>", szGroup);
+						/*
+						else
+							if (StrEqual(g_szStyleBonusFastestTime[style][g_iClientInZone[client][2]], "N/A"))
+								Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fff'>%s</font>", szGroup, g_szStyleBonusFastestTime[style][g_iClientInZone[client][2]]);
+							else
+								Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fc0'>%s</font>", szGroup, g_szStyleBonusFastestTime[style][g_iClientInZone[client][2]]);
+						 */
+
+					//OLD CODE
+					/*
 					if (g_iClientInZone[client][2] == 0 && style == 0)
 					{
 						if (g_fRecordMapTime != 9999999.0)
 						{
 							// fluffys
 							if (g_bPracticeMode[client])
-								Format(g_szLastSRDifference[client], 64, "SR: <font color='#fc0'>%s</font>", g_szRecordMapTime);
+								Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fc0'>%s</font>", szGroup, g_szCustomCheckpointsTimesRecords[g_iCustomCheckpointsType[client]-1][g_iClientInZone[client][2]]);
 							else
-								Format(g_szLastSRDifference[client], 64, "SR: <font color='#fc0'>%s</font>", g_szRecordMapTime);
+								Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fc0'>%s</font>", szGroup, g_szCustomCheckpointsTimesRecords[g_iCustomCheckpointsType[client]-1][g_iClientInZone[client][2]]);
 						}
 						else
-							Format(g_szLastSRDifference[client], 64, "SR: N/A");
+							Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: N/A", szGroup);
 					}
 					else if (g_iClientInZone[client][2] == 0 && g_iCurrentStyle[client] != 0) // Styles
 					{
@@ -3427,12 +3489,12 @@ public void CenterHudAlive(int client)
 						{
 							// fluffys
 							if (g_bPracticeMode[client])
-								Format(g_szLastSRDifference[client], 64, "SR: <font color='#fc0'>%s</font>", g_szRecordStyleMapTime[style]);
+								Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fc0'>%s</font>", szGroup, g_szRecordStyleMapTime[style]);
 							else
-								Format(g_szLastSRDifference[client], 64, "SR: <font color='#fc0'>%s</font>", g_szRecordStyleMapTime[style]);
+								Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fc0'>%s</font>", szGroup, g_szRecordStyleMapTime[style]);
 						}
 						else
-							Format(g_szLastSRDifference[client], 64, "SR: N/A");
+							Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: N/A");
 					}
 					else
 					{
@@ -3440,27 +3502,28 @@ public void CenterHudAlive(int client)
 						{
 							if (StrEqual(g_szBonusFastestTime[g_iClientInZone[client][2]], "N/A"))
 							{
-								Format(g_szLastSRDifference[client], 64, "SR: <font color='#fff'>%s</font>", g_szBonusFastestTime[g_iClientInZone[client][2]]);
+								Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fff'>%s</font>", szGroup, g_szBonusFastestTime[g_iClientInZone[client][2]]);
 							}
 							else
 							{	
-								Format(g_szLastSRDifference[client], 64, "SR: <font color='#fc0'>%s</font>", g_szBonusFastestTime[g_iClientInZone[client][2]]);
+								Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fc0'>%s</font>", szGroup, g_szBonusFastestTime[g_iClientInZone[client][2]]);
 							}
 						}
 						else if (g_iCurrentStyle[client] != 0) // Styles
 						{
 							if (StrEqual(g_szStyleBonusFastestTime[style][g_iClientInZone[client][2]], "N/A"))
 							{
-								Format(g_szLastSRDifference[client], 64, "SR: <font color='#fff'>%s</font>", g_szStyleBonusFastestTime[style][g_iClientInZone[client][2]]);
+								Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fff'>%s</font>", szGroup, g_szStyleBonusFastestTime[style][g_iClientInZone[client][2]]);
 							}
 							else
 							{
-								Format(g_szLastSRDifference[client], 64, "SR: <font color='#fc0'>%s</font>", g_szStyleBonusFastestTime[style][g_iClientInZone[client][2]]);
+								Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s: <font color='#fc0'>%s</font>", szGroup, g_szStyleBonusFastestTime[style][g_iClientInZone[client][2]]);
 							}
 						}
 					}
+					*/
 				}
-				Format(module[i], 128, "%s", g_szLastSRDifference[client]);
+				Format(module[i], 128, "%s", g_szCustomCheckpointDifferenceCHUD[client]);
 			}
 			else if (g_iCentreHudModule[client][i] == 3)
 			{
@@ -3916,126 +3979,86 @@ public void Checkpoint(int client, int zone, int zonegroup, float time)
 
 	g_fCheckpointTimesNew[zonegroup][client][zone] = time;
 
-	// Server record difference
-	char sz_srDiff[128];
-	char sz_srDiff_colorless[128];
+	float f_Diff;
 
-	float f_srDiff;
+	char CustomCheckpointDifference[64];
+	char CustomCheckpointDifference_colorless[64];
 
-	//CUSTOM CHECKPOINTS
-	if(g_iMinimalHUD_CompareType[client] > 2){
+//////
+//CUSTOM CHECKPOINTS
+//////
 
-		if(g_iMinimalHUD_CompareType[client] == 3)
-			if(g_bTOP)
-				f_srDiff = (g_fCustomCheckpointsTimes[0][zone] - time);
-			else
-				f_srDiff = 0.0;
-		else if(g_iMinimalHUD_CompareType[client] == 4)
-			if(g_bG1)
-				f_srDiff = (g_fCustomCheckpointsTimes[1][zone] - time);
-			else
-				f_srDiff = 0.0;
-		else if(g_iMinimalHUD_CompareType[client] == 5)
-			if(g_bG2)
-				f_srDiff = (g_fCustomCheckpointsTimes[2][zone] - time);
-			else
-				f_srDiff = 0.0;
-		else if(g_iMinimalHUD_CompareType[client] == 6)
-			if(g_bG3)
-				f_srDiff = (g_fCustomCheckpointsTimes[3][zone] - time);
-			else
-				f_srDiff = 0.0;
-		else if(g_iMinimalHUD_CompareType[client] == 7)
-			if(g_bG4)
-				f_srDiff = (g_fCustomCheckpointsTimes[4][zone] - time);
-			else
-				f_srDiff = 0.0;
-		else if(g_iMinimalHUD_CompareType[client] == 8)
-			if(g_bG5)
-				f_srDiff = (g_fCustomCheckpointsTimes[5][zone] - time);
-			else
-				f_srDiff = 0.0;
+	//check if the custom selected group exists
+	if(g_bCustomGroupExists[g_iCustomCheckpointsType[client] - 1][zonegroup] && g_bTimerRunning[client]){
+
+		char szGroup[4];
 		
+		switch(g_iCustomCheckpointsType[client]){
+			case 1: Format(szGroup , sizeof(szGroup), "WR");
+			case 2: Format(szGroup , sizeof(szGroup), "PB");
+			case 3: Format(szGroup , sizeof(szGroup), "R10");
+			case 4: Format(szGroup , sizeof(szGroup), "G1");
+			case 5: Format(szGroup , sizeof(szGroup), "G2");
+			case 6: Format(szGroup , sizeof(szGroup), "G3");
+			case 7: Format(szGroup , sizeof(szGroup), "G4");
+			case 8: Format(szGroup , sizeof(szGroup), "G5");
+		}
 
-		FormatTimeFloat(client, f_srDiff, 3, sz_srDiff, 128);
+		if(g_iCustomCheckpointsType[client] != 2)
+			f_Diff = (g_fCustomCheckpointsTimes[g_iCustomCheckpointsType[client] - 1][zone] - time);
+		else
+			f_Diff = (g_fCheckpointTimesRecord[zonegroup][client][zone] - time);
 
-		if (f_srDiff > 0){
-			Format(sz_srDiff_colorless, 128, "-%s", sz_srDiff);
-			Format(sz_srDiff, 128, "%cSR: %c-%s%c", WHITE, LIGHTGREEN, sz_srDiff, WHITE);
+		FormatTimeFloat(client, f_Diff, 3, CustomCheckpointDifference, 64);
+
+		if (f_Diff > 0){
+			Format(CustomCheckpointDifference_colorless, 64, "-%s", CustomCheckpointDifference);
+			Format(CustomCheckpointDifference, 64, "%c-%s%c", LIGHTGREEN, CustomCheckpointDifference, WHITE);
+			Format(CustomCheckpointDifference, 64, "%c%s: %c%s%c", WHITE, szGroup, LIGHTGREEN, CustomCheckpointDifference, WHITE);
 		}
 		else{
-			Format(sz_srDiff_colorless, 128, "+%s", sz_srDiff);
-			Format(sz_srDiff, 128, "%cSR: %c+%s%c", WHITE, RED, sz_srDiff, WHITE);
+			Format(CustomCheckpointDifference_colorless, 64, "+%s", CustomCheckpointDifference);
+			Format(CustomCheckpointDifference, 64, "%c%s: %c%s%c", WHITE, szGroup, RED, CustomCheckpointDifference, WHITE);
 		}
 
-		if(g_iMinimalHUD_CompareType[client] == 3)
-			if(g_bTOP)
-				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[R10: %s]", sz_srDiff_colorless);
-			else
-				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[R10: N/A]");
-		else if(g_iMinimalHUD_CompareType[client] == 4)
-			if(g_bG1)
-				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G1: %s]", sz_srDiff_colorless);
-			else
-				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G1: N/A]", sz_srDiff_colorless);
-		else if(g_iMinimalHUD_CompareType[client] == 5)
-			if(g_bG2)
-				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G2: %s]", sz_srDiff_colorless);
-			else
-				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G2: N/A]", sz_srDiff_colorless);
-		else if(g_iMinimalHUD_CompareType[client] == 6)
-			if(g_bG3)
-				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G3: %s]", sz_srDiff_colorless);
-			else
-				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G3: N/A]", sz_srDiff_colorless);
-		else if(g_iMinimalHUD_CompareType[client] == 7)
-			if(g_bG4)
-				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G4: %s]", sz_srDiff_colorless);
-			else
-				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G4: N/A]", sz_srDiff_colorless);
-		else if(g_iMinimalHUD_CompareType[client] == 8)
-			if(g_bG5)
-				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G5: %s]", sz_srDiff_colorless);
-			else
-				Format(g_szCustomLastTimeDifferenceMinimalHUD[client], 64, "[G5: N/A]", sz_srDiff_colorless);
-
-	}
-
-	//FORMAT THE COMPARISONS STRINGS AGAINST THE SR
-	//IF THERE IS A RECORD
-	if (g_bCheckpointRecordFound[zonegroup] && g_fCheckpointServerRecord[zonegroup][zone] > 0.0 && g_bTimerRunning[client])
-	{
-
-		f_srDiff = (g_fCheckpointServerRecord[zonegroup][zone] - time);
-
-		FormatTimeFloat(client, f_srDiff, 3, sz_srDiff, 128);
-
-		if (f_srDiff > 0)
-		{
-			Format(sz_srDiff_colorless, 128, "-%s", sz_srDiff);
-			Format(sz_srDiff, 128, "%cSR: %c-%s%c", WHITE, LIGHTGREEN, sz_srDiff, WHITE);
-			if (zonegroup > 0)
-				Format(g_szLastSRDifference[client], 64, "SR:<font color='#5e5'>%s</font>", sz_srDiff_colorless);
-			else
-				Format(g_szLastSRDifference[client], 64, "SR:<font color='#5e5'>%s</font>", sz_srDiff_colorless);
-
-		}
+		//FORMAT CENTER HUD
+		if (zonegroup > 0)
+			Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s:<font color='#5e5'>%s</font>", szGroup, CustomCheckpointDifference_colorless);
 		else
-		{
-			Format(sz_srDiff_colorless, 128, "+%s", sz_srDiff);
-			Format(sz_srDiff, 128, "%cSR: %c+%s%c", WHITE, RED, sz_srDiff, WHITE);
-			if (zonegroup > 0)
-				Format(g_szLastSRDifference[client], 64, "SR:<font color='#f32'>%s</font>", sz_srDiff_colorless);
-			else if (g_iCurrentStyle[client] > 0)
-				Format(g_szLastSRDifference[client], 64, "\tSR:<font color='#f32'>%s</font>", sz_srDiff_colorless);
-			else
-				Format(g_szLastSRDifference[client], 64, "SR:<font color='#f32'>%s</font>", sz_srDiff_colorless);
-		}
+			Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s:<font color='#5e5'>%s</font>", szGroup, CustomCheckpointDifference_colorless);
+
 		g_fLastDifferenceTime[client] = GetGameTime();
 	}
-	else
-		Format(sz_srDiff, 128, "%cSR: %cN/A%c", WHITE, LIGHTGREEN, WHITE);
+	//custom selected group doesnt exist
+	else{
 
+		char szGroup[4];
+		
+		switch(g_iCustomCheckpointsType[client]){
+			case 1: Format(szGroup , sizeof(szGroup), "WR");
+			case 2: Format(szGroup , sizeof(szGroup), "PB");
+			case 3: Format(szGroup , sizeof(szGroup), "R10");
+			case 4: Format(szGroup , sizeof(szGroup), "G1");
+			case 5: Format(szGroup , sizeof(szGroup), "G2");
+			case 6: Format(szGroup , sizeof(szGroup), "G3");
+			case 7: Format(szGroup , sizeof(szGroup), "G4");
+			case 8: Format(szGroup , sizeof(szGroup), "G5");
+		}
+		
+		Format(CustomCheckpointDifference, 64, "%c%s: %cN/A%c", WHITE, szGroup, LIGHTGREEN, WHITE);
+
+		//FORMAT CENTER HUD
+		if (zonegroup > 0)
+			Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s:<font color='#5e5'>N/A</font>", szGroup);
+		else
+			Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s:<font color='#5e5'>N/A</font>", szGroup);
+
+		g_fLastDifferenceTime[client] = GetGameTime();
+	}
+
+//////
+//END OF CUSTOM CHECKPOINTS
+//////
 
 	// Get client name for spectators
 	char szName[MAX_NAME_LENGTH];
@@ -4086,16 +4109,14 @@ public void Checkpoint(int client, int zone, int zonegroup, float time)
 		char szTime[32];
 		FormatTimeFloat(client, time, 3, szTime, 32);
 
-		SendMapCheckpointForward(client, zonegroup, zone, time, szTime, szDiff_colorless, sz_srDiff_colorless);
+		SendMapCheckpointForward(client, zonegroup, zone, time, szTime, szDiff_colorless, CustomCheckpointDifference);
 
 		if (g_bCheckpointsEnabled[client] && g_iCpMessages[client])
 		{	
-			
-			CPrintToChat(client, "%t", "Misc30", g_szChatPrefix, g_iClientInZone[client][1] + 1, szTime, szDiff, sz_srDiff);
-
+			CPrintToChat(client, "%t", "Misc30", g_szChatPrefix, g_iClientInZone[client][1] + 1, szTime, szDiff, CustomCheckpointDifference);
 		}
 
-		Format(szSpecMessage, sizeof(szSpecMessage), "%t", "Misc31", g_szChatPrefix, szName, g_iClientInZone[client][1] + 1, szTime, szDiff, sz_srDiff);
+		Format(szSpecMessage, sizeof(szSpecMessage), "%t", "Misc31", g_szChatPrefix, szName, g_iClientInZone[client][1] + 1, szTime, szDiff, CustomCheckpointDifference);
 		CheckpointToSpec(client, szSpecMessage);
 
 		// Saving difference time for next checkpoint
@@ -4122,7 +4143,7 @@ public void Checkpoint(int client, int zone, int zonegroup, float time)
 			Call_PushFloat(-1.0);
 			Call_PushString("N/A");
 			Call_PushFloat(g_fCheckpointServerRecord[zonegroup][zone]);
-			Call_PushString(sz_srDiff_colorless);
+			Call_PushString(CustomCheckpointDifference_colorless);
 
 			/* Finish the call, get the result */
 			Call_Finish();
@@ -4130,9 +4151,9 @@ public void Checkpoint(int client, int zone, int zonegroup, float time)
 			if (percent > -1.0)
 			{
 				if (g_bCheckpointsEnabled[client] && g_iCpMessages[client])
-					CPrintToChat(client, "%t", "Misc32", g_szChatPrefix, g_iClientInZone[client][1] + 1, szTime, sz_srDiff);
+					CPrintToChat(client, "%t", "Misc32", g_szChatPrefix, g_iClientInZone[client][1] + 1, szTime, CustomCheckpointDifference);
 
-				Format(szSpecMessage, sizeof(szSpecMessage), "%t", "Misc33", g_szChatPrefix, szName, g_iClientInZone[client][1] + 1, szTime, sz_srDiff);
+				Format(szSpecMessage, sizeof(szSpecMessage), "%t", "Misc33", g_szChatPrefix, szName, g_iClientInZone[client][1] + 1, szTime, CustomCheckpointDifference);
 				CheckpointToSpec(client, szSpecMessage);
 			}
 		}
