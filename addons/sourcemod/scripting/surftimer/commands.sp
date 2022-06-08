@@ -2281,12 +2281,12 @@ void MinimalHUDSpeedGradient(int client, bool menu = false)
 		MinimalHUDOptions(client);
 }
 
-void MinimalHUDSetComparisons(int client, bool menu = false)
+void SetComparisons(int client, bool menu = false)
 {
-	if(g_iMinimalHUD_CompareType[client] != 8)
-		g_iMinimalHUD_CompareType[client]++;
+	if(g_iCustomCheckpointsType[client] != 8)
+		g_iCustomCheckpointsType[client]++;
 	else
-		g_iMinimalHUD_CompareType[client] = 1;
+		g_iCustomCheckpointsType[client] = 1;
 
 	/*
 	if (g_bMinimalHUD_CompareWR[client]){
@@ -2300,7 +2300,7 @@ void MinimalHUDSetComparisons(int client, bool menu = false)
 	*/
 
 	if (menu)
-		MinimalHUDOptions(client);
+		MiscellaneousOptions(client);
 }
 
 void SpeedMode(int client, bool menu = false)
@@ -3454,6 +3454,25 @@ public void MiscellaneousOptions(int client)
 	else
 		AddMenuItem(menu, "", "[Z] Speed Mode");
 
+	//Comparison Type
+	//COMPARISON MODE
+	if (g_iCustomCheckpointsType[client] == 1)
+		AddMenuItem(menu, "", "Compare To : [WR]");
+	else if(g_iCustomCheckpointsType[client] == 2)
+		AddMenuItem(menu, "", "Compare To : [PB]");
+	else if(g_iCustomCheckpointsType[client] == 3)
+		AddMenuItem(menu, "", "Compare To : [TOP 10]");
+	else if(g_iCustomCheckpointsType[client] == 4)
+		AddMenuItem(menu, "", "Compare To : [G1]");
+	else if(g_iCustomCheckpointsType[client] == 5)
+		AddMenuItem(menu, "", "Compare To : [G2]");
+	else if(g_iCustomCheckpointsType[client] == 6)
+		AddMenuItem(menu, "", "Compare To : [G3]");
+	else if(g_iCustomCheckpointsType[client] == 7)
+		AddMenuItem(menu, "", "Compare To : [G4]");
+	else if(g_iCustomCheckpointsType[client] == 8)
+		AddMenuItem(menu, "", "Compare To : [G5]");
+
 	// Centre Speed Display
 	if (g_bCenterSpeedDisplay[client])
 		AddMenuItem(menu, "", "[ON] Centre Speed Display");
@@ -3499,11 +3518,12 @@ public int MiscellaneousOptionsHandler(Menu menu, MenuAction action, int param1,
 			case 2: TeleSide(param1, true);
 			case 3: SpeedGradient(param1, true);
 			case 4: SpeedMode(param1, true);
-			case 5: CenterSpeedDisplay(param1, true);
-			case 6: HideChat(param1, true);
-			case 7: HideViewModel(param1, true);
-			case 8: PrespeedText(param1, true);
-			case 9: HintsText(param1, true);
+			case 5: SetComparisons(param1, true);
+			case 6: CenterSpeedDisplay(param1, true);
+			case 7: HideChat(param1, true);
+			case 8: HideViewModel(param1, true);
+			case 9: PrespeedText(param1, true);
+			case 10: HintsText(param1, true);
 		}
 	}
 	else if (action == MenuAction_Cancel)
@@ -3537,24 +3557,6 @@ public void MinimalHUDOptions(int client)
 	else
 		AddMenuItem(menu, "", "[YELLOW] Speed Gradient");
 	
-	//COMPARISON MODE
-	if (g_iMinimalHUD_CompareType[client] == 1)
-		AddMenuItem(menu, "", "Compare To : [PB]");
-	else if(g_iMinimalHUD_CompareType[client] == 2)
-		AddMenuItem(menu, "", "Compare To : [WR]");
-	else if(g_iMinimalHUD_CompareType[client] == 3)
-		AddMenuItem(menu, "", "Compare To : [TOP 10]");
-	else if(g_iMinimalHUD_CompareType[client] == 4)
-		AddMenuItem(menu, "", "Compare To : [G1]");
-	else if(g_iMinimalHUD_CompareType[client] == 5)
-		AddMenuItem(menu, "", "Compare To : [G2]");
-	else if(g_iMinimalHUD_CompareType[client] == 6)
-		AddMenuItem(menu, "", "Compare To : [G3]");
-	else if(g_iMinimalHUD_CompareType[client] == 7)
-		AddMenuItem(menu, "", "Compare To : [G4]");
-	else if(g_iMinimalHUD_CompareType[client] == 8)
-		AddMenuItem(menu, "", "Compare To : [G5]");
-	
 	SetMenuExitBackButton(menu, true);
 	DisplayMenu(menu, client, MENU_TIME_FOREVER);
 }
@@ -3567,7 +3569,6 @@ public int MinimalHUDOptionsHandler(Menu menu, MenuAction action, int param1, in
 		{	
 			case 0: MinimalHUD(param1, true);
 			case 1: MinimalHUDSpeedGradient(param1, true);
-			case 2: MinimalHUDSetComparisons(param1, true);
 		}
 	}
 	else if (action == MenuAction_Cancel)
