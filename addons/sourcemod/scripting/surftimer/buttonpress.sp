@@ -143,7 +143,7 @@ public void CL_OnStartTimerPress(int client)
 
 			if (iPrestrafeRecord == 0)
 			{
-				Format(szRecordDifference, sizeof(szRecordDifference), "%c%s%c", GRAY, "N/A", GRAY);
+				Format(szRecordDifference, sizeof(szRecordDifference), "%c%s%c", GRAY, "N/A", WHITE);
 			}
 			else if (prestrafe >= iPrestrafeRecord)
 			{
@@ -158,7 +158,7 @@ public void CL_OnStartTimerPress(int client)
 
 			if (iPersonalPrestrafeRecord == 0)
 			{
-				Format(szPersonalDifference, sizeof(szPersonalDifference), "%c%s%c", GRAY, "N/A", GRAY);
+				Format(szPersonalDifference, sizeof(szPersonalDifference), "%c%s%c", GRAY, "N/A", WHITE);
 			}
 			else if (prestrafe >= iPersonalPrestrafeRecord)
 			{
@@ -838,7 +838,7 @@ public void CL_OnStartWrcpTimerPress(int client)
 
 			if (iPrestrafeRecord == 0)
 			{
-				Format(szRecordDifference, sizeof(szRecordDifference), "%c%s%c", GRAY, "N/A", GRAY);	
+				Format(szRecordDifference, sizeof(szRecordDifference), "%c%s%c", GRAY, "N/A", WHITE);	
 			}
 			else if (prestrafe >= iPrestrafeRecord)
 			{
@@ -853,7 +853,7 @@ public void CL_OnStartWrcpTimerPress(int client)
 
 			if (iPersonalPrestrafeRecord == 0)
 			{
-				Format(szPersonalDifference, sizeof(szPersonalDifference), "%c%s%c", GRAY, "N/A", GRAY);
+				Format(szPersonalDifference, sizeof(szPersonalDifference), "%c%s%c", GRAY, "N/A", WHITE);
 			}
 			else if (prestrafe >= iPersonalPrestrafeRecord)
 			{
