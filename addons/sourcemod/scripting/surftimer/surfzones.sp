@@ -465,6 +465,10 @@ public void StartTouch(int client, int action[3])
 				{
 					Checkpoint(client, action[1], g_iClientInZone[client][2], fCurrentRunTime);
 				}
+				else{
+					//PrintToChatAll("style %d | cp %i | %d tick count", g_iCurrentStyle[client], action[1], g_iRecordedTicks[client]);
+					g_iCPStartFrame_CurrentRun[g_iCurrentStyle[client]][action[1]][client] = g_iRecordedTicks[client];
+				}
 				
 				if (!g_bSaveLocTele[client])
 				{
@@ -536,6 +540,10 @@ public void StartTouch(int client, int action[3])
 						lastCheckpoint[g_iClientInZone[client][2]][client] = g_iPlayerPracLocationSnap[client][g_iLastSaveLocIdClient[client]] - 1;
 					}
 				}
+				else{
+					//PrintToChatAll("style %d | cp %i | %d tick count", g_iCurrentStyle[client], action[1], g_iRecordedTicks[client]);
+					g_iCPStartFrame_CurrentRun[g_iCurrentStyle[client]][action[1]][client] = g_iRecordedTicks[client];
+				}
 			}
 
 		}
@@ -565,6 +573,26 @@ public void StartTouch(int client, int action[3])
 			g_bInMaxSpeed[client] = true;
 			// CPrintToChat(client, "Inside MaxSpeed zone");
 		}
+		
+		//INCASE THE RECORD IS OLD, WHEN THERE IS NOT DATA IN THE DATABASE
+		//WE SIMPLY ADD TO "g_iCPStartFrame" THE CURRENT REPLAY BOT TICK
+		//THIS WAY WHEN THE DATABASE HAS NO VALUES
+		//THE PLAYERS CAN SELECT THE CHECKPOINTS OPTION IN THE REPLAY MENU WITH THE CORRECT VALUES
+		if(IsPlayerAlive(client) && IsFakeClient(client)){
+			//MAKE BOTS REGISTER TICKS
+
+			if(action[0] == 3){
+				if(g_iCPStartFrame[g_iCurrentStyle[client]][action[1]] == 0){
+					g_iCPStartFrame[g_iCurrentStyle[client]][action[1]] = g_iReplayTick[client];
+				}
+			}
+			else if(action[0] == 4){
+				if(g_iCPStartFrame[g_iCurrentStyle[client]][action[1]] == 0){
+					g_iCPStartFrame[g_iCurrentStyle[client]][action[1]] = g_iReplayTick[client];
+				}
+			}
+		}
+
 	}
 }
 
