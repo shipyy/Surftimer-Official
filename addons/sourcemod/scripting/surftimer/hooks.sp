@@ -1003,6 +1003,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 					StopRecording(client);
 				}
 				//IF THE PLAYER IS NOT BEING RECORDED BUT STARTS MOVING AGAIN, START RECORDING PLAYER
+				//MAP RUN CASE
 				if(speed > 0 && !g_Recording[client] && !g_bTimerRunning[client]){
 					StopRecording(client);
 					StartRecording(client);
@@ -1010,6 +1011,11 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 					{
 						Stage_StartRecording(client);
 					}
+				}
+				//STAGE ONLY CASE
+				if(speed > 0 && !g_StageRecording[client] && !g_bTimerRunning[client]){
+					if (g_bhasStages)
+						Stage_StartRecording(client);
 				}
 
 				//STAGE START
