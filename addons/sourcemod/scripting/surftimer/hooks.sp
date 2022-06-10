@@ -1308,7 +1308,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			RecordReplay(client, buttons, subtype, seed, impulse, weapon, angles, vel);
 
 			//IF PLAYER IS IN A STARTZONE/STAGE
-			if((g_bInStartZone[client] || g_bInStageZone[client]) && g_iCurrentStyle[client] == 0){
+			if((g_bInStartZone[client] || g_bInStageZone[client])){
 
 				int speed = RoundToNearest(g_fLastSpeed[client]);
 
