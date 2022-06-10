@@ -1313,7 +1313,7 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 				int speed = RoundToNearest(g_fLastSpeed[client]);
 
 				//MAP START
-				//IF PLAYER IS IN STARTZONE/STAGESTART , NOT MOVING, NOT ON A RUN AND NOT RECORDING ,WE CAN STOP RECORDING WHEN HE STOPS MOVING
+				//IF PLAYER IS IN STARTZONE , NOT MOVING, NOT ON A RUN AND NOT RECORDING ,WE CAN STOP RECORDING WHEN HE STOPS MOVING
 				if(speed == 0 && g_aRecording[client] != null && !g_bTimerRunning[client] && g_Recording[client]){
 					StopRecording(client);
 				}
@@ -1325,6 +1325,11 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 					{
 						Stage_StartRecording(client);
 					}
+				}
+				//STAGE ONLY CASE
+				if(speed > 0 && !g_StageRecording[client] && !g_bTimerRunning[client]){
+					if (g_bhasStages)
+						Stage_StartRecording(client);
 				}
 
 				//STAGE START
