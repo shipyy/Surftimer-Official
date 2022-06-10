@@ -1024,6 +1024,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 		{
 			Replay_Recording(client, buttons, subtype, seed, impulse, weapon, angles, vel);
 
+			//MAYBE REMOVE STYLE CONSTRAINT CAUSE ITNHINK OTHERWISE REPLAYS GO BIG BIG
+			//if((g_bInStartZone[client] || g_bInStageZone[client])){
 			//IF PLAYER IS IN A STARTZONE/STAGE
 			if((g_bInStartZone[client] || g_bInStageZone[client]) && g_iCurrentStyle[client] == 0){
 
