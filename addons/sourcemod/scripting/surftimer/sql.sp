@@ -1502,9 +1502,9 @@ public void sql_updatePlayerRankPointsCallback(Handle owner, Handle hndl, const 
 			if (IsValidClient(data))
 			{
 				if (style == 0)
-					CPrintToChat(data, "%t", "Rc_PlayerRankFinished", g_szChatPrefix, g_pr_points[data][style]);
+					CPrintToChat(data, "%t", "Rc_PlayerRankFinished", g_szChatPrefix, g_pr_points[data][style] + g_pr_challenge_points[data][style]);
 				else
-					CPrintToChat(data, "%t", "Rc_PlayerRankFinished2", g_szChatPrefix, g_szStyleMenuPrint[style], g_pr_points[data][style]);
+					CPrintToChat(data, "%t", "Rc_PlayerRankFinished2", g_szChatPrefix, g_szStyleMenuPrint[style], g_pr_points[data][style] + g_pr_challenge_points[data][style]);
 			}
 
 			g_bRecalcRankInProgess[data] = false;
@@ -1591,7 +1591,8 @@ public void db_viewPlayerPointsCallback(Handle owner, Handle hndl, const char[] 
 		while (SQL_FetchRow(hndl))
 		{
 			style = SQL_FetchInt(hndl, 10);
-			g_pr_points[client][style] = SQL_FetchInt(hndl, 2) + SQL_FetchInt(hndl, 11);
+			g_pr_points[client][style] = SQL_FetchInt(hndl, 2);
+			g_pr_challenge_points[client][style] = SQL_FetchInt(hndl, 11);
 			g_pr_finishedmaps[client][style] = SQL_FetchInt(hndl, 3);
 			g_pr_finishedmaps_perc[client][style] = (float(g_pr_finishedmaps[client][style]) / float(g_pr_MapCount[0])) * 100.0;
 			if (style == 0)
