@@ -814,7 +814,6 @@ public void CL_OnStartWrcpTimerPress(int client)
 
 			if (g_iCurrentStyle[client] == 0 && g_bTimerRunning[client]){
 				g_iStageAttemptsNew[0][client][g_Stage[0][client]-1] += 1;
-				PrintToChatAll("Incremented stage %d", g_Stage[0][client]);
 			}
 		}
 		if (g_Stage[0][client] >= 1 && !g_bPracticeMode[client] && !IsFakeClient(client)) {
