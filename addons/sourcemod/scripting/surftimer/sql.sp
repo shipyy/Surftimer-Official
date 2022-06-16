@@ -1591,7 +1591,7 @@ public void db_viewPlayerPointsCallback(Handle owner, Handle hndl, const char[] 
 		while (SQL_FetchRow(hndl))
 		{
 			style = SQL_FetchInt(hndl, 10);
-			g_pr_points[client][style] = SQL_FetchInt(hndl, 2);
+			g_pr_points[client][style] = SQL_FetchInt(hndl, 2) + SQL_FetchInt(hndl, 11);
 			g_pr_finishedmaps[client][style] = SQL_FetchInt(hndl, 3);
 			g_pr_finishedmaps_perc[client][style] = (float(g_pr_finishedmaps[client][style]) / float(g_pr_MapCount[0])) * 100.0;
 			if (style == 0)
@@ -1869,22 +1869,23 @@ public void sql_selectPlayerProfileCallback(Handle owner, Handle hndl, const cha
 		Format(g_szProfileName[client], sizeof(g_szProfileName), szName);
 		SQL_FetchString(hndl, 3, szCountry, sizeof(szCountry));
 		int points = SQL_FetchInt(hndl, 4);
-		int wrPoints = SQL_FetchInt(hndl, 5);
-		int wrbPoints = SQL_FetchInt(hndl, 6);
-		int wrcpPoints = SQL_FetchInt(hndl, 7);
-		int top10Points = SQL_FetchInt(hndl, 8);
-		int groupPoints = SQL_FetchInt(hndl, 9);
-		int mapPoints = SQL_FetchInt(hndl, 10);
-		int bonusPoints = SQL_FetchInt(hndl, 11);
-		int finishedMaps = SQL_FetchInt(hndl, 12);
-		int finishedBonuses = SQL_FetchInt(hndl, 13);
-		int finishedStages = SQL_FetchInt(hndl, 14);
-		int wrs = SQL_FetchInt(hndl, 15);
-		int wrbs = SQL_FetchInt(hndl, 16);
-		int wrcps = SQL_FetchInt(hndl, 17);
-		int top10s = SQL_FetchInt(hndl, 18);
-		int groups = SQL_FetchInt(hndl, 19);
-		int lastseen = SQL_FetchInt(hndl, 20);
+		int challenge_points = SQL_FetchInt(hndl, 5);
+		int wrPoints = SQL_FetchInt(hndl, 6);
+		int wrbPoints = SQL_FetchInt(hndl, 7);
+		int wrcpPoints = SQL_FetchInt(hndl, 8);
+		int top10Points = SQL_FetchInt(hndl, 9);
+		int groupPoints = SQL_FetchInt(hndl, 10);
+		int mapPoints = SQL_FetchInt(hndl, 11);
+		int bonusPoints = SQL_FetchInt(hndl, 12);
+		int finishedMaps = SQL_FetchInt(hndl, 13);
+		int finishedBonuses = SQL_FetchInt(hndl, 14);
+		int finishedStages = SQL_FetchInt(hndl, 15);
+		int wrs = SQL_FetchInt(hndl, 16);
+		int wrbs = SQL_FetchInt(hndl, 17);
+		int wrcps = SQL_FetchInt(hndl, 18);
+		int top10s = SQL_FetchInt(hndl, 19);
+		int groups = SQL_FetchInt(hndl, 20);
+		int lastseen = SQL_FetchInt(hndl, 21);
 
 		if (finishedMaps > g_pr_MapCount[0])
 			finishedMaps = g_pr_MapCount[0];
@@ -1958,7 +1959,7 @@ public void sql_selectPlayerProfileCallback(Handle owner, Handle hndl, const cha
 
 		Format(szCompleted, 1024, "Completed - Points (%s%c):\n%s\n%s\n%s\n%s\n \n%s\n \n%s\n \n", szTotalPerc, PERCENT, szMapPoints, szBonusPoints, szTop10Points, szStagePc, szMiPc, szRecords);
 
-		Format(g_pr_szrank[client], 512, "Rank: %s/%i %s\nTotal pts: %i\n \n", szRank, g_pr_RankedPlayers[style], szSkillGroup, points);
+		Format(g_pr_szrank[client], 512, "Rank: %s/%i %s\nTotal pts: %i\n \n", szRank, g_pr_RankedPlayers[style], szSkillGroup, points + challenge_points);
 		
 		char szTop[128];
 		if (style > 0)
@@ -2270,7 +2271,7 @@ public void sql_selectTopSurfersCallback(Handle owner, Handle hndl, const char[]
 					if (time < 3600.0)
 						Format(szTime, 32, "   %s", szTime);
 					if (i == 100)
-						Format(szValue, 128, "[%i.] %s |    » %s", i, szTime, szName);
+						Format(szValue, 128, "[%i.] %s |	» %s", i, szTime, szName);
 					if (i >= 10)
 						Format(szValue, 128, "[%i.] %s |    » %s", i, szTime, szName);
 					else
@@ -7244,8 +7245,9 @@ public void db_selectTopPlayers(int client, int style)
 	WritePackCell(pack, client);
 	WritePackCell(pack, style);
 
-	char szQuery[128];
+	char szQuery[1024];
 	Format(szQuery, sizeof(szQuery), sql_selectTopPlayers, style);
+	PrintToServer(szQuery);
 	SQL_TQuery(g_hDb, db_selectTop100PlayersCallback, szQuery, pack, DBPrio_Low);
 }
 
@@ -7296,6 +7298,10 @@ public void db_selectTop100PlayersCallback(Handle owner, Handle hndl, const char
 			points = SQL_FetchInt(hndl, 1);
 			int pro = SQL_FetchInt(hndl, 2);
 			SQL_FetchString(hndl, 3, szSteamID, 32);
+			int challenge_points = SQL_FetchInt(hndl, 4);
+
+			points += challenge_points;
+
 			float fperc;
 			fperc = (float(pro) / (float(g_pr_MapCount[0]))) * 100.0;
 
@@ -12686,4 +12692,11 @@ public int CCPMenuHandler(Menu menu, MenuAction action, int param1, int param2)
 		delete menu;
 
 	return 0;
+}
+
+public void db_AddChallengePoints(char szSteamID[32], int style, int points_to_add)
+{
+	char szQuery[1024];
+	Format(szQuery, sizeof(szQuery), "UPDATE ck_playerrank SET points = points + '%i' WHERE style = '%i' AND steamid = '%s';", points_to_add, style, szSteamID);
+	SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, DBPrio_Low);
 }
