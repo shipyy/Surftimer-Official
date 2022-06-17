@@ -21,6 +21,15 @@ public Action Client_AddNewMap(int client, int args)
 	return Plugin_Handled;
 }
 
+public Action Populate_NewMaps(int client, int args)
+{
+	if (IsPlayerZoner(client))
+		db_Populate_NewMaps();
+
+	return Plugin_Handled;
+
+}
+
 public int NewMapMenuHandler(Menu menu, MenuAction action, int param1, int param2)
 {	
 
@@ -112,6 +121,21 @@ public void db_InsertNewestMaps()
 	char szQuery[512];
 	Format(szQuery, sizeof(szQuery), sql_insertNewestMaps, g_szMapName);
 	SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, DBPrio_Low);
+}
+
+public void db_Populate_NewMaps()
+{
+	PrintToServer("\n----------POPULATING NEWMAPS----------\n");
+
+	char szMapName[128];
+	for (int i = 0; i < GetArraySize(g_MapList); i++)
+	{
+		GetArrayString(g_MapList, i, szMapName, sizeof(szMapName));
+
+		char szQuery[512];
+		Format(szQuery, sizeof(szQuery), "INSERT INTO ck_newmaps (mapname) VALUES('%s');", szMapName);
+		SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, DBPrio_Low);
+	}
 }
 
 //update Database just incase
