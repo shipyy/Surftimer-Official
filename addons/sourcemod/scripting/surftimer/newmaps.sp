@@ -4,6 +4,7 @@ void CreateCommandsNewMap()
 	RegConsoleCmd("sm_nm", Client_NewMap, "[surftimer] shows new maps");
 	RegConsoleCmd("sm_addnewmap", Client_AddNewMap, "[surftimer] add a new map");
 	RegConsoleCmd("sm_anm", Client_AddNewMap, "[surftimer] add a new map");
+	RegConsoleCmd("sm_pop_newmaps", Populate_NewMaps, "[surftimer] populate ck_newmaps (usefull if the server is using new version of webstats)");
 
 	db_present();
 }
