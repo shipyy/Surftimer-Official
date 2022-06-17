@@ -3561,24 +3561,6 @@ public void MiscellaneousOptions(int client)
 	else
 		AddMenuItem(menu, "", "[RIGHT] Start Side");
 
-	// Speed Gradient
-	if (g_SpeedGradient[client] == 0)
-		AddMenuItem(menu, "", "[WHITE] Speed Gradient");
-	else if (g_SpeedGradient[client] == 1)
-		AddMenuItem(menu, "", "[GREEN] Speed Gradient");
-	else if (g_SpeedGradient[client] == 2)
-		AddMenuItem(menu, "", "[RAINBOW] Speed Gradient");
-	else
-		AddMenuItem(menu, "", "[MOMENTUM] Speed Gradient");
-	
-	// Speed Mode
-	if (g_SpeedMode[client] == 0)
-		AddMenuItem(menu, "", "[XY] Speed Mode");
-	else if (g_SpeedMode[client] == 1)
-		AddMenuItem(menu, "", "[XYZ] Speed Mode");
-	else
-		AddMenuItem(menu, "", "[Z] Speed Mode");
-
 	//Comparison Type
 	//COMPARISON MODE
 	if (g_iCustomCheckpointsType[client] == 1)
@@ -3597,12 +3579,6 @@ public void MiscellaneousOptions(int client)
 		AddMenuItem(menu, "", "Compare To : [G4]");
 	else if(g_iCustomCheckpointsType[client] == 8)
 		AddMenuItem(menu, "", "Compare To : [G5]");
-
-	// Centre Speed Display
-	if (g_bCenterSpeedDisplay[client])
-		AddMenuItem(menu, "", "[ON] Centre Speed Display");
-	else
-		AddMenuItem(menu, "", "[OFF] Centre Speed Display");
 
 	// Hide Chat
 	if (g_bHideChat[client])
