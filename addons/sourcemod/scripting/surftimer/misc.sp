@@ -3920,7 +3920,7 @@ public void CenterHudAlive(int client)
 					Format(module[i], 128, "<font color='#f32'>Disabled	</font>");
 				else
 				{
-					Format(module[i], 128, "<font color='#f32'>00:00:00		</font>");
+					Format(module[i], 128, "<font color='#f32'>00:00:00	</font>");
 				}
 
 				if (g_iCurrentStyle[client] != 0)
@@ -4656,9 +4656,9 @@ public void Checkpoint(int client, int zone, int zonegroup, float time, float sp
 			Format(szDiff, sizeof(szDiff), "%c-%s", LIGHTGREEN, szDiff);
 			Format(g_szLastPBDifferenceMinimalHUD[client], 64, "[PB: %s]", szDiff_colorless);
 			if (zonegroup > 0)
-				Format(g_szLastPBDifference[client], 64, "PB:<font color='#5e5'>%s</font>	", szDiff_colorless);
+				Format(g_szLastPBDifference[client], 64, "PB:<font color='#5e5'>%s</font>", szDiff_colorless);
 			else
-				Format(g_szLastPBDifference[client], 64, "PB:<font color='#5e5'>%s</font>	", szDiff_colorless);
+				Format(g_szLastPBDifference[client], 64, "PB:<font color='#5e5'>%s</font>", szDiff_colorless);
 
 		}
 		else
@@ -4667,9 +4667,9 @@ public void Checkpoint(int client, int zone, int zonegroup, float time, float sp
 			Format(szDiff, sizeof(szDiff), "%c+%s", RED, szDiff);
 			Format(g_szLastPBDifferenceMinimalHUD[client], 64, "[PB: %s]", szDiff_colorless);
 			if (zonegroup > 0)
-				Format(g_szLastPBDifference[client], 64, "PB:<font color='#f32'>%s</font>	", szDiff_colorless);
+				Format(g_szLastPBDifference[client], 64, "PB:<font color='#f32'>%s</font>", szDiff_colorless);
 			else
-				Format(g_szLastPBDifference[client], 64, "PB:<font color='#f32'>%s</font>	", szDiff_colorless);
+				Format(g_szLastPBDifference[client], 64, "PB:<font color='#f32'>%s</font>", szDiff_colorless);
 
 		}
 		g_fLastDifferenceTime[client] = GetGameTime();
