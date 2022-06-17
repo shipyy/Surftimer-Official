@@ -4022,10 +4022,10 @@ public void Checkpoint(int client, int zone, int zonegroup, float time)
 		}
 
 		//FORMAT CENTER HUD
-		if (zonegroup > 0)
+		if (f_Diff > 0)
 			Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s:<font color='#5e5'>%s</font>", szGroup, CustomCheckpointDifference_colorless);
 		else
-			Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s:<font color='#5e5'>%s</font>", szGroup, CustomCheckpointDifference_colorless);
+			Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s:<font color='#f32'>%s</font>", szGroup, CustomCheckpointDifference_colorless);
 
 		g_fLastDifferenceTime[client] = GetGameTime();
 	}
@@ -4048,10 +4048,10 @@ public void Checkpoint(int client, int zone, int zonegroup, float time)
 		Format(CustomCheckpointDifference, 64, "%c%s: %cN/A%c", WHITE, szGroup, LIGHTGREEN, WHITE);
 
 		//FORMAT CENTER HUD
-		if (zonegroup > 0)
+		if (f_Diff > 0)
 			Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s:<font color='#5e5'>N/A</font>", szGroup);
 		else
-			Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s:<font color='#5e5'>N/A</font>", szGroup);
+			Format(g_szCustomCheckpointDifferenceCHUD[client], 64, "%s:<font color='#f32'>N/A</font>", szGroup);
 
 		g_fLastDifferenceTime[client] = GetGameTime();
 	}
