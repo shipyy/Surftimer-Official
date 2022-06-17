@@ -2258,6 +2258,17 @@ void SpeedMode(int client, bool menu = false)
 		CSDOptions(client);
 }
 
+void SetComparisons(int client, bool menu = false)
+{
+	if(g_iCustomCheckpointsType[client] != 8)
+		g_iCustomCheckpointsType[client]++;
+	else
+		g_iCustomCheckpointsType[client] = 1;
+
+	if (menu)
+		MiscellaneousOptions(client);
+}
+
 void CSD_PosX(int client, bool menu = false)
 {
 	if (g_fCSD_POS_X[client] < 1.0){
