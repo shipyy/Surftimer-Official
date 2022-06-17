@@ -798,7 +798,7 @@ int g_iColorChangeIndex[MAXPLAYERS + 1];
 int g_iCSDUpdateRate[MAXPLAYERS + 1];
 
 //CUSTOM CHECKPOINTS TYPE
-char g_szCustomCheckpointDifferenceCHUD[MAXPLAYERS + 1][64];
+char g_szCustomCheckpointDifferenceCHUD[MAXPLAYERS + 1][128];
 int g_iCustomCheckpointsType[MAXPLAYERS + 1];
 
 // Custom tele side
