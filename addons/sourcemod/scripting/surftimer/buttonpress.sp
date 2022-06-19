@@ -528,6 +528,9 @@ public void CL_OnEndTimerPress(int client)
 						CPrintToChat(i, "%t", "BPress6", g_szChatPrefix, szName, g_szStyleRecordPrint[style], g_szFinalTime[client], g_szTimeDifference[client], g_StyleMapRank[style][client], count, g_szRecordStyleMapTime[style]);
 					}
 				}
+
+				SendMapFinishForward(client, count, style);
+
 			}
 			CS_SetClientAssists(client, 100);
 		}

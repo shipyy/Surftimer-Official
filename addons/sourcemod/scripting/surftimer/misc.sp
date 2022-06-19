@@ -1961,7 +1961,7 @@ stock void MapFinishedMsgs(int client, int rankThisRun = 0)
 		if (g_bMapFirstRecord[client] || g_bMapPBRecord[client] || g_bMapSRVRecord[client])
 			CheckMapRanks(client);
 
-		SendMapFinishForward(client, count);
+		SendMapFinishForward(client, count, 0);
 
 	}
 	// recalc avg
