@@ -1298,9 +1298,6 @@ int g_pr_TableRowCount;
 // Clients points
 int g_pr_points[MAX_PR_PLAYERS + 1][MAX_STYLES];
 
-// Clients challenge points
-int g_pr_challenge_points[MAX_PR_PLAYERS + 1][MAX_STYLES];
-
 // Clients points before recalculation
 int g_pr_oldpoints[MAX_PR_PLAYERS + 1][MAX_STYLES];
 
