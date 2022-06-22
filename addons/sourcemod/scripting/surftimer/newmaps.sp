@@ -24,6 +24,9 @@ public Action Client_AddNewMap(int client, int args)
 
 public Action Populate_NewMaps(int client, int args)
 {
+	if (!IsValidClient(client))
+		return Plugin_Handled;
+
 	if (IsPlayerZoner(client))
 		db_Populate_NewMaps();
 
@@ -157,6 +160,8 @@ public void SQL_MapTierExistsCallback(Handle owner, Handle hndl, const char[] er
 	{
 		char map[128];
 		SQL_FetchString(hndl, 0, map, sizeof(map));
+
+		PrintToServer("-----ADDING %s-----", map);
 
 		char szQuery[512];
 		Format(szQuery, sizeof(szQuery), "INSERT INTO ck_newmaps (mapname) VALUES('%s');", map);
