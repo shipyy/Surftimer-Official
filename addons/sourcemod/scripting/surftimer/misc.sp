@@ -4700,7 +4700,11 @@ public void Checkpoint(int client, int zone, int zonegroup, float time, float sp
 		char szSpeed[32];
 		Format(szSpeed, 32, "%i", RoundToNearest(speed));
 
-		SendMapCheckpointForward(client, zonegroup, zone, time, szTime, szDiff_colorless, sz_srDiff_colorless, speed, szSpeed, sz_SpeedDiff_colorless, sz_srSpeedDiff_colorless);
+		//MAIN FORWARD IF OTHER CODE USED
+		//SendMapCheckpointForward(client, zonegroup, zone, time, szTime, szDiff_colorless, sz_srDiff_colorless, speed, szSpeed, sz_SpeedDiff_colorless, sz_srSpeedDiff_colorless);
+
+		//DEFAULT
+		SendMapCheckpointForward(client, zonegroup, zone, time, szTime, szDiff_colorless, sz_srDiff_colorless);
 
 		if (g_bCheckpointsEnabled[client] && g_iCpMessages[client])
 		{	
@@ -4732,9 +4736,9 @@ public void Checkpoint(int client, int zone, int zonegroup, float time, float sp
 		char szSpeed[32];
 		Format(szSpeed, 32, "%i", RoundToNearest(speed));
 
+		/* CP SPEEDS CODE
 		Call_StartForward(g_MapCheckpointForward);
-
-		/* Push parameters one at a time */
+		//Push parameters one at a time
 		Call_PushCell(client);
 		Call_PushFloat(time);
 		Call_PushString(szTime);
@@ -4749,7 +4753,23 @@ public void Checkpoint(int client, int zone, int zonegroup, float time, float sp
 		Call_PushFloat(g_fCheckpointSpeedServerRecord[zonegroup][zone]);
 		Call_PushString(sz_srSpeedDiff_colorless);
 
-		/* Finish the call, get the result */
+		//Finish the call, get the result
+		Call_Finish();
+		*/
+
+		//DEFAULT CODE
+		Call_StartForward(g_MapCheckpointForward);
+
+		//Push parameters one at a time
+		Call_PushCell(client);
+		Call_PushFloat(time);
+		Call_PushString(szTime);
+		Call_PushFloat(-1.0);
+		Call_PushString("N/A");
+		Call_PushFloat(g_fCheckpointServerRecord[zonegroup][zone]);
+		Call_PushString(sz_srDiff_colorless);
+
+		//Finish the call, get the result
 		Call_Finish();
 
 		if (percent > -1.0)

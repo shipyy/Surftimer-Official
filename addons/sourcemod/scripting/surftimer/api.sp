@@ -209,7 +209,12 @@ void Register_Forwards()
 	g_MapFinishForward = new GlobalForward("surftimer_OnMapFinished", ET_Event, Param_Cell, Param_Float, Param_String, Param_Cell, Param_Cell, Param_Cell);
 	//g_MapCheckpointForward = new GlobalForward("surftimer_OnCheckpoint", ET_Event, Param_Cell, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String);
 	//g_MapCheckpointForward = new GlobalForward("surftimer_OnCheckpoint", ET_Event, Param_Cell, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_String, Param_String);
-	g_MapCheckpointForward = new GlobalForward("surftimer_OnCheckpoint", ET_Event, Param_Cell, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String);
+	
+	//MAIN FORWARD TO USE IF SWAPPED
+	//g_MapCheckpointForward = new GlobalForward("surftimer_OnCheckpoint", ET_Event, Param_Cell, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String);
+	
+	//DEFAULT
+	g_MapCheckpointForward = new GlobalForward("surftimer_OnCheckpoint", ET_Event, Param_Cell, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String);
 	g_BonusFinishForward = new GlobalForward("surftimer_OnBonusFinished", ET_Event, Param_Cell, Param_Float, Param_String, Param_Cell, Param_Cell, Param_Cell);
 	g_PracticeFinishForward = new GlobalForward("surftimer_OnPracticeFinished", ET_Event, Param_Cell, Param_Float, Param_String);
 	g_NewRecordForward = new GlobalForward("surftimer_OnNewRecord", ET_Event, Param_Cell, Param_Cell, Param_String, Param_String, Param_Cell);
@@ -255,6 +260,44 @@ void SendMapCheckpointForward(
 	int zonegroup, 
 	int zone, 
 	float time, 
+	const char[] szTime, 
+	const char[] szDiff_colorless, 
+	const char[] sz_srDiff_colorless)
+{
+	// Checkpoint forward
+	Call_StartForward(g_MapCheckpointForward);
+	/* Push parameters one at a time */
+	Call_PushCell(client);
+	Call_PushFloat(time);
+	Call_PushString(szTime);
+	Call_PushFloat(g_fCheckpointTimesRecord[zonegroup][client][zone]);
+	Call_PushString(szDiff_colorless);
+	Call_PushFloat(g_fCheckpointServerRecord[zonegroup][zone]);
+	Call_PushString(sz_srDiff_colorless);
+
+	/* Finish the call, get the result */
+	Call_Finish();
+}
+
+//CP SPEEDS CODE
+/**
+ * Sends a map checkpoint forward on surftimer_OnCheckpoint.
+ * 
+ * @param client               Index of the client.
+ * @param zonegroup            ID of the zone group.
+ * @param zone                 ID of the zone.
+ * @param time                 Time at the zone.
+ * @param szTime               Formatted time.
+ * @param szDiff_colorless     Colorless time diff.
+ * @param sz_srDiff_colorless  Colorless time diff with the record.
+ */
+
+/*
+void SendMapCheckpointForward(
+	int client, 
+	int zonegroup, 
+	int zone, 
+	float time, 
 	const char[] szTime,
 	const char[] szDiff_colorless, 
 	const char[] sz_srDiff_colorless,
@@ -265,8 +308,7 @@ void SendMapCheckpointForward(
 {
 	// Checkpoint forward
 	Call_StartForward(g_MapCheckpointForward);
-
-	/* Push parameters one at a time */
+	// Push parameters one at a time
 	Call_PushCell(client);
 	Call_PushFloat(time);
 	Call_PushString(szTime);
@@ -281,9 +323,10 @@ void SendMapCheckpointForward(
 	Call_PushFloat(g_fCheckpointSpeedServerRecord[zonegroup][zone]);
 	Call_PushString(sz_srSpeedDiff_colorless);
 
-	/* Finish the call, get the result */
+	//Finish the call, get the result
 	Call_Finish();
 }
+*/
 
 /**
  * Sends a bonus finish forward on surftimer_OnBonusFinished.
