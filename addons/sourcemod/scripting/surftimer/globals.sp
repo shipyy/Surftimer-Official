@@ -1242,6 +1242,8 @@ int g_iSelectedTrigger[MAXPLAYERS + 1];
 int g_iMapTier;
 bool g_bRankedMap;
 
+// Late Load Linux fix
+Handle g_cvar_sv_hibernate_when_empty = INVALID_HANDLE;
 
 // Fix prehopping in zones
 bool g_bJumpedInZone[MAXPLAYERS + 1];

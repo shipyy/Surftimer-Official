@@ -423,6 +423,13 @@ void CreateConVars()
 	SetConVarBool(g_hAutoBhop, true);
 	SetConVarBool(g_hEnableBhop, true);
 
+	g_cvar_sv_hibernate_when_empty = FindConVar("sv_hibernate_when_empty");
+
+	if (GetConVarInt(g_cvar_sv_hibernate_when_empty) == 1)
+	{
+		SetConVarInt(g_cvar_sv_hibernate_when_empty, 0);
+	}
+
 	// Show Triggers
 	g_Offset_m_fEffects = FindSendPropInfo("CBaseEntity", "m_fEffects");
 
