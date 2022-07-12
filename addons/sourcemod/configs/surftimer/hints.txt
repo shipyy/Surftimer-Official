@@ -14,3 +14,11 @@ Type {lightgreen}!flashlight {default}if the map is too dark
 Type {lightgreen}!howto {default}to see a tutorial on how to surf
 Type {lightgreen}!nc {default}to toggle noclip on and off
 Tired of seeing these hints? Type {lightgreen}!togglehints {default}to toggle them on or off
+Type {lightgreen}!prinfo {default}to see detailed information on the map
+Type {lightgreen}!ccp {default}to see detailed information of a run
+Type {lightgreen}!mhud {default}to use a different HUD
+Type {lightgreen}!options {default}to access your personal settings
+Type {lightgreen}!sp {default}or {lightgreen}!startpos {default}to set a start position on the map/stage
+Type {lightgreen}!ve {default}to start a map extend vote
+Type {lightgreen}!track {default}to see what times you have gained/lost
+Type {lightgreen}!rl {default}to see what times you have recently lost
