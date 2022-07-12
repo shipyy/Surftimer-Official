@@ -632,7 +632,7 @@ public Action Command_VoteExtend(int client, int args)
 	if (!IsValidClient(client))
 		return Plugin_Handled;
 
-	if (IsPlayerTimerAdmin(client))
+	if (IsPlayerTimerAdmin(client) || IsPlayerZoner(client))
 		VoteExtend(client);
 
 	return Plugin_Handled;
@@ -840,16 +840,18 @@ public Action Command_createPlayerCheckpoint(int client, int args)
 		CPrintToChat(client, "%t", "Commands7Chat", g_szChatPrefix, g_iSaveLocCount[client]);
 		PrintToConsole(client, "%t", "Commands7Console", g_iSaveLocCount[client]);
 
-		if (g_iAllowCheckpointRecreation != 0)
+		int iAllowCheckpointRecreation = GetConVarInt(g_hAllowCheckpointRecreation);
+
+		if (iAllowCheckpointRecreation != 0)
 		{
 			int id = g_iSaveLocCount[client];
 
-			if (g_iAllowCheckpointRecreation == 1 || g_iAllowCheckpointRecreation == 3)
+			if (iAllowCheckpointRecreation == 1 || iAllowCheckpointRecreation == 3)
 			{
 				CPrintToChat(client, "%t", "CheckpointRecreationToChat", RoundToNearest(g_fSaveLocCoords[player][id][0]), RoundToNearest(g_fSaveLocCoords[player][id][1]), RoundToNearest(g_fSaveLocCoords[player][id][2]), RoundToNearest(g_fSaveLocAngle[player][id][0]), RoundToNearest(g_fSaveLocAngle[player][id][1]), RoundToNearest(g_fSaveLocAngle[player][id][2]), RoundToNearest(g_fSaveLocVel[player][id][0]), RoundToNearest(g_fSaveLocVel[player][id][1]), RoundToNearest(g_fSaveLocVel[player][id][2]), g_iPlayerPracLocationSnap[player][id], g_fPlayerPracTimeSnap[player][id], g_fPracModeStartTime[player], g_fPlayerPracSrcpTimeSnap[player][id], g_fStartPracSrcpTime[player], g_iSaveLocInBonus[player][id]);
 			}
 			
-			if (g_iAllowCheckpointRecreation == 2 || g_iAllowCheckpointRecreation == 3)
+			if (iAllowCheckpointRecreation == 2 || iAllowCheckpointRecreation == 3)
 			{
 				PrintToConsole(client, "%t", "CheckpointRecreationToConsole", g_iSaveLocCount[player], RoundToNearest(g_fSaveLocCoords[player][id][0]), RoundToNearest(g_fSaveLocCoords[player][id][1]), RoundToNearest(g_fSaveLocCoords[player][id][2]), RoundToNearest(g_fSaveLocAngle[player][id][0]), RoundToNearest(g_fSaveLocAngle[player][id][1]), RoundToNearest(g_fSaveLocAngle[player][id][2]), RoundToNearest(g_fSaveLocVel[player][id][0]), RoundToNearest(g_fSaveLocVel[player][id][1]), RoundToNearest(g_fSaveLocVel[player][id][2]), g_iPlayerPracLocationSnap[player][id], g_fPlayerPracTimeSnap[player][id], g_fPracModeStartTime[player], g_fPlayerPracSrcpTimeSnap[player][id], g_fStartPracSrcpTime[player], g_iSaveLocInBonus[player][id]);
 			}
@@ -946,7 +948,7 @@ public Action Command_goToPlayerCheckpoint(int client, int args)
 
 public Action Command_recreatePlayerCheckpoint(int client, int args)
 {
-	if (g_iAllowCheckpointRecreation == 0)
+	if (GetConVarInt(g_hAllowCheckpointRecreation) == 0)
 	{
 		CReplyToCommand(client, "%t", "CheckpointRecreationNotAllowed", g_szChatPrefix);
 		return Plugin_Handled;
@@ -6058,6 +6060,8 @@ public int PlayRecordCPMenuHandler(Handle menu, MenuAction action, int param1, i
 		PlayRecordMenu(param1);
 	else if (action == MenuAction_End)
 		delete menu;
+
+	return 0;
 }
 
 public Action Command_previousSaveloc(int client, int args)
