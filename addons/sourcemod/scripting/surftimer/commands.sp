@@ -1122,6 +1122,10 @@ public int SaveLocListHandler(Menu menu, MenuAction action, int param1, int para
 
 public Action Command_Teleport(int client, int args)
 {
+	//RESTRICT USE OF STAGE RESTART COMMANDS IF PLAYER IS IN A RUN TO GET A FASTER DROP, NO SMART BUSINESS ALLOWED 
+	if(g_bInStageZone[client] && g_bTimerRunning[client])
+		return Plugin_Handled;
+
 	g_bWrcpTimeractivated[client] = false;
 
 	// Throttle using !back to fix errors with replays
