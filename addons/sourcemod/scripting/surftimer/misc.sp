@@ -4714,7 +4714,7 @@ public void Checkpoint(int client, int zone, int zonegroup, float time, float sp
 
 		}
 
-		Format(szSpecMessage, sizeof(szSpecMessage), "%t", "Misc31", g_szChatPrefix, szName, g_iClientInZone[client][1] + 1, szTime, szDiff, sz_srDiff, sz_SpeedDiff, sz_srSpeedDiff);
+		Format(szSpecMessage, sizeof(szSpecMessage), "%t", "Misc31", g_szChatPrefix, szName, g_iClientInZone[client][1] + 1, szTime, szDiff, sz_srDiff, szSpeed, sz_SpeedDiff, sz_srSpeedDiff);
 		CheckpointToSpec(client, szSpecMessage);
 
 		// Saving difference time for next checkpoint
