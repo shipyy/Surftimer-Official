@@ -5369,7 +5369,7 @@ public Action Command_Startpos(int client, int args)
 	if (!IsValidClient(client))
 		return Plugin_Handled;
 
-	if (g_bTimerEnabled[client])
+	if (g_bTimerEnabled[client] && !g_bPracticeMode[client])
 		Startpos(client);
 	else 
 		CReplyToCommand(client, "%t", "Commands82", g_szChatPrefix);
