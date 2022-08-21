@@ -2060,7 +2060,7 @@ stock void PrintChatBonus(int client, int zGroup, int rank = 0)
 			db_insertAnnouncement(szName, g_szMapName, 1, g_szFinalTime[client], zGroup);
 	}
 
-	SendBonusFinishForward(client, rank, zGroup);
+	SendBonusFinishForward(client, rank, zGroup, 0);
 
 	CheckBonusRanks(client, zGroup);
 	db_CalcAvgRunTimeBonus();
@@ -4045,12 +4045,13 @@ public void Checkpoint(int client, int zone, int zonegroup, float time, float sp
 	float f_srSpeedDiff;
 
 	//CALCULATE EVERY GROUP DIFFERENCE
-	g_fCustomCheckpointsTimes_Difference[0][zone] = g_fCustomCheckpointsTimes[0][zone] - time;
-	g_fCustomCheckpointsTimes_Difference[1][zone] = g_fCustomCheckpointsTimes[1][zone] - time;
-	g_fCustomCheckpointsTimes_Difference[2][zone] = g_fCustomCheckpointsTimes[2][zone] - time;
-	g_fCustomCheckpointsTimes_Difference[3][zone] = g_fCustomCheckpointsTimes[3][zone] - time;
-	g_fCustomCheckpointsTimes_Difference[4][zone] = g_fCustomCheckpointsTimes[4][zone] - time;
-	g_fCustomCheckpointsTimes_Difference[5][zone] = g_fCustomCheckpointsTimes[5][zone] - time;
+	for(int i = 0; i < 6; i++)
+	{
+		if (g_fCustomCheckpointsTimes[i][zone] > 0.0)
+			g_fCustomCheckpointsTimes_Difference[i][zone] = g_fCustomCheckpointsTimes[i][zone] - time;
+		else
+			g_fCustomCheckpointsTimes_Difference[i][zone] = 666666.0;
+	}
 
 	//CUSTOM CHECKPOINTS
 	if(g_iCustomCheckpointCompareType[client] > 2){
@@ -4527,6 +4528,8 @@ stock void PrintChatBonusStyle (int client, int zGroup, int style, int rank = 0)
 	if (g_bBonusPBRecord[client] || g_bBonusFirstRecord[client])
 		SetNewPersonalRecordPrestrafe(client, zGroup, style, false, true , false);
 	
+	SendBonusFinishForward(client, rank, zGroup, style);
+
 	CheckBonusStyleRanks(client, zGroup, style);
 
 	if (rank == 9999999 && IsValidClient(client))

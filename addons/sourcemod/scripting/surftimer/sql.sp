@@ -1516,7 +1516,7 @@ public void db_viewPlayerPointsCallback(Handle owner, Handle hndl, const char[] 
 
 		char updateConnections[1024];
 		Format(updateConnections, 1024, "UPDATE ck_playerrank SET connections = connections + 1 WHERE steamid = '%s';", g_szSteamID[client]);
-		SQL_TQuery(g_hDb, SQL_CheckCallback, updateConnections, DBPrio_Low);
+		SQL_TQuery(g_hDb, SQL_CheckCallback, updateConnections, _, DBPrio_Low);
 
 		// Debug
 		g_fTick[client][1] = GetGameTime();

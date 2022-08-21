@@ -195,8 +195,6 @@ public void OnMapStart()
 		db_selectMapZones();
 	}
 
-	LogToFileEx(g_szLogFile, "[surftimer] 006");
-
 	// Get Map Tag
 	ExplodeString(g_szMapName, "_", g_szMapPrefix, 2, 32);
 
@@ -205,8 +203,6 @@ public void OnMapStart()
 
 	// reload language files
 	LoadTranslations("surftimer.phrases");
-
-	LogToFileEx(g_szLogFile, "[surftimer] 007");
 
 	CheatFlag("bot_zombie", false, true);
 	g_bTierFound = false;
@@ -1169,11 +1165,7 @@ public void OnPluginStart()
 	CreateHooks();
 	CreateCommandListeners();
 
-	LogError("[SurfTimer] 001");
-
 	db_setupDatabase();
-
-	LogError("[SurfTimer] 002");
 	CreateCommandsNewMap();
 
 	// mic
