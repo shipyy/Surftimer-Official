@@ -2246,7 +2246,7 @@ public void db_selectBonusesInMapCallback(Handle owner, Handle hndl, const char[
 		if (SQL_GetRowCount(hndl) == 1)
 		{
 			SQL_FetchString(hndl, 0, mapname, 128);
-			db_selectBonusTopSurfers(client, mapname, SQL_FetchInt(hndl, 1));
+			db_selectBonusTopSurfers(client, mapname, SQL_FetchInt(hndl, 1), 0);
 			return;
 		}
 
@@ -2301,7 +2301,7 @@ public int MenuHandler_SelectBonusinMap(Handle sMenu, MenuAction action, int cli
 			GetMenuItem(sMenu, item, aID, sizeof(aID));
 			ExplodeString(aID, "-", splits, sizeof(splits), sizeof(splits[]));
 
-			db_selectBonusTopSurfers(client, splits[0], StringToInt(splits[1]));
+			db_selectBonusTopSurfers(client, splits[0], StringToInt(splits[1]), 0);
 		}
 		case MenuAction_End:
 		{
@@ -2312,10 +2312,11 @@ public int MenuHandler_SelectBonusinMap(Handle sMenu, MenuAction action, int cli
 	return 0;
 }
 
-public void db_selectBonusTopSurfers(int client, char mapname[128], int zGrp)
+public void db_selectBonusTopSurfers(int client, char mapname[128], int zGrp, int style)
 {
 	char szQuery[1024];
-	Format(szQuery, sizeof(szQuery), sql_selectTopBonusSurfers, mapname, zGrp);
+	Format(szQuery, 1024, sql_selectTopBonusSurfers, mapname, style, style, zGrp);
+	PrintToServer(szQuery);
 	Handle pack = CreateDataPack();
 	WritePackCell(pack, client);
 	WritePackString(pack, mapname);
@@ -3387,9 +3388,11 @@ public void sql_selectRecordCheckpointsCallback(Handle owner, Handle hndl, const
 			zonegroup = SQL_FetchInt(hndl, 0);
 			cp = SQL_FetchInt(hndl, 1);
 
-			g_fCheckpointServerRecord[zonegroup][cp-1] = SQL_FetchFloat(hndl, 2);
-			if (!g_bCheckpointRecordFound[zonegroup] && g_fCheckpointServerRecord[zonegroup][cp-1] > 0.0)
-				g_bCheckpointRecordFound[zonegroup] = true;
+			if (cp > 0) {
+				g_fCheckpointServerRecord[zonegroup][cp-1] = SQL_FetchFloat(hndl, 2);
+				if (!g_bCheckpointRecordFound[zonegroup] && g_fCheckpointServerRecord[zonegroup][cp-1] > 0.0)
+					g_bCheckpointRecordFound[zonegroup] = true;
+			}
 		}
 
 		db_viewRecordCheckpointSpeedsInMap();
@@ -4926,6 +4929,7 @@ public void db_viewFastestBonus()
 	char szQuery[1024];
 	// SELECT name, MIN(runtime), zonegroup, style FROM ck_bonus WHERE mapname = '%s' GROUP BY zonegroup, style;
 	Format(szQuery, sizeof(szQuery), sql_selectFastestBonus, g_szMapName);
+	PrintToServer(szQuery);
 	SQL_TQuery(g_hDb, SQL_selectFastestBonusCallback, szQuery, 1, DBPrio_High);
 }
 

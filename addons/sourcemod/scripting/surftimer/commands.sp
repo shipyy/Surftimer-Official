@@ -1219,7 +1219,7 @@ public int MenuHandler_SelectBonusTop(Menu sMenu, MenuAction action, int client,
 			char aID[3];
 			GetMenuItem(sMenu, item, aID, sizeof(aID));
 			int zoneGrp = StringToInt(aID);
-			db_selectBonusTopSurfers(client, g_szMapName, zoneGrp);
+			db_selectBonusTopSurfers(client, g_szMapName, zoneGrp, 0);
 		}
 		case MenuAction_End:
 		{
@@ -1994,7 +1994,7 @@ public Action Client_BonusTop(int client, int args)
 			return Plugin_Handled;
 		}
 	}
-	db_selectBonusTopSurfers(client, szArg, zGrp);
+	db_selectBonusTopSurfers(client, szArg, zGrp, 0);
 	return Plugin_Handled;
 }
 
@@ -2071,7 +2071,7 @@ public Action Client_SWBonusTop(int client, int args)
 			return Plugin_Handled;
 		}
 	}
-	db_selectBonusTopSurfers(client, szArg, zGrp);
+	db_selectBonusTopSurfers(client, szArg, zGrp, 0);
 	return Plugin_Handled;
 }
 
@@ -3263,7 +3263,7 @@ public int TopMenuHandler(Menu menu, MenuAction action, int param1, int param2)
 		{
 			case 0: db_selectTopPlayers(param1, style);
 			case 1: SelectMapTop(param1, style);
-			case 2: BonusTopMenu(param1);
+			case 2: BonusTopMenu(param1, style);
 		}
 	}
 	else if (action == MenuAction_End)
@@ -3283,8 +3283,9 @@ public void SelectMapTop(int client, int style)
 	}
 }
 
-public void BonusTopMenu(int client)
+public void BonusTopMenu(int client, int style)
 {
+	g_iWrcpMenuStyleSelect[client] = style;
 	if (g_mapZoneGroupCount > 2)
 	{
 		char buffer[3];
@@ -3309,7 +3310,7 @@ public void BonusTopMenu(int client)
 		sMenu.Display(client, 60);
 	}
 	else {
-		db_selectBonusTopSurfers(client, g_szMapName, 1);
+		db_selectBonusTopSurfers(client, g_szMapName, 1, g_iWrcpMenuStyleSelect[client]);
 	}
 }
 
@@ -3317,7 +3318,7 @@ public int BonusTopMenuHandler(Menu menu, MenuAction action, int param1, int par
 {
 	if (action == MenuAction_Select)
 	{
-		db_selectBonusTopSurfers(param1, g_szMapName, param2 + 1);
+		db_selectBonusTopSurfers(param1, g_szMapName, param2 + 1, g_iWrcpMenuStyleSelect[param1]);
 	}
 	else if (action == MenuAction_End)
 	{
