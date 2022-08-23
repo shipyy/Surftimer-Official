@@ -3395,9 +3395,10 @@ public void sql_selectRecordCheckpointsCallback(Handle owner, Handle hndl, const
 		db_viewRecordCheckpointSpeedsInMap();
 
 	}
-
-	if (!g_bServerDataLoaded)
-		db_CalcAvgRunTime();
+	else {
+		if (!g_bServerDataLoaded)
+			db_CalcAvgRunTime();
+	}
 
 	return;
 }
@@ -3452,8 +3453,7 @@ public void db_GetGroupRuntimes()
 
 	char szQuery[512];
 	int rank;
-
-	PrintToServer("===db_GetGroupRuntimes===");
+	
 	for(int i = 0; i < 6; i++){
 		rank = 0;
 		if(i == 0){
@@ -6610,7 +6610,7 @@ public void SQL_db_CalcAvgRunBonusTimeCallback(Handle owner, Handle hndl, const 
 	{
 		LogError("[SurfTimer] SQL Error (SQL_db_CalcAvgRunTimeCallback): %s", error);
 		if (!g_bServerDataLoaded)
-		db_CalculatePlayerCount(0);
+			db_CalculatePlayerCount(0);
 		return;
 	}
 
@@ -10278,7 +10278,7 @@ public void db_selectMapCurrentImprovementCallback(Handle owner, Handle hndl, co
 	{
 		LogError("[SurfTimer] SQL Error (db_selectMapCurrentImprovementCallback): %s", error);
 		if (!g_bServerDataLoaded)
-			db_LoadCPTypesTimes()
+			db_LoadCPTypesTimes();
 		return;
 	}
 
@@ -10373,7 +10373,7 @@ public void db_selectMapCurrentImprovementCallback(Handle owner, Handle hndl, co
 	}
 
 	if (!g_bServerDataLoaded)
-		db_LoadCPTypesTimes()
+		db_LoadCPTypesTimes();
 }
 
 public void db_selectMapNameEquals(int client, char[] szMapName, int style)
