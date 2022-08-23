@@ -173,7 +173,6 @@ public int callback_DeleteRecord(Menu menu, MenuAction action, int client, int k
 			}
 		
 			
-			PrintToServer(szQuery);
 			SQL_TQuery(g_hDb, sql_DeleteMenuView, szQuery, GetClientSerial(client));
 			return 0;
 		}
@@ -293,7 +292,6 @@ public int callback_Confirm(Menu menu, MenuAction action, int client, int key)
 			}
 			
 			db_GetMapRecord_Pro();
-			PrintToServer(szQuery);
 			
 			CPrintToChat(client, "%t", "DeleteRecordsDeletion", g_szChatPrefix);
 			ShowMainDeleteMenu(client);
@@ -2316,7 +2314,6 @@ public void db_selectBonusTopSurfers(int client, char mapname[128], int zGrp, in
 {
 	char szQuery[1024];
 	Format(szQuery, 1024, sql_selectTopBonusSurfers, mapname, style, style, zGrp);
-	PrintToServer(szQuery);
 	Handle pack = CreateDataPack();
 	WritePackCell(pack, client);
 	WritePackString(pack, mapname);
@@ -3462,15 +3459,12 @@ public void db_GetGroupRuntimes()
 		if(i == 0){
 			if(g_MapTimesCount >= 10){
 				Format(szQuery, sizeof(szQuery), sql_selectGroupRuntimes, g_szMapName, g_szMapName, 10-1);
-				PrintToServer(szQuery);
+				
 				SQL_TQuery(g_hDb, sql_selectGroupRuntimesCallback, szQuery, i, DBPrio_Low);
 			}
 		}
 		else if(i == 1){
-			PrintToServer("g_MapTimesCount %d", g_MapTimesCount);
-			PrintToServer("g_G1Top %d", g_G1Top);
 			if(g_MapTimesCount > 10){
-				PrintToServer("YUP YUP");
 				if(g_MapTimesCount > g_G1Top){
 					rank = g_G1Top;
 				}
@@ -3478,10 +3472,9 @@ public void db_GetGroupRuntimes()
 					rank = g_MapTimesCount;
 				}
 
-				PrintToServer("rank %d", rank);
 				if(rank != 0){
 					Format(szQuery, sizeof(szQuery), sql_selectGroupRuntimes, g_szMapName, g_szMapName, rank-1);
-					PrintToServer(szQuery);
+					
 					SQL_TQuery(g_hDb, sql_selectGroupRuntimesCallback, szQuery, i, DBPrio_Low);
 				}
 			}
@@ -3497,7 +3490,7 @@ public void db_GetGroupRuntimes()
 
 				if(rank != 0){
 					Format(szQuery, sizeof(szQuery), sql_selectGroupRuntimes, g_szMapName, g_szMapName, rank-1);
-					PrintToServer(szQuery);
+					
 					SQL_TQuery(g_hDb, sql_selectGroupRuntimesCallback, szQuery, i, DBPrio_Low);
 				}
 			}
@@ -3514,7 +3507,7 @@ public void db_GetGroupRuntimes()
 
 				if(rank != 0){
 					Format(szQuery, sizeof(szQuery), sql_selectGroupRuntimes, g_szMapName, g_szMapName, rank-1);
-					PrintToServer(szQuery);
+					
 					SQL_TQuery(g_hDb, sql_selectGroupRuntimesCallback, szQuery, i, DBPrio_Low);
 				}
 			}
@@ -3531,7 +3524,7 @@ public void db_GetGroupRuntimes()
 
 				if(rank != 0){
 					Format(szQuery, sizeof(szQuery), sql_selectGroupRuntimes, g_szMapName, g_szMapName, rank-1);
-					PrintToServer(szQuery);
+					
 					SQL_TQuery(g_hDb, sql_selectGroupRuntimesCallback, szQuery, i, DBPrio_Low);
 				}
 			}
@@ -3548,7 +3541,7 @@ public void db_GetGroupRuntimes()
 
 				if(rank != 0){
 					Format(szQuery, sizeof(szQuery), sql_selectGroupRuntimes, g_szMapName, g_szMapName, rank-1);
-					PrintToServer(szQuery);
+					
 					SQL_TQuery(g_hDb, sql_selectGroupRuntimesCallback, szQuery, i, DBPrio_Low);
 				}
 			}
@@ -3601,7 +3594,6 @@ public void db_LoadCPTypesTimes()
 		if(i == 0){
 			if(g_MapTimesCount >= 10){
 				Format(szQuery, sizeof(szQuery), sql_selectCheckpointsTimesType, g_szMapName, g_szMapName, 10-1);
-				PrintToServer(szQuery);
 				SQL_TQuery(g_hDb, sql_selectCheckpointsTimesTypeCallback, szQuery, i, DBPrio_Low);
 			}
 		}
@@ -3617,7 +3609,6 @@ public void db_LoadCPTypesTimes()
 
 				if(rank != 0){
 					Format(szQuery, sizeof(szQuery), sql_selectCheckpointsTimesType, g_szMapName, g_szMapName, rank-1);
-					PrintToServer(szQuery);
 					SQL_TQuery(g_hDb, sql_selectCheckpointsTimesTypeCallback, szQuery, i, DBPrio_Low);
 				}
 			}
@@ -3633,7 +3624,6 @@ public void db_LoadCPTypesTimes()
 
 				if(rank != 0){
 					Format(szQuery, sizeof(szQuery), sql_selectCheckpointsTimesType, g_szMapName, g_szMapName, rank-1);
-					PrintToServer(szQuery);
 					SQL_TQuery(g_hDb, sql_selectCheckpointsTimesTypeCallback, szQuery, i, DBPrio_Low);
 				}
 			}
@@ -3650,7 +3640,6 @@ public void db_LoadCPTypesTimes()
 
 				if(rank != 0){
 					Format(szQuery, sizeof(szQuery), sql_selectCheckpointsTimesType, g_szMapName, g_szMapName, rank-1);
-					PrintToServer(szQuery);
 					SQL_TQuery(g_hDb, sql_selectCheckpointsTimesTypeCallback, szQuery, i, DBPrio_Low);
 				}
 			}
@@ -3667,7 +3656,6 @@ public void db_LoadCPTypesTimes()
 
 				if(rank != 0){
 					Format(szQuery, sizeof(szQuery), sql_selectCheckpointsTimesType, g_szMapName, g_szMapName, rank-1);
-					PrintToServer(szQuery);
 					SQL_TQuery(g_hDb, sql_selectCheckpointsTimesTypeCallback, szQuery, i, DBPrio_Low);
 				}
 			}
@@ -3684,7 +3672,6 @@ public void db_LoadCPTypesTimes()
 
 				if(rank != 0){
 					Format(szQuery, sizeof(szQuery), sql_selectCheckpointsTimesType, g_szMapName, g_szMapName, rank-1);
-					PrintToServer(szQuery);
 					SQL_TQuery(g_hDb, sql_selectCheckpointsTimesTypeCallback, szQuery, i, DBPrio_Low);
 				}
 			}
@@ -4929,7 +4916,6 @@ public void db_viewFastestBonus()
 	char szQuery[1024];
 	// SELECT name, MIN(runtime), zonegroup, style FROM ck_bonus WHERE mapname = '%s' GROUP BY zonegroup, style;
 	Format(szQuery, sizeof(szQuery), sql_selectFastestBonus, g_szMapName);
-	PrintToServer(szQuery);
 	SQL_TQuery(g_hDb, SQL_selectFastestBonusCallback, szQuery, 1, DBPrio_High);
 }
 
