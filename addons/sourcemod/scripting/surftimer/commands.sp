@@ -155,7 +155,6 @@ void CreateCommands()
 	RegConsoleCmd("sm_bhoptimer", Client_OptionMenu, "[surftimer] opens options menu");
 	RegConsoleCmd("sm_knife", Command_GiveKnife, "[surftimer] Give players a knife");
 	RegConsoleCmd("sm_timeleft", Command_Timeleft, "[surftimer] Display Timeleft on bottom of screen");
-	RegConsoleCmd("sm_mhud", Command_MinimalHUD, "[surftimer] Use Minimal HUD");
 	RegConsoleCmd("sm_chud", Command_CentreSpeedHud, "[surftimer] Use Center HUD");
 	RegConsoleCmd("sm_prinfo_help", Command_PRinfo_help, "[surftimer] Show in console how to use the command");
 	RegConsoleCmd("sm_csd", Command_CenterSpeed, "[surftimer] [settings] on/off - toggle center speed display");
@@ -415,31 +414,11 @@ public Action Command_Timeleft(int client, int args){
 
 }
 
-public Action Command_MinimalHUD(int client, int args){
-
-	if(g_bMinimalHUD[client]){
-		g_bMinimalHUD[client] = false;
-		CPrintToChat(client, "%t", "MinimalHUDOff", g_szChatPrefix);
-	}
-	else{
-		g_bMinimalHUD[client] = true;
-		if(g_bCentreHud[client])
-			g_bCentreHud[client] = false;
-
-		CPrintToChat(client, "%t", "MinimalHUDOn", g_szChatPrefix);
-	}
-
-	return Plugin_Handled;
-
-}
-
 public Action Command_CentreSpeedHud(int client, int args){
 
 	g_bCentreHud[client] = !g_bCentreHud[client];
 
 	if(g_bCentreHud[client]){
-		if(g_bMinimalHUD[client])
-			g_bMinimalHUD[client] = false;
 		CPrintToChat(client, "%t", "CenterHUDOn", g_szChatPrefix);
 	}
 	else
@@ -2327,50 +2306,6 @@ void SpeedGradient(int client, bool menu = false)
 		CSDOptions(client);
 }
 
-void MinimalHUD(int client, bool menu = false)
-{
-	g_bMinimalHUD[client] = !g_bMinimalHUD[client];
-
-	if(g_bMinimalHUD[client] && g_bCentreHud[client])
-		g_bCentreHud[client] = false;
-	
-	if (menu)
-		MinimalHUDOptions(client);
-}
-
-void MinimalHUDSpeedGradient(int client, bool menu = false)
-{
-	if (g_MinimalHUDSpeedGradient[client] != 4)
-		g_MinimalHUDSpeedGradient[client]++;
-	else
-		g_MinimalHUDSpeedGradient[client] = 0;
-
-	if (menu)
-		MinimalHUDOptions(client);
-}
-
-void MinimalHUDSetComparisons(int client, bool menu = false)
-{
-	if(g_iMinimalHUD_CompareType[client] != 8)
-		g_iMinimalHUD_CompareType[client]++;
-	else
-		g_iMinimalHUD_CompareType[client] = 1;
-
-	/*
-	if (g_bMinimalHUD_CompareWR[client]){
-		g_bMinimalHUD_CompareWR[client] = !g_bMinimalHUD_CompareWR[client];
-		g_bMinimalHUD_ComparePB[client] = true;
-	}
-	else if(g_bMinimalHUD_ComparePB[client]){
-		g_bMinimalHUD_ComparePB[client] = !g_bMinimalHUD_ComparePB[client];
-		g_bMinimalHUD_CompareWR[client] = true;
-	}
-	*/
-
-	if (menu)
-		MinimalHUDOptions(client);
-}
-
 void CheckpointComparisonType(int client, bool menu = false)
 {
 	if(g_iCustomCheckpointCompareType[client] != 8)
@@ -3340,7 +3275,6 @@ public void OptionMenu(int client)
 
 	AddMenuItem(optionmenu, "CentreHud", "Centre Hud Options");
 	AddMenuItem(optionmenu, "SideHud", "Side Hud Options");
-	AddMenuItem(optionmenu, "MinimalHUD", "Minimal Hud Options\n \n");
 	AddMenuItem(optionmenu, "CSDOptions", "Center Speed Options\n \n");
 	AddMenuItem(optionmenu, "Miscellaneous", "Miscellaneous Options");
 
@@ -3361,9 +3295,8 @@ public int OptionMenuHandler(Menu menu, MenuAction action, int param1, int param
 			}
 			case 1: CentreHudOptions(param1, 0);
 			case 2: SideHudOptions(param1, 0);
-			case 3: MinimalHUDOptions(param1);
-			case 4: CSDOptions(param1);
-			case 5: MiscellaneousOptions(param1);
+			case 3: CSDOptions(param1);
+			case 4: MiscellaneousOptions(param1);
 		}
 	}
 	else if (action == MenuAction_End)
@@ -3410,8 +3343,6 @@ public int CentreHudOptionsHandler(Menu menu, MenuAction action, int param1, int
 		if (param2 == 0)
 		{
 			g_bCentreHud[param1] = !g_bCentreHud[param1];
-			if(g_bCentreHud[param1])
-				g_bMinimalHUD[param1] = false;
 			CentreHudOptions(param1, 0);
 		}
 		else if (param2 == 1)
@@ -3797,70 +3728,6 @@ public int MiscellaneousOptionsHandler(Menu menu, MenuAction action, int param1,
 			case 7: HintsText(param1, true);
 			case 8: TimeleftText(param1, true);
 			case 9: CheckpointComparisonType(param1, true);
-		}
-	}
-	else if (action == MenuAction_Cancel)
-		OptionMenu(param1);
-	else if (action == MenuAction_End)
-		delete menu;
-
-	return 0;
-}
-
-public void MinimalHUDOptions(int client)
-{
-	Menu menu = CreateMenu(MinimalHUDOptionsHandler);
-	SetMenuTitle(menu, "Minimal HUD - Settings \n \n");
-
-	//COMPARISON MODE
-	if (g_bMinimalHUD[client])
-		AddMenuItem(menu, "", "[ON] Show HUD");
-	else
-		AddMenuItem(menu, "", "[OFF] Sow HUD");
-
-	// Speed Gradient
-	if (g_MinimalHUDSpeedGradient[client] == 0)
-		AddMenuItem(menu, "", "[WHITE] Speed Gradient");
-	else if (g_MinimalHUDSpeedGradient[client] == 1)
-		AddMenuItem(menu, "", "[RED] Speed Gradient");
-	else if (g_MinimalHUDSpeedGradient[client] == 2)
-		AddMenuItem(menu, "", "[GREEN] Speed Gradient");
-	else if (g_MinimalHUDSpeedGradient[client] == 3)
-		AddMenuItem(menu, "", "[BLUE] Speed Gradient");
-	else
-		AddMenuItem(menu, "", "[YELLOW] Speed Gradient");
-	
-	//COMPARISON MODE
-	if (g_iMinimalHUD_CompareType[client] == 1)
-		AddMenuItem(menu, "", "Compare To : [PB]");
-	else if(g_iMinimalHUD_CompareType[client] == 2)
-		AddMenuItem(menu, "", "Compare To : [WR]");
-	else if(g_iMinimalHUD_CompareType[client] == 3)
-		AddMenuItem(menu, "", "Compare To : [TOP 10]");
-	else if(g_iMinimalHUD_CompareType[client] == 4)
-		AddMenuItem(menu, "", "Compare To : [G1]");
-	else if(g_iMinimalHUD_CompareType[client] == 5)
-		AddMenuItem(menu, "", "Compare To : [G2]");
-	else if(g_iMinimalHUD_CompareType[client] == 6)
-		AddMenuItem(menu, "", "Compare To : [G3]");
-	else if(g_iMinimalHUD_CompareType[client] == 7)
-		AddMenuItem(menu, "", "Compare To : [G4]");
-	else if(g_iMinimalHUD_CompareType[client] == 8)
-		AddMenuItem(menu, "", "Compare To : [G5]");
-	
-	SetMenuExitBackButton(menu, true);
-	DisplayMenu(menu, client, MENU_TIME_FOREVER);
-}
-
-public int MinimalHUDOptionsHandler(Menu menu, MenuAction action, int param1, int param2)
-{
-	if (action == MenuAction_Select)
-	{
-		switch (param2)
-		{	
-			case 0: MinimalHUD(param1, true);
-			case 1: MinimalHUDSpeedGradient(param1, true);
-			case 2: MinimalHUDSetComparisons(param1, true);
 		}
 	}
 	else if (action == MenuAction_Cancel)

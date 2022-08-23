@@ -345,14 +345,10 @@ float g_fCheckpointSpeedServerRecord[CPLIMIT];
 
 // Last difference to the server record checkpoint time
 char g_szLastSRDifference[MAXPLAYERS + 1][64];
-char g_szLastSRDifferenceMinimalHUD[MAXPLAYERS + 1][64];
 
 // Last difference to clients own record checkpoint
 char g_szLastPBDifference[MAXPLAYERS + 1][64];
-char g_szLastPBDifferenceMinimalHUD[MAXPLAYERS + 1][64];
 char g_szLastCustomCheckpointDifference[MAXPLAYERS + 1][64];
-//char g_szCustomLastSpeedDifferenceMinimalHUD[MAXPLAYERS + 1][64];
-
 //NOT IMPLEMENTED
 // Last difference to clients own record checkpoint speed
 //char g_szLastPBSpeedDifference[MAXPLAYERS + 1][64];
@@ -820,12 +816,6 @@ int g_iCentreHudModule[MAXPLAYERS + 1][6];
 bool g_bSpecListOnly[MAXPLAYERS + 1];
 bool g_bSideHud[MAXPLAYERS + 1];
 int g_iSideHudModule[MAXPLAYERS + 1][5];
-
-//MINIMAL HUD
-bool g_bMinimalHUD[MAXPLAYERS + 1];
-int g_iMinimalHUD_CompareType[MAXPLAYERS + 1];
-//bool g_bMinimalHUD_ComparePB[MAXPLAYERS + 1];
-int g_MinimalHUDSpeedGradient[MAXPLAYERS + 1];
 
 //CSD OPTIONS
 float g_fCSD_POS_X[MAXPLAYERS + 1];
