@@ -1,4 +1,4 @@
-void CheckDatabaseForUpdates()
+public void CheckDatabaseForUpdates()
 {
     // If tables haven't been created yet.
     if (!SQL_FastQuery(g_hDb, "SELECT steamid FROM ck_playerrank LIMIT 1"))
@@ -25,7 +25,7 @@ void CheckDatabaseForUpdates()
             db_upgradeDatabase(2);
             return;
         }
-        else if (!SQL_FastQuery(g_hDb, "SELECT teleside FROM ck_playeroptions LIMIT 1"))
+        else if (!SQL_FastQuery(g_hDb, "SELECT teleside FROM ck_playeroptions2 LIMIT 1"))
         {
             db_upgradeDatabase(3);
             return;
@@ -45,7 +45,12 @@ void CheckDatabaseForUpdates()
             db_upgradeDatabase(6);
             return;
         }
-        LogMessage("Version 6 looks good.");
+        else if(!SQL_FastQuery(g_hDb, "SELECT cp FROM ck_ccp LIMIT 1"))
+        {
+            db_upgradeDatabase(7);
+            return;
+        }
+        LogMessage("Version 7 looks good.");
     }
 }
 
@@ -99,6 +104,10 @@ public void db_upgradeDatabase(int ver)
     else if (ver == 6)
     {
         SQL_FastQuery(g_hDb, sql_createReplays);
+    }
+    else if (ver == 7)
+    {
+        SQL_FastQuery(g_hDb, sql_createCCP);
     }
 
     CheckDatabaseForUpdates();

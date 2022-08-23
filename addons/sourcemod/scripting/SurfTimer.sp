@@ -185,7 +185,6 @@ public void OnMapStart()
 
 	db_viewMapSettings();
 
-
 	/// Start Loading Server Settings
 	ConVar cvHibernateWhenEmpty = FindConVar("sv_hibernate_when_empty");
 
@@ -196,6 +195,8 @@ public void OnMapStart()
 		db_selectMapZones();
 	}
 
+	LogToFileEx(g_szLogFile, "[surftimer] 006");
+
 	// Get Map Tag
 	ExplodeString(g_szMapName, "_", g_szMapPrefix, 2, 32);
 
@@ -205,12 +206,15 @@ public void OnMapStart()
 	// reload language files
 	LoadTranslations("surftimer.phrases");
 
+	LogToFileEx(g_szLogFile, "[surftimer] 007");
+
 	CheatFlag("bot_zombie", false, true);
 	g_bTierFound = false;
 	for (int i = 0; i < MAXZONEGROUPS; i++)
 	{
 		g_fBonusFastest[i] = 9999999.0;
 		g_bCheckpointRecordFound[i] = false;
+		g_bCheckpointSpeedsRecordFound[i] = false;
 	}
 
 	for (int i = 0; i < MAX_STYLES; i++)
@@ -1164,7 +1168,11 @@ public void OnPluginStart()
 	CreateHooks();
 	CreateCommandListeners();
 
+	LogError("[SurfTimer] 001");
+
 	db_setupDatabase();
+
+	LogError("[SurfTimer] 002");
 	CreateCommandsNewMap();
 
 	// mic

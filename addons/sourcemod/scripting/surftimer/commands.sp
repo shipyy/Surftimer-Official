@@ -5646,9 +5646,6 @@ public Action Command_CCP(int client, int args)
 
 	if (!IsValidClient(client))
 		return Plugin_Handled;
-	
-	//CCP MENU
-	ccp_menu = new Menu(CCPMenuHandler);
 
 	switch(args){
 		case 0:{
@@ -5675,7 +5672,6 @@ public Action Command_CCP(int client, int args)
 					db_viewCCP_WithMapRank(client, g_szSteamID[client], g_szMapName, rank);
 				else
 					CPrintToChat(client, "%t", "CCP_01", g_szChatPrefix);
-
 			}
 		}
 	}

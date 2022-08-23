@@ -1348,8 +1348,6 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 				}
 			}
 
-			//PrintToChatAll("stage %d attempts : %d", g_Stage[0][client], g_iStageAttemptsNew[0][client][g_Stage[0][client]-1]);
-
 		}
 
 		//PRINFO

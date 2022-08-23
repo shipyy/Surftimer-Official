@@ -282,31 +282,63 @@ int g_totalBonusCount;
 // Does map have a bonus?
 bool g_bhasBonus;
 
+/*----------  CCP Variables  ----------*/
+
+//THIS VARIABLES ARE USED ON SM_CCP
+float g_fCCP_StageTimes_ServerRecord[MAXPLAYERS + 1][CPLIMIT];
+//int g_iCCP_StageAttempts_ServerRecord[MAXPLAYERS + 1][CPLIMIT]; commented this cause i dont see it being use atm, but in the future its already here
+float g_fCCP_StageTimes_Player[MAXPLAYERS + 1][CPLIMIT];
+int g_iCCP_StageAttempts_Player[MAXPLAYERS + 1][CPLIMIT];
+int g_iCCP_StageRank_Player[MAXPLAYERS + 1][CPLIMIT];
+int g_iCCP_StageTotal_Player[MAXPLAYERS + 1][CPLIMIT];
+
+
+//CLIENT VARIABLES
+// Clients Stage Times have been found?
+bool g_bStageTimesFound[MAXPLAYERS + 1];
+
+// Clients Stage Attempts have been found?
+bool g_bStageAttemptsFound[MAXPLAYERS + 1];
+
+// Clients best run's stage times
+float g_fCCPStageTimesRecord[MAXPLAYERS + 1][CPLIMIT];
+
+// Clients best run's stage attempts
+int g_iCCPStageAttemptsRecord[MAXPLAYERS + 1][CPLIMIT];
+
+// Clients current run's stage times
+float g_fStageTimesNew[MAXPLAYERS + 1][CPLIMIT];
+
+// Clients current run's stage attempts
+int g_iStageAttemptsNew[MAXPLAYERS + 1][CPLIMIT];
+
+//SERVER VARIABLES
+// Server record stage times
+float g_fCCPStageTimesServerRecord[CPLIMIT];
+
+// Server record stage attempts
+int g_iCCPStageAttemptsServerRecord[CPLIMIT];
+
+
 /*----------  Checkpoint Variables  ----------*/
 
 // Clients best run's times
 float g_fCheckpointTimesRecord[MAXZONEGROUPS][MAXPLAYERS + 1][CPLIMIT];
 
 // Clients best run's speed's
-float g_fCheckpointSpeedsRecord[MAXZONEGROUPS][MAXPLAYERS + 1][CPLIMIT];
+float g_fCheckpointSpeedsRecord[MAXPLAYERS + 1][CPLIMIT];
 
 // Clients current run's times
-float g_fCheckpointTimesNew[MAXZONEGROUPS][MAXPLAYERS + 1][CPLIMIT];
+float g_fCheckpointTimesNew[MAXPLAYERS + 1][CPLIMIT];
 
 // Clients current run's speed's
-float g_fCheckpointSpeedsNew[MAXZONEGROUPS][MAXPLAYERS + 1][CPLIMIT];
-
-// Clients current run's stage times
-float g_fStageTimesNew[MAXZONEGROUPS][MAXPLAYERS + 1][CPLIMIT];
-
-// Clients current run's stage attempts
-int g_iStageAttemptsNew[MAXZONEGROUPS][MAXPLAYERS + 1][CPLIMIT];
+float g_fCheckpointSpeedsNew[MAXPLAYERS + 1][CPLIMIT];
 
 // Server record checkpoint times
 float g_fCheckpointServerRecord[MAXZONEGROUPS][CPLIMIT];
 
 // Server record checkpoint speed's
-float g_fCheckpointSpeedServerRecord[MAXZONEGROUPS][CPLIMIT];
+float g_fCheckpointSpeedServerRecord[CPLIMIT];
 
 // Last difference to the server record checkpoint time
 char g_szLastSRDifference[MAXPLAYERS + 1][64];
@@ -349,16 +381,16 @@ int lastCheckpoint[MAXZONEGROUPS][MAXPLAYERS + 1];
 // Clients checkpoints have been found?
 bool g_bCheckpointsFound[MAXZONEGROUPS][MAXPLAYERS + 1];
 
-// Clients Stage Times have been found?
-bool g_bStageTimesFound[MAXPLAYERS + 1];
-
-// Clients Stage Attempts have been found?
-bool g_bStageAttemptsFound[MAXPLAYERS + 1];
+// Clients checkpoints speeds have been found?
+bool g_bCheckpointSpeedsFound[MAXPLAYERS + 1];
 
 // Map record checkpoints found?
 bool g_bCheckpointRecordFound[MAXZONEGROUPS];
 
 // Map record checkpoints found?
+bool g_bCheckpointSpeedsRecordFound[MAXZONEGROUPS];
+
+// Map replay checkpoints found?
 bool g_bReplayTickFound[MAX_STYLES];
 
 // The biggest % amount the player has reached in current map
@@ -1383,12 +1415,6 @@ float g_fstComplete[MAXPLAYERS + 1][MAXZONEGROUPS];
 float g_fTimeIncrement[MAXPLAYERS + 1][MAXZONEGROUPS];
 int g_iPRinfoMapRank[MAXPLAYERS + 1];
 int g_iPRinfoMapRankBonus[MAXPLAYERS + 1];
-
-//CCP COMMAND
-Menu ccp_menu;
-float g_fCCPRecordCheckpointTimes[CPLIMIT];
-float g_fCCPPlayerCheckpointTimes[CPLIMIT];
-int g_iCCPPlayerCheckpointAttempts[CPLIMIT];
 
 // surf_christmas2
 bool g_bUsingStageTeleport[MAXPLAYERS + 1];
