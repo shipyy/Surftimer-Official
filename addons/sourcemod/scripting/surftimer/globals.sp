@@ -1026,7 +1026,7 @@ int g_CurrentAdditionalTeleportIndex[MAXPLAYERS + 1];
 int g_iRecordedTicks[MAXPLAYERS + 1];
 
 // Amount of Player's frame
-int g_iRecordedTicksCount[MAXPLAYERS + 1];
+int g_iReplayTicksCount[MAXPLAYERS + 1];
 
 // Checkpoints StartFrame
 int g_iCPStartFrame[MAX_STYLES][CPLIMIT];

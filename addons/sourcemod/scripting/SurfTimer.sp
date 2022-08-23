@@ -149,10 +149,10 @@ public void OnLibraryRemoved(const char[] name)
 public void OnEntityCreated(int entity, const char[] classname) {
 	if( (classname[0] == 't' ||  classname[0] == 'l') ? (StrEqual(classname, "trigger_teleport", false) ) : false)
 	{
-		SDKHook(entity, SDKHook_Use, ingnoreTriggers);
-		SDKHook(entity, SDKHook_StartTouch, ingnoreTriggers);
-		SDKHook(entity, SDKHook_Touch, ingnoreTriggers);
-		SDKHook(entity, SDKHook_EndTouch, ingnoreTriggers);
+		SDKHook(entity, SDKHook_Use, IgnoreTriggers);
+		SDKHook(entity, SDKHook_StartTouch, IgnoreTriggers);
+		SDKHook(entity, SDKHook_Touch, IgnoreTriggers);
+		SDKHook(entity, SDKHook_EndTouch, IgnoreTriggers);
 	}
 }
 
