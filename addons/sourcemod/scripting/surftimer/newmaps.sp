@@ -124,7 +124,7 @@ public void db_InsertNewestMaps()
 	char sql_insertNewestMaps[] = "INSERT INTO ck_newmaps (mapname) VALUES('%s');";
 	char szQuery[512];
 	Format(szQuery, sizeof(szQuery), sql_insertNewestMaps, g_szMapName);
-	SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, DBPrio_Low);
+	SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, _, DBPrio_Low);
 }
 
 public void db_Populate_NewMaps()
@@ -145,7 +145,7 @@ public void db_MapTierExists(char szMapName[128])
 	char szQuery[512];
 	Format(szQuery, sizeof(szQuery), "SELECT mapname FROM ck_maptier WHERE mapname = '%s' LIMIT 1;", szMapName);
 	
-	SQL_TQuery(g_hDb, SQL_MapTierExistsCallback, szQuery, DBPrio_Low);
+	SQL_TQuery(g_hDb, SQL_MapTierExistsCallback, szQuery, _, DBPrio_Low);
 }
 
 public void SQL_MapTierExistsCallback(Handle owner, Handle hndl, const char[] error, any pack)
@@ -165,7 +165,7 @@ public void SQL_MapTierExistsCallback(Handle owner, Handle hndl, const char[] er
 
 		char szQuery[512];
 		Format(szQuery, sizeof(szQuery), "INSERT INTO ck_newmaps (mapname) VALUES('%s');", map);
-		SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, DBPrio_Low);
+		SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, _, DBPrio_Low);
 	}
 }
 
