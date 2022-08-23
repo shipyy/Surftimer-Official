@@ -55,7 +55,12 @@ public void CheckDatabaseForUpdates()
             db_upgradeDatabase(8);
             return;
         }
-        LogMessage("Version 8 looks good.");
+        if (!SQL_FastQuery(g_hDb, "SELECT timestamp FROM ck_bonus LIMIT 1"))
+		{
+			db_upgradeDatabase(9);
+			return;
+		}
+        LogMessage("Version 9 looks good.");
     }
 }
 
@@ -117,6 +122,12 @@ public void db_upgradeDatabase(int ver)
     else if (ver == 8)
     {
         SQL_FastQuery(g_hDb, "ALTER TABLE ck_playeroptions2 ADD COLUMN custom_type INT(11) NOT NULL DEFAULT '1';");
+    }
+    else if (ver == 9)
+    {
+        SQL_FastQuery(g_hDb, "ALTER TABLE `ck_bonus` ADD `timestamp` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;");
+        SQL_FastQuery(g_hDb, "ALTER TABLE `ck_playertimes` ADD `timestamp` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;");
+        SQL_FastQuery(g_hDb, "ALTER TABLE `ck_wrcps` ADD `timestamp` TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP;");
     }
 
     CheckDatabaseForUpdates();
