@@ -214,7 +214,7 @@ void Register_Forwards()
 	//g_MapCheckpointForward = new GlobalForward("surftimer_OnCheckpoint", ET_Event, Param_Cell, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String);
 	
 	//DEFAULT
-	g_MapCheckpointForward = new GlobalForward("surftimer_OnCheckpoint", ET_Event, Param_Cell, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String);
+	g_MapCheckpointForward = new GlobalForward("surftimer_OnCheckpoint", ET_Event, Param_Cell, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_Cell);
 	g_BonusFinishForward = new GlobalForward("surftimer_OnBonusFinished", ET_Event, Param_Cell, Param_Float, Param_String, Param_Cell, Param_Cell, Param_Cell);
 	g_PracticeFinishForward = new GlobalForward("surftimer_OnPracticeFinished", ET_Event, Param_Cell, Param_Float, Param_String);
 	g_NewRecordForward = new GlobalForward("surftimer_OnNewRecord", ET_Event, Param_Cell, Param_Cell, Param_String, Param_String, Param_Cell);
@@ -274,6 +274,12 @@ void SendMapCheckpointForward(
 	Call_PushString(szDiff_colorless);
 	Call_PushFloat(g_fCheckpointServerRecord[zonegroup][zone]);
 	Call_PushString(sz_srDiff_colorless);
+
+	ArrayList CustomCheckpoints = new ArrayList();
+	for(int i = 0; i < 6; i++){
+		CustomCheckpoints.Push(g_fCustomCheckpointsTimes_Difference[i][zone]);
+	}
+	Call_PushCell(CustomCheckpoints);
 
 	/* Finish the call, get the result */
 	Call_Finish();

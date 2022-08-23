@@ -2371,6 +2371,17 @@ void MinimalHUDSetComparisons(int client, bool menu = false)
 		MinimalHUDOptions(client);
 }
 
+void CheckpointComparisonType(int client, bool menu = false)
+{
+	if(g_iCustomCheckpointCompareType[client] != 8)
+		g_iCustomCheckpointCompareType[client]++;
+	else
+		g_iCustomCheckpointCompareType[client] = 1;
+
+	if (menu)
+		MiscellaneousOptions(client);
+}
+
 void SpeedMode(int client, bool menu = false)
 {
 	if (g_SpeedMode[client] != 2)
@@ -3746,6 +3757,24 @@ public void MiscellaneousOptions(int client)
 		AddMenuItem(menu, "", "[ON] Timeleft");
 	else
 		AddMenuItem(menu, "", "[OFF] Timeleft");
+
+	//COMPARISON MODE
+	if (g_iCustomCheckpointCompareType[client] == 1)
+		AddMenuItem(menu, "", "Compare To : [WR]");
+	else if(g_iCustomCheckpointCompareType[client] == 2)
+		AddMenuItem(menu, "", "Compare To : [PB]");
+	else if(g_iCustomCheckpointCompareType[client] == 3)
+		AddMenuItem(menu, "", "Compare To : [TOP 10]");
+	else if(g_iCustomCheckpointCompareType[client] == 4)
+		AddMenuItem(menu, "", "Compare To : [G1]");
+	else if(g_iCustomCheckpointCompareType[client] == 5)
+		AddMenuItem(menu, "", "Compare To : [G2]");
+	else if(g_iCustomCheckpointCompareType[client] == 6)
+		AddMenuItem(menu, "", "Compare To : [G3]");
+	else if(g_iCustomCheckpointCompareType[client] == 7)
+		AddMenuItem(menu, "", "Compare To : [G4]");
+	else if(g_iCustomCheckpointCompareType[client] == 8)
+		AddMenuItem(menu, "", "Compare To : [G5]");
 	
 	SetMenuExitBackButton(menu, true);
 	DisplayMenu(menu, client, MENU_TIME_FOREVER);
@@ -3766,6 +3795,7 @@ public int MiscellaneousOptionsHandler(Menu menu, MenuAction action, int param1,
 			case 6: PreSpeedMode(param1, true);
 			case 7: HintsText(param1, true);
 			case 8: TimeleftText(param1, true);
+			case 9: CheckpointComparisonType(param1, true);
 		}
 	}
 	else if (action == MenuAction_Cancel)

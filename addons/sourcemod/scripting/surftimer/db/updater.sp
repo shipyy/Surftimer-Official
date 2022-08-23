@@ -50,7 +50,12 @@ public void CheckDatabaseForUpdates()
             db_upgradeDatabase(7);
             return;
         }
-        LogMessage("Version 7 looks good.");
+        else if(!SQL_FastQuery(g_hDb, "SELECT custom_type FROM ck_playeroptions2 LIMIT 1"))
+        {
+            db_upgradeDatabase(8);
+            return;
+        }
+        LogMessage("Version 8 looks good.");
     }
 }
 
@@ -108,6 +113,10 @@ public void db_upgradeDatabase(int ver)
     else if (ver == 7)
     {
         SQL_FastQuery(g_hDb, sql_createCCP);
+    }
+    else if (ver == 8)
+    {
+        SQL_FastQuery(g_hDb, "ALTER TABLE ck_playeroptions2 ADD COLUMN custom_type INT(11) NOT NULL DEFAULT '1';");
     }
 
     CheckDatabaseForUpdates();

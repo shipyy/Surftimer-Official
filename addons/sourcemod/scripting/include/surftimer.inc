@@ -147,7 +147,7 @@ forward Action surftimer_OnMapFinished(int client, float fRunTime, char sRunTime
  * @return						Plugin_Handled, to stop the client from searching.
  */
 //default
-forward Action surftimer_OnCheckpoint(int client, float fRunTime, char sRunTime[54], float fPbCp, char sPbDiff[16], char fSrCp, char sSrDiff[16]);
+forward Action surftimer_OnCheckpoint(int client, float fRunTime, char sRunTime[54], float fPbCp, char sPbDiff[16], char fSrCp, char sSrDiff[16], ArrayList CustomCheckpoints);
 //cp speeds
 //forward Action surftimer_OnCheckpoint(int client, float fRunTime, char sRunTime[54], float fPbCp, char sPbDiff[16], float fSrCp, char sSrDiff[16], float fspeed, char sspeed[128], float fPbCpSpeed, char sCpSpeedDiff[128], float fSRCPSpeed, char sSRCpSpeedDiff[128]);
 

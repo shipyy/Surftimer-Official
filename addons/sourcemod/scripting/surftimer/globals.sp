@@ -322,6 +322,9 @@ int g_iCCPStageAttemptsServerRecord[CPLIMIT];
 
 /*----------  Checkpoint Variables  ----------*/
 
+//CUSTOM CHECKPOINT
+int g_iCustomCheckpointCompareType[MAXPLAYERS + 1];
+
 // Clients best run's times
 float g_fCheckpointTimesRecord[MAXZONEGROUPS][MAXPLAYERS + 1][CPLIMIT];
 
@@ -347,8 +350,7 @@ char g_szLastSRDifferenceMinimalHUD[MAXPLAYERS + 1][64];
 // Last difference to clients own record checkpoint
 char g_szLastPBDifference[MAXPLAYERS + 1][64];
 char g_szLastPBDifferenceMinimalHUD[MAXPLAYERS + 1][64];
-
-char g_szCustomLastTimeDifferenceMinimalHUD[MAXPLAYERS + 1][64];
+char g_szLastCustomCheckpointDifference[MAXPLAYERS + 1][64];
 //char g_szCustomLastSpeedDifferenceMinimalHUD[MAXPLAYERS + 1][64];
 
 //NOT IMPLEMENTED
@@ -358,6 +360,8 @@ char g_szCustomLastTimeDifferenceMinimalHUD[MAXPLAYERS + 1][64];
 //VARIABLES FOR THE DIFFERENT TYPES OF CP'S COMPARISONS
 //ONLY ALLOCATE 6 SPACES BECAUSE THERE ARE ALREADY 2 OTHER VARIABLES THAT CONTAIN PB && WR
 float g_fCustomCheckpointsTimes[6][CPLIMIT];
+float g_fCustomCheckpointsTimes_Difference[6][CPLIMIT];
+float g_fGroupRuntimes[6];
 //NOT IMPLEMENTED
 //float g_fCustomCheckpointsSpeeds[6][CPLIMIT];
 
