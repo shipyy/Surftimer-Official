@@ -56,10 +56,10 @@ public void CheckDatabaseForUpdates()
             return;
         }
         if (!SQL_FastQuery(g_hDb, "SELECT timestamp FROM ck_bonus LIMIT 1"))
-		{
-			db_upgradeDatabase(9);
-			return;
-		}
+        {
+            db_upgradeDatabase(9);
+            return;
+        }
         LogMessage("Version 9 looks good.");
     }
 }
