@@ -4414,15 +4414,16 @@ public void db_viewBonusPRinfoCallback(Handle owner, Handle hndl, const char[] e
 
 public void db_viewReplayCPTicks(char szMapName[128])
 {
+	char szQuery[1024];
+
 	for(int i = 0; i < MAX_STYLES; i++){
 		g_bReplayTickFound[i] = false;
 		for(int j = 0; j < CPLIMIT - 2; j++)
 			g_iCPStartFrame[i][j] = 0;
-	}
 
-	char szQuery[1024];
-	Format(szQuery, 1024, sql_selectReplayCPTicks, szMapName);
-	SQL_TQuery(g_hDb, SQL_selectReplayCPTicksCallback, szQuery, _, DBPrio_Low);
+		Format(szQuery, 1024, sql_selectReplayCPTicks, szMapName, i);
+		SQL_TQuery(g_hDb, SQL_selectReplayCPTicksCallback, szQuery, _, DBPrio_Low);
+	}
 }
 
 public void SQL_selectReplayCPTicksCallback(Handle owner, Handle hndl, const char[] error, any client)
@@ -12215,25 +12216,22 @@ public void SQL_viewCCP_GetMapRankCallback(Handle owner, Handle hndl, const char
 		char szPlayerSteamID[32];
 		SQL_FetchString(hndl, 2,  szPlayerSteamID, 32);
 
-		//IF PLAYER REQUESTED HAS COMPLETED MAP
-		if(map_rank != 0){
-			char szMapTimeFormatted[32];
-			FormatTimeFloat(client, map_time, 3, szMapTimeFormatted, 32);
+		char szMapTimeFormatted[32];
+		FormatTimeFloat(client, map_time, 3, szMapTimeFormatted, 32);
 
-			//IF THE DIDNT PLAYER PROVIDED THE RANK BEFORE
-			//THIS -1 IS A COLUMN FROM THE SQL QUERY
-			//WHEN IT HAS A -1 IN IT , IT MEANS THE PLAYER PROVIDED THE RANK
-			if(map_rank != -1) {
-				CloseHandle(pack);
-				db_GetTotalMapCompletions(client, szPlayerSteamID, szMapName, map_time, map_rank);
-			}
-			//IF THE PLAYER PROVIDED THE RANK BEFORE
-			else{
-				//SINCE THE PLAYER PROVIDED THE RANK WE READ FROM THE PACK GENERATED WITH THE RANK
-				map_rank = ReadPackCell(pack);
-				CloseHandle(pack);
-				db_GetTotalMapCompletions(client, szPlayerSteamID, szMapName, map_time, map_rank);
-			}
+		//IF THE DIDNT PLAYER PROVIDED THE RANK BEFORE
+		//THIS -1 IS A COLUMN FROM THE SQL QUERY
+		//WHEN IT HAS A -1 IN IT , IT MEANS THE PLAYER PROVIDED THE RANK
+		if(map_rank != -1) {
+			CloseHandle(pack);
+			db_GetTotalMapCompletions(client, szSteamID, szMapName, map_time, map_rank);
+		}
+		//IF THE PLAYER PROVIDED THE RANK BEFORE
+		else{
+			//SINCE THE PLAYER PROVIDED THE RANK WE READ FROM THE PACK GENERATED WITH THE RANK
+			map_rank = ReadPackCell(pack);
+			CloseHandle(pack);
+			db_GetTotalMapCompletions(client, szPlayerSteamID, szMapName, map_time, map_rank);
 		}
 	}
 	else {
