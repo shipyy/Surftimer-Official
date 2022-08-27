@@ -4184,21 +4184,21 @@ public void Checkpoint(int client, int zone, int zonegroup, float time, float sp
 		//SLOWER THAN WR
 		if(f_srSpeedDiff > 0){
 			Format(sz_srSpeedDiff_colorless, 128, "-%s", sz_srSpeedDiff);
-			Format(sz_srSpeedDiff, 128, "%c-%s%c", RED, sz_srSpeedDiff, WHITE);
+			Format(sz_srSpeedDiff, 128, "SR: %c-%s%c", RED, sz_srSpeedDiff, WHITE);
 		}
 		//FASTER THAN WR
 		else if(f_srSpeedDiff < 0){
 			Format(sz_srSpeedDiff_colorless, 128, "+%s", sz_srSpeedDiff);
-			Format(sz_srSpeedDiff, 128, "%c+%i%c", GREEN, RoundToNearest(f_srSpeedDiff * (-1)), WHITE);
+			Format(sz_srSpeedDiff, 128, "SR: %c+%i%c", GREEN, RoundToNearest(f_srSpeedDiff * (-1)), WHITE);
 		}
 		//SAME AS WR
 		else{
 			Format(sz_srSpeedDiff_colorless, 128, "%s", sz_srSpeedDiff);
-			Format(sz_srSpeedDiff, 128, "%c%i%c", WHITE, RoundToNearest(f_srSpeedDiff * (-1)), WHITE);
+			Format(sz_srSpeedDiff, 128, "SR: %c%i%c", WHITE, RoundToNearest(f_srSpeedDiff * (-1)), WHITE);
 		}
 	}
 	else{
-		Format(sz_srSpeedDiff, 128, "N/A", WHITE, WHITE);
+		Format(sz_srSpeedDiff, 128, "SR: %cN/A%c", LIGHTGREEN, WHITE);
 	}
 
 	//PB
@@ -4212,21 +4212,21 @@ public void Checkpoint(int client, int zone, int zonegroup, float time, float sp
 		//SLOWER THAN WR
 		if(f_SpeedDiff > 0){
 			Format(sz_SpeedDiff_colorless, 128, "-%s", sz_SpeedDiff);
-			Format(sz_SpeedDiff, 128, "%c-%s", RED, sz_SpeedDiff);
+			Format(sz_SpeedDiff, 128, "PB: %c-%s%c", RED, sz_SpeedDiff, WHITE);
 		}
 		//FASTER THAN WR
 		else if(f_SpeedDiff < 0){
 			Format(sz_SpeedDiff_colorless, 128, "+%s", sz_SpeedDiff);
-			Format(sz_SpeedDiff, 128, "%c+%i", GREEN, RoundToNearest(f_SpeedDiff * (-1)));
+			Format(sz_SpeedDiff, 128, "PB: %c+%i%c", GREEN, RoundToNearest(f_SpeedDiff * (-1)), WHITE);
 		}
 		//SAME AS WR
 		else{
 			Format(sz_SpeedDiff_colorless, 128, "%s", sz_SpeedDiff);
-			Format(sz_SpeedDiff, 128, "%c%i", WHITE, RoundToNearest(f_SpeedDiff * (-1)));
+			Format(sz_SpeedDiff, 128, "PB: %c%i%c", WHITE, RoundToNearest(f_SpeedDiff * (-1)), WHITE);
 		}
 	}
 	else{
-		Format(sz_SpeedDiff, 128, "N/A");
+		Format(sz_SpeedDiff, 128, "PB: %cN/A%c", LIGHTGREEN, WHITE);
 	}
 
 
