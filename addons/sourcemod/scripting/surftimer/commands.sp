@@ -155,7 +155,7 @@ void CreateCommands()
 	RegConsoleCmd("sm_bhoptimer", Client_OptionMenu, "[surftimer] opens options menu");
 	RegConsoleCmd("sm_knife", Command_GiveKnife, "[surftimer] Give players a knife");
 	RegConsoleCmd("sm_timeleft", Command_Timeleft, "[surftimer] Display Timeleft on bottom of screen");
-	RegConsoleCmd("sm_chud", Command_CentreSpeedHud, "[surftimer] Use Center HUD");
+	//RegConsoleCmd("sm_chud", Command_CentreSpeedHud, "[surftimer] Use Center HUD");
 	RegConsoleCmd("sm_prinfo_help", Command_PRinfo_help, "[surftimer] Show in console how to use the command");
 	RegConsoleCmd("sm_csd", Command_CenterSpeed, "[surftimer] [settings] on/off - toggle center speed display");
 
