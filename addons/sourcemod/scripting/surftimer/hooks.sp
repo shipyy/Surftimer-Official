@@ -1312,15 +1312,18 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 			//IF PLAYER IS IN A STARTZONE/STAGE
 			if((g_bInStartZone[client] || g_bInStageZone[client])){
 
-				int speed = RoundToNearest(g_fLastSpeed[client]);
+				float fVelocity[3];
+				GetEntPropVector(client, Prop_Data, "m_vecVelocity", fVelocity);
+				int speed = RoundToNearest(SquareRoot(Pow(fVelocity[0], 2.0) + Pow(fVelocity[1], 2.0) + Pow(fVelocity[2], 2.0)));
 
 				//MAP START
 				//IF PLAYER IS IN STARTZONE , NOT MOVING, NOT ON A RUN AND NOT RECORDING ,WE CAN STOP RECORDING WHEN HE STOPS MOVING
-				if(speed == 0 && g_aRecording[client] != null && !g_bTimerRunning[client] && g_Recording[client]){
+				if(speed <= 0 && g_aRecording[client] != null && !g_bTimerRunning[client] && g_Recording[client]){
 					StopRecording(client);
+					g_StageRecording[client] = false;
 				}
 				//IF THE PLAYER IS NOT BEING RECORDED BUT STARTS MOVING AGAIN, START RECORDING PLAYER
-				if(speed > 0 && !g_Recording[client] && !g_bTimerRunning[client]){
+				if(speed > 0 && !g_Recording[client] && !g_bTimerRunning[client] && g_bInStartZone[client]){
 					StopRecording(client);
 					StartRecording(client);
 					if (g_bhasStages)
@@ -1329,14 +1332,18 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 					}
 				}
 				//STAGE ONLY CASE
-				if(speed > 0 && !g_StageRecording[client] && !g_bTimerRunning[client]){
+				if(speed > 0 && !g_StageRecording[client] && !g_bTimerRunning[client] && !g_Recording[client] && g_bInStageZone[client]){
 					if (g_bhasStages)
 						Stage_StartRecording(client);
+				}
+				if(speed <= 0 && g_StageRecording[client] && !g_bTimerRunning[client] && g_bInStageZone[client]){
+					if (g_bhasStages)
+						g_StageRecording[client] = false;
 				}
 
 				//STAGE START
 				//IF THE PLAYER GETS A WRCP DURING A RUN BUT STOPS AT THE STARTZONE WE TRIM THE FRAMES
-				if(speed == 0 && g_aRecording[client] != null && g_bTimerRunning[client] && g_Recording[client] && g_StageRecording[client] && g_bInStageZone[client]){
+				if(speed <= 0 && g_aRecording[client] != null && g_bTimerRunning[client] && g_Recording[client] && g_StageRecording[client] && g_bInStageZone[client]){
 					if(g_bhasStages){
 						g_StageRecording[client] = false;
 						//g_iStageStartFrame[client] = g_iRecordedTicks[client];
