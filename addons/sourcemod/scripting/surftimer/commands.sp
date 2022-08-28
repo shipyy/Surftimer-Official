@@ -507,10 +507,14 @@ void CreateCommandListeners()
 {
 	
 	// Chat command listener
-	if(GetConVarBool(g_henableChatProcessing)){
+	if(g_henableChatProcessing.BoolValue){
+		PrintToConsole(0, "===============HOOKING SAY_HOOK===============");
 		AddCommandListener(Say_Hook, "say");
 		HookUserMessage(GetUserMessageId("SayText2"), SayText2, true);
 		AddCommandListener(Say_Hook, "say_team");
+	}
+	else {
+		PrintToConsole(0, "===============USING CHAT-PROCESSOR===============");
 	}
 
 	AddCommandListener(Command_JoinTeam, "jointeam");

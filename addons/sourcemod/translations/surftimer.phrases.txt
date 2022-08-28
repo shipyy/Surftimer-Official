@@ -1107,7 +1107,7 @@
 	"Hooks1"
 	{
 		"#format"	"{1:s}"
-		"en"		"{1} Cancelled"
+		"en"		"{1} {red}Cancelled"
 	}
 	"Hooks2"
 	{

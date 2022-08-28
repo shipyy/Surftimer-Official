@@ -509,6 +509,8 @@ public Action Say_Hook(int client, const char[] command, int argc)
 
 public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstring, char[] name, char[] message, bool& processcolors, bool& removecolors)
 {
+	if (GetConVarBool(g_henableChatProcessing))
+		return Plugin_Handled;
 
 	int client = view_as<int>(author);
 
@@ -516,27 +518,27 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 	if (g_bClientOwnReason[client])
 	{
 		g_bClientOwnReason[client] = false;
-		return Plugin_Changed;
+		return Plugin_Handled;
 	}
 
 	if (IsValidClient(client) && g_ClientRenamingZone[client])
 	{
 		Admin_renameZone(client, message);
-		return Plugin_Changed;
+		return Plugin_Handled;
 	}
 
-	if (IsValidClient(client) && (!GetConVarBool(g_henableChatProcessing)))
+	if (IsValidClient(client))
 	{
 		if (client > 0)
 			if (BaseComm_IsClientGagged(client))
-				return Plugin_Changed;
+				return Plugin_Handled;
 
 		// Blocked Commands
 		for (int i = 0; i < sizeof(g_BlockedChatText); i++)
 		{
 			if (StrEqual(g_BlockedChatText[i], message, true))
 			{
-				return Plugin_Changed;
+				return Plugin_Handled;
 			}
 		}
 
@@ -549,8 +551,6 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 				Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks1", g_szChatPrefix);
 				recipients.Clear();
 				recipients.Push(GetClientUserId(client));
-				//CPrintToChat(client, "%t", "Hooks1", g_szChatPrefix);
-				g_iWaitingForResponse[client] = None;
 				return Plugin_Changed;
 			}
 
@@ -564,7 +564,6 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 					if (prespeed < 0.0)
 						prespeed = 0.0;
 					g_mapZones[g_ClientSelectedZone[client]].PreSpeed = prespeed;
-					PrespeedMenu(client);
 				}
 				case ZoneGroup:
 				{
@@ -575,14 +574,11 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 						Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks2", g_szChatPrefix);
 						recipients.Clear();
 						recipients.Push(GetClientUserId(client));
-						//CPrintToChat(client, "%t", "Hooks2", g_szChatPrefix);
-						return Plugin_Changed;
 					}
 					g_iZonegroupHook[client] = zgrp;
 					Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks3", g_szChatPrefix, zgrp);
 					recipients.Clear();
 					recipients.Push(GetClientUserId(client));
-					//CPrintToChat(client, "%t", "Hooks3", g_szChatPrefix, zgrp);
 				}
 				case MaxVelocity:
 				{
@@ -592,11 +588,9 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 						maxvelocity = 10000.0;
 					g_fMaxVelocity = maxvelocity;
 					db_updateMapSettings();
-					MaxVelocityMenu(client);
 					Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks4", g_szChatPrefix, g_szMapName, maxvelocity);
 					recipients.Clear();
 					recipients.Push(GetClientUserId(client));
-					//CPrintToChat(client, "%t", "Hooks4", g_szChatPrefix, g_szMapName, maxvelocity);
 				}
 				case TargetName:
 				{
@@ -605,13 +599,9 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 						Format(message, sizeof(message[]), "player");
 
 					Format(g_mapZones[g_ClientSelectedZone[client]].TargetName, sizeof(MapZone::TargetName), "%s", message);
-
 					Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks5", g_szChatPrefix, g_szZoneDefaultNames[g_CurrentZoneType[client]], g_mapZones[g_ClientSelectedZone[client]].ZoneTypeId, message);
 					recipients.Clear();
 					recipients.Push(GetClientUserId(client));
-					//CPrintToChat(client, "%t", "Hooks5", g_szChatPrefix, g_szZoneDefaultNames[g_CurrentZoneType[client]], g_mapZones[g_ClientSelectedZone[client]].ZoneTypeId, message);
-
-					EditorMenu(client);
 				}
 				case ClientEdit:
 				{
@@ -639,6 +629,7 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 					}
 
 					SQL_TQuery(g_hDb, sql_DeleteMenuView, szQuery, GetClientSerial(client));
+					return Plugin_Handled;
 				}
 				case ColorValue:
 				{
@@ -656,28 +647,26 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 						case 1: g_iCSD_G[client] = color_value;
 						case 2: g_iCSD_B[client] = color_value;
 					}
-					CSDOptions(client);
+					return Plugin_Handled;
 				}
 			}
-
-			g_iWaitingForResponse[client] = None;
 			return Plugin_Changed;
 		}
 
 		// !s & !stage Commands
 		if (StrContains(message, "!s", false) == 0 || StrContains(message, "!stage", false) == 0)
-			return Plugin_Changed;
+			return Plugin_Handled;
 
 		// !b & !bonus Commands
 		if (StrContains(message, "!b", false) == 0 || StrContains(message, "!bonus", false) == 0)
-			return Plugin_Changed;
+			return Plugin_Handled;
 
 		// Empty Message
 		if (StrEqual(message, " ") || !message[0])
-			return Plugin_Changed;
+			return Plugin_Handled;
 
 		if (checkSpam(client))
-			return Plugin_Changed;
+			return Plugin_Handled;
 
 		parseColorsFromString(message, 1024);
 
@@ -689,17 +678,17 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 				for (int i = 0; i <= strlen(message); ++i)
 					message[i] = CharToLower(message[i]);
 				FakeClientCommand(client, "say %s", message);
-				return Plugin_Changed;
+				return Plugin_Handled;
 			}
 		}
 
 		// Hide ! commands
 		if (StrContains(message, "!", false) == 0)
-		return Plugin_Changed;
+			return Plugin_Handled;
 
 		if ((IsChatTrigger() && message[0] == '/') || (message[0] == '@' && (GetUserFlagBits(client) & ADMFLAG_ROOT || GetUserFlagBits(client) & ADMFLAG_GENERIC)))
 		{
-			return Plugin_Changed;
+			return Plugin_Continue;
 		}
 
 		char szName[64];
@@ -719,7 +708,7 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 		if (GetClientTeam(client) == 1)
 		{
 			PrintSpecMessageAll(client);
-			return Plugin_Changed;
+			return Plugin_Handled;
 		}
 		else
 		{
@@ -738,11 +727,9 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 
 				if (IsPlayerAlive(client)){
 					Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks6", g_szCountryCode[client], szChatRank, szName, message);
-					//PrintToChatAll("%t", "Hooks6", g_szCountryCode[client], szChatRank, szName, message);
 				}
 				else{
 					Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks7", g_szCountryCode[client], szChatRank, szName, message);
-					//PrintToChatAll("%t", "Hooks7", g_szCountryCode[client], szChatRank, szName, message);
 				}
 				return Plugin_Changed;
 			}
@@ -752,23 +739,78 @@ public Action CP_OnChatMessage(int& author, ArrayList recipients, char[] flagstr
 				{
 					if (IsPlayerAlive(client)){
 						Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks8", szChatRank, szName, message);
-						//PrintToChatAll("%t", "Hooks8", szChatRank, szName, message);
 					}
 					else{
 						Format(message, MAXLENGTH_MESSAGE, "%t", "Hooks9", szChatRank, szName, message);
-						//PrintToChatAll("%t", "Hooks9", szChatRank, szName, message);
 					}
 					return Plugin_Changed;
 				}
 			}
 		}
 	}
-	return Plugin_Changed;
+	return Plugin_Continue;
 }
 
 public void CP_OnChatMessagePost(int author, ArrayList recipients, const char[] flagstring, const char[] formatstring, const char[] name, const char[] message, bool processcolors, bool removecolors)
 {
-	PrintToServer("total recipients %d ", recipients.Length);
+	int client = view_as<int>(author)
+
+	if (IsValidClient(client))
+	{
+		// Functions that require the client to input something via the chat box
+		if (g_iWaitingForResponse[client] > None)
+		{
+			if (StrContains(message, "cancel", false) != -1){
+				switch (g_iWaitingForResponse[client]) {
+					case PreSpeed: 
+					{
+						PrespeedMenu(client);
+					}
+					case MaxVelocity:
+					{
+						MaxVelocityMenu(client);
+					}
+					case TargetName:
+					{
+						EditorMenu(client);
+					}
+					case ColorValue:
+					{
+						CSDOptions(client);
+					}
+				}
+
+				g_iWaitingForResponse[client] = None;
+				return;
+			}
+			else {
+				// Check which function we're waiting for
+				switch (g_iWaitingForResponse[client])
+				{
+					case PreSpeed: 
+					{
+						PrespeedMenu(client);
+					}
+					case MaxVelocity:
+					{
+						MaxVelocityMenu(client);
+					}
+					case TargetName:
+					{
+						EditorMenu(client);
+					}
+					case ColorValue:
+					{
+						CSDOptions(client);
+					}
+				}
+				g_iWaitingForResponse[client] = None;
+				return;
+			}
+		}
+	}
+
+	return;
 }
 
 public void CGetRankColor(char[] sMsg, int iSize) // edit from CProcessVariables - colorvars
