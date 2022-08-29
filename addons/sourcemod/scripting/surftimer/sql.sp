@@ -3454,7 +3454,7 @@ public void db_GetGroupRuntimes()
 	char szQuery[512];
 	int rank;
 	
-	for(int i = 0; i < 6; i++){
+	for(int i = 2; i < 8; i++){
 		rank = 0;
 		if(i == 0){
 			if(g_MapTimesCount >= 10){
@@ -3549,6 +3549,8 @@ public void db_GetGroupRuntimes()
 
 	}
 
+	g_fCustomRuntimes[0] = g_fRecordMapTime == 9999999.0 ? 666666.0 : g_fRecordMapTime;
+
 	if (!g_bServerDataLoaded)
 		db_selectAnnouncements();
 
@@ -3566,7 +3568,7 @@ public void sql_selectGroupRuntimesCallback(Handle owner, Handle hndl, const cha
 
 	if (SQL_HasResultSet(hndl) && SQL_FetchRow(hndl))
 	{
-		g_fGroupRuntimes[rank] = SQL_FetchFloat(hndl, 0);
+		g_fCustomRuntimes[rank] = SQL_FetchFloat(hndl, 0);
 	}
 }
 
@@ -3677,7 +3679,6 @@ public void db_LoadCPTypesTimes()
 			}
 		}
 	}
-
 	db_GetGroupRuntimes();
 }
 

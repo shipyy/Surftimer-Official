@@ -3513,9 +3513,9 @@ public void CenterHudAlive(int client)
 								case 8 : Format(g_szLastCustomCheckpointDifference[client], 64, "G5:");
 							}
 
-							if (g_fGroupRuntimes[g_iCustomCheckpointCompareType[client]-3] > 0.0){
+							if (g_fCustomRuntimes[g_iCustomCheckpointCompareType[client]-3] > 0.0){
 								char szFormattedGroupTime[32];
-								FormatTimeFloat(client, g_fGroupRuntimes[g_iCustomCheckpointCompareType[client]-3], 3, szFormattedGroupTime[client], sizeof szFormattedGroupTime);
+								FormatTimeFloat(client, g_fCustomRuntimes[g_iCustomCheckpointCompareType[client]-3], 3, szFormattedGroupTime[client], sizeof szFormattedGroupTime);
 								Format(g_szLastCustomCheckpointDifference[client], 64, "%s %s", g_szLastCustomCheckpointDifference[client], szFormattedGroupTime[client]);
 							}
 							else
@@ -4045,12 +4045,25 @@ public void Checkpoint(int client, int zone, int zonegroup, float time, float sp
 	float f_srSpeedDiff;
 
 	//CALCULATE EVERY GROUP DIFFERENCE
-	for(int i = 0; i < 6; i++)
-	{
-		if (g_fCustomCheckpointsTimes[i][zone] > 0.0)
-			g_fCustomCheckpointsTimes_Difference[i][zone] = g_fCustomCheckpointsTimes[i][zone] - time;
-		else
-			g_fCustomCheckpointsTimes_Difference[i][zone] = 666666.0;
+	for(int i = 0; i < 8; i++)
+	{	if (i == 0) {
+			if (g_bCheckpointRecordFound[zonegroup])
+				g_fCustomCheckpointsTimes_Difference[client][i][zone] = g_fCheckpointServerRecord[zonegroup][zone] - time;
+			else
+				g_fCustomCheckpointsTimes_Difference[client][i][zone] = 666666.0;
+		}
+		else if (i == 1) {
+			if (g_bCheckpointsFound[zonegroup][client])
+				g_fCustomCheckpointsTimes_Difference[client][i][zone] = g_fCheckpointTimesRecord[zonegroup][client][zone] - time;
+			else
+				g_fCustomCheckpointsTimes_Difference[client][i][zone] = 666666.0;
+		}
+		else {
+			if (g_fCustomCheckpointsTimes[i][zone] > 0.0)
+				g_fCustomCheckpointsTimes_Difference[client][i][zone] = g_fCustomCheckpointsTimes[i][zone] - time;
+			else
+				g_fCustomCheckpointsTimes_Difference[client][i][zone] = 666666.0;
+		}
 	}
 
 	//CUSTOM CHECKPOINTS
@@ -4058,32 +4071,32 @@ public void Checkpoint(int client, int zone, int zonegroup, float time, float sp
 
 		if(g_iCustomCheckpointCompareType[client] == 3)
 			if(g_bTOP)
-				f_srDiff = (g_fCustomCheckpointsTimes[0][zone] - time);
+				f_srDiff = (g_fCustomCheckpointsTimes[2][zone] - time);
 			else
 				f_srDiff = 666666.0;
 		else if(g_iCustomCheckpointCompareType[client] == 4)
 			if(g_bG1)
-				f_srDiff = (g_fCustomCheckpointsTimes[1][zone] - time);
+				f_srDiff = (g_fCustomCheckpointsTimes[2][zone] - time);
 			else
 				f_srDiff = 666666.0;
 		else if(g_iCustomCheckpointCompareType[client] == 5)
 			if(g_bG2)
-				f_srDiff = (g_fCustomCheckpointsTimes[2][zone] - time);
+				f_srDiff = (g_fCustomCheckpointsTimes[4][zone] - time);
 			else
 				f_srDiff = 666666.0;
 		else if(g_iCustomCheckpointCompareType[client] == 6)
 			if(g_bG3)
-				f_srDiff = (g_fCustomCheckpointsTimes[3][zone] - time);
+				f_srDiff = (g_fCustomCheckpointsTimes[5][zone] - time);
 			else
 				f_srDiff = 666666.0;
 		else if(g_iCustomCheckpointCompareType[client] == 7)
 			if(g_bG4)
-				f_srDiff = (g_fCustomCheckpointsTimes[4][zone] - time);
+				f_srDiff = (g_fCustomCheckpointsTimes[6][zone] - time);
 			else
 				f_srDiff = 666666.0;
 		else if(g_iCustomCheckpointCompareType[client] == 8)
 			if(g_bG5)
-				f_srDiff = (g_fCustomCheckpointsTimes[5][zone] - time);
+				f_srDiff = (g_fCustomCheckpointsTimes[7][zone] - time);
 			else
 				f_srDiff = 666666.0;
 

@@ -138,30 +138,83 @@ public int Native_GetMapData(Handle plugin, int numParams)
 	return g_MapTimesCount;
 }
 
+public int Native_GetBonusData(Handle plugin, int numParams)
+{	
+	int client = GetNativeCell(1);
+
+	//WR
+	char szname[MAX_NAME_LENGTH];
+	GetNativeString(2, szname, MAX_NAME_LENGTH);
+	float WRtime = GetNativeCellRef(3);
+	float PBtime = GetNativeCellRef(4);
+
+	int zonegroup = g_iClientInZone[client][2];
+
+	Format(szname, sizeof(szname), g_szBonusFastest[zonegroup]);
+	SetNativeString(2, szname, sizeof(szname), true);
+
+	if(g_fBonusFastest[zonegroup] > 0)
+		WRtime = g_fBonusFastest[zonegroup];
+	else
+		WRtime = -1.0;
+	SetNativeCellRef(3, WRtime);
+
+	if(g_fPersonalRecordBonus[zonegroup][client] > 0)
+		PBtime = g_fPersonalRecordBonus[zonegroup][client];
+	else
+		PBtime = -1.0;
+	SetNativeCellRef(4, PBtime);
+
+	return g_iBonusCount[zonegroup];
+}
+
 public int Native_GetPlayerData(Handle plugin, int numParams)
 {
 	int client = GetNativeCellRef(1);
+	int zonegroup = GetNativeCellRef(2);
 	int rank = 99999;
 	float time;
 	char szCountry[16];
 	if (IsValidClient(client) && !IsFakeClient(client))
 	{
-		time = GetNativeCellRef(2);
-		rank = GetNativeCellRef(3);
-		GetNativeString(4, szCountry, 16);
+		zonegroup = g_iClientInZone[client][2];
 
-		if (g_fPersonalRecord[client] > 0.0)
-			time = g_fPersonalRecord[client];
-		else
-			time = -1.0;
+		if (zonegroup == 0) {
+			time = GetNativeCellRef(3);
+			rank = GetNativeCellRef(4);
+			GetNativeString(5, szCountry, 16);
 
-		Format(szCountry, sizeof(szCountry), g_szCountryCode[client]);
+			if (g_fPersonalRecord[client] > 0.0)
+				time = g_fPersonalRecord[client];
+			else
+				time = -1.0;
 
-		rank = g_MapRank[client];
+			rank = g_MapTimesCount;
 
-		SetNativeCellRef(2, time);
-		SetNativeCellRef(3, rank);
-		SetNativeString(4, szCountry, sizeof(szCountry), true);
+			Format(szCountry, sizeof(szCountry), g_szCountryCode[client]);
+
+			SetNativeCellRef(3, time);
+			SetNativeCellRef(4, rank);
+			SetNativeString(5, szCountry, sizeof(szCountry), true);
+		}
+		else {
+			time = GetNativeCellRef(3);
+			rank = GetNativeCellRef(4);
+			GetNativeString(5, szCountry, 16);
+
+			if (g_fPersonalRecordBonus[zonegroup][client] > 0.0)
+				time = g_fPersonalRecordBonus[zonegroup][client];
+			else
+				time = -1.0;
+
+			rank = g_iBonusCount[zonegroup];
+
+			Format(szCountry, sizeof(szCountry), g_szCountryCode[client]);
+
+			SetNativeCellRef(3, time);
+			SetNativeCellRef(4, rank);
+			SetNativeString(5, szCountry, sizeof(szCountry), true);
+		}
 	}
 
 	return rank;
@@ -235,6 +288,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("surftimer_GetPlayerSkillgroup", Native_GetPlayerSkillgroup);
 	CreateNative("surftimer_GetPlayerNameColored", Native_GetPlayerNameColored);
 	CreateNative("surftimer_GetMapData", Native_GetMapData);
+	CreateNative("surftimer_GetBonusData", Native_GetBonusData);
 	CreateNative("surftimer_GetPlayerData", Native_GetPlayerData);
 	CreateNative("surftimer_GetPlayerInfo", Native_GetPlayerInfo);
 	CreateNative("surftimer_GetClientStyle", Native_GetClientStyle);
@@ -330,8 +384,8 @@ void SendMapCheckpointForward(
 	Call_PushString(sz_srDiff_colorless);
 
 	ArrayList CustomCheckpoints = new ArrayList();
-	for (int i = 0; i < 6; i++)
-		CustomCheckpoints.Push(g_fCustomCheckpointsTimes_Difference[i][zone]);
+	for (int i = 0; i < 8; i++)
+		CustomCheckpoints.Push(g_fCustomCheckpointsTimes_Difference[client][i][zone]);
 	Call_PushCell(CustomCheckpoints);
 
 	/* Finish the call, get the result */

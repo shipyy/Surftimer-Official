@@ -355,9 +355,9 @@ char g_szLastCustomCheckpointDifference[MAXPLAYERS + 1][64];
 
 //VARIABLES FOR THE DIFFERENT TYPES OF CP'S COMPARISONS
 //ONLY ALLOCATE 6 SPACES BECAUSE THERE ARE ALREADY 2 OTHER VARIABLES THAT CONTAIN PB && WR
-float g_fCustomCheckpointsTimes[6][CPLIMIT];
-float g_fCustomCheckpointsTimes_Difference[6][CPLIMIT];
-float g_fGroupRuntimes[6];
+float g_fCustomCheckpointsTimes[8][CPLIMIT];
+float g_fCustomCheckpointsTimes_Difference[MAXPLAYERS + 1][8][CPLIMIT];
+float g_fCustomRuntimes[8];
 //NOT IMPLEMENTED
 //float g_fCustomCheckpointsSpeeds[6][CPLIMIT];
 
