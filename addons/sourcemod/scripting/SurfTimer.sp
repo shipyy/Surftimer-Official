@@ -309,6 +309,7 @@ public void OnMapStart()
 
 	//CSD Hud Synchronizer
 	HUD_Handle = CreateHudSynchronizer();
+	Timeleft_Handle = CreateHudSynchronizer();
 }
 
 public void OnMapEnd()

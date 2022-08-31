@@ -1499,6 +1499,7 @@ int g_iCurrentTick[MAXPLAYERS + 1];
 
 int g_iRankToDelete[MAXPLAYERS + 1];
 Handle HUD_Handle;
+Handle Timeleft_Handle;
 
 /*===================================
 =         Predefined Arrays         =

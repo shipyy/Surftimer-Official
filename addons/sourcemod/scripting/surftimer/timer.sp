@@ -514,7 +514,7 @@ public Action TimeleftTimer(Handle timer,any client)
 			
 			SetHudTextParams(-1.0, 0.10, 1.0, 255, 255, 255, 255, 0, 0.0, 0.0, 0.0);
 
-			ShowHudText(i, 0, timeleft);
+			ShowSyncHudText(i, Timeleft_Handle, timeleft);
 		}
 
 	return Plugin_Continue;
