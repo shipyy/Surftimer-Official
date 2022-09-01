@@ -52,7 +52,7 @@ public void SQL_ViewPlayerInfoCallback(Handle owner, Handle hndl, const char[] e
 		SetMenuTitle(menu, szTitle);
 
 		AddMenuItem(menu, szSteamId64, "Community Profile Link");
-		SetMenuExitButton(menu, true);
+		SetMenuExitBackButton(menu, true);
 		DisplayMenu(menu, client, MENU_TIME_FOREVER);
 	}
 	else if (IsClientInGame(client))
@@ -66,6 +66,9 @@ public int ProfileInfoMenuHandler(Menu menu, MenuAction action, int param1, int 
 		char info[64];
 		GetMenuItem(menu, param2, info, sizeof(info));
 		CPrintToChat(param1, "%t", "SQLTime1", g_szChatPrefix, info);
+	}
+	else if (action == MenuAction_Cancel) {
+		db_viewPlayerProfile(param1, g_ProfileStyleSelect[param1],  g_szProfileSteamId[param1], true, "");
 	}
 	else if (action == MenuAction_End)
 	{

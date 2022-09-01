@@ -613,6 +613,7 @@ char g_szRankName[MAXPLAYERS + 1][32];
 //int g_rankNameChatColour[MAXPLAYERS + 1];
 int g_GroupMaps[MAX_PR_PLAYERS + 1][MAX_STYLES];
 int g_Top10Maps[MAX_PR_PLAYERS + 1][MAX_STYLES];
+int g_AVGMapRank[MAX_PR_PLAYERS + 1][MAX_STYLES];
 
 // 0 = wr, 1 = wrb, 2 = wrcp
 int g_WRs[MAX_PR_PLAYERS + 1][MAX_STYLES][3];
