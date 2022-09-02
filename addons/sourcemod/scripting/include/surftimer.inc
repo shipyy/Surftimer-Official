@@ -183,6 +183,14 @@ native bool surftimer_SafeTeleport(int client, float fDestination[3], float fAng
 /*  FORWARDS  */
 
 /**
+ * Called when a client start a map.
+ *
+ * @param client				The client's ID.
+ * @return						Plugin_Handled, to stop the client from searching.
+ */
+forward Action surftimer_OnMapStart(int client, int prestrafe, int pre_PBDiff, int pre_SRDiff);
+
+/**
  * Called when a client finishes a map.
  *
  * @param client			The client's ID.

@@ -364,6 +364,25 @@ void Register_Forwards()
 	g_PracticeFinishForward = new GlobalForward("surftimer_OnPracticeFinished", ET_Event, Param_Cell, Param_Float, Param_String);
 	g_NewRecordForward = new GlobalForward("surftimer_OnNewRecord", ET_Event, Param_Cell, Param_Cell, Param_String, Param_String, Param_Cell);
 	g_NewWRCPForward = new GlobalForward("surftimer_OnNewWRCP", ET_Event, Param_Cell, Param_Cell, Param_String, Param_String, Param_Cell);
+	g_MapStartForward = new GlobalForward("surftimer_OnMapStart", ET_Event, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
+}
+
+/**
+ * Sends a map start forward on surftimer_OnMapStart.
+ * 
+ * @param client               	Index of the client.
+ * @param prestrafe             prestrafe
+ * @param pre_PBDiff     		pb prestrafe difference
+ * @param pre_SRDiff  			sr prestrafe difference
+ */
+void SendMapStartForward(int client, int prestrafe, int pre_PBDiff, int pre_SRDiff)
+{
+	Call_StartForward(g_MapStartForward);
+	Call_PushCell(client);
+	Call_PushCell(prestrafe);
+	Call_PushCell(pre_PBDiff);
+	Call_PushCell(pre_SRDiff);
+	Call_Finish();
 }
 
 /**

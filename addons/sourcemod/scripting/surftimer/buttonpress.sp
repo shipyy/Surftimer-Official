@@ -200,7 +200,11 @@ public void CL_OnStartTimerPress(int client)
 				if (g_iPrespeedText[i])
 					CPrintToChat(i, preMessage);
 			}
+
+			if (g_iClientInZone[client][2] == 0)
+				SendMapStartForward(client, prestrafe, iPersonalDifference, iRecordDifference);
 		}
+
 	}
 
 	// Play Start Sound
