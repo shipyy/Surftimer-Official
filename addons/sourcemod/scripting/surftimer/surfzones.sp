@@ -383,6 +383,16 @@ public void StartTouch(int client, int action[3])
 		}
 		else if (action[0] == 1 || action[0] == 5) // Start Zone or Speed Start
 		{
+
+			if (g_bTimerRunning[client]) {
+				PrintToConsole(0, "===STARTED RECORDING MAP BECAUSE START TOUCH===");
+				
+				StopRecording(client);
+				StartRecording(client);
+				if (g_bhasStages)
+					Stage_StartRecording(client);
+			}
+
 			// Set Default Values
 			Client_Stop(client, 1);
 			ResetGravity(client);
@@ -410,11 +420,6 @@ public void StartTouch(int client, int action[3])
 				g_CurrentStage[client] = 0;
 
 			}
-
-			if(g_aRecording[client] != null){
-				StopRecording(client);
-			}
-
 		}
 		else if (action[0] == 2) // End Zone
 		{	
@@ -562,6 +567,8 @@ public void StartTouch(int client, int action[3])
 			{
 				g_bSaveLocTele[client] = false;
 			}
+
+			Stage_StartRecording(client);
 		}
 		else if (action[0] == 4) // Checkpoint Zone
 		{
