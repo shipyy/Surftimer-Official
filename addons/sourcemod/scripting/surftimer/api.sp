@@ -18,7 +18,7 @@ public any Native_GetCurrentTime(Handle plugin, int numParams)
 {	
 	int client = GetNativeCell(1);
 
-	if (g_bWrcpTimeractivated[client])
+	if (g_bWrcpTimeractivated[client] && !g_bTimerRunning[client])
 		return g_fCurrentWrcpRunTime[client];
 	else if (g_bPracticeMode[client] || g_bTimerRunning[client])
 		return g_fCurrentRunTime[client];
