@@ -957,6 +957,7 @@ public void sql_CountFinishedStagesCallback(Handle owner, Handle hndl, const cha
 	// Next up: Points from maps
 	char szQuery[512];
 	Format(szQuery, sizeof(szQuery), "SELECT mapname, (select count(1)+1 from ck_playertimes b where a.mapname=b.mapname and a.runtimepro > b.runtimepro AND b.style = %i) AS `rank`, (SELECT count(1) FROM ck_playertimes b WHERE a.mapname = b.mapname AND b.style = %i) as total, (SELECT tier FROM `ck_maptier` b WHERE a.mapname = b.mapname) as tier FROM ck_playertimes a where steamid = '%s' AND style = %i;", style, style, szSteamId, style);
+	PrintToConsole(0, szQuery);
 	SQL_TQuery(g_hDb, sql_CountFinishedMapsCallback, szQuery, pack, DBPrio_Low);
 }
 
@@ -1313,15 +1314,35 @@ public void sql_CountFinishedMapsCallback(Handle owner, Handle hndl, const char[
 	if (IsValidClient(client) && !IsFakeClient(client))
 		CS_SetMVPCount(client, (RoundFloat(ftotalperc)));
 
-	// Next up: Average Map Rank
-	char szQuery[512];
-	Format(szQuery, 512, sql_AVGMapRank, g_szSteamID[client], g_SelectedStyle[client], g_SelectedStyle[client] ,g_szSteamID[client], g_SelectedStyle[client]);
-	SQL_TQuery(g_hDb, sql_AVGMapRankCallback, szQuery, pack, DBPrio_Low);
+	db_updateAVGmaprank(client, style);
 }
 
 // 6. Calculate the Average Map Rank
 // Fetching:
 // avgmaprank
+public void db_updateAVGmaprank(int client, int style)
+{
+	Handle pack = CreateDataPack();
+	WritePackCell(pack, client);
+	WritePackCell(pack, style);
+
+	// Next up: Average Map Rank
+	char szQuery[512];
+	if (client > MAXPLAYERS && g_pr_RankingRecalc_InProgress || client > MAXPLAYERS && g_bProfileRecalc[client])
+	{
+		Format(szQuery, sizeof szQuery, sql_AVGMapRank, g_pr_szSteamID[client], style, style, g_pr_szSteamID[client], style);
+		SQL_TQuery(g_hDb, sql_AVGMapRankCallback, szQuery, pack, DBPrio_Low);
+	}
+	else
+	{
+		if (IsValidClient(client))
+		{
+			Format(szQuery, sizeof szQuery, sql_AVGMapRank, g_szSteamID[client], g_SelectedStyle[client], g_SelectedStyle[client] ,g_szSteamID[client], g_SelectedStyle[client]);
+			SQL_TQuery(g_hDb, sql_AVGMapRankCallback, szQuery, pack, DBPrio_Low);
+		}
+	}
+}
+
 public void sql_AVGMapRankCallback(Handle owner, Handle hndl, const char[] error, any pack)
 {
 	if (hndl == null)
