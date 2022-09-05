@@ -262,7 +262,7 @@ public int Native_GetPlayerInfo(Handle plugin, int numParams)
 {
 	int client = GetNativeCellRef(1);
 	int iStage = 9999;
-	if (IsValidClient(client) && !IsFakeClient(client))
+	if (IsValidClient(client))
 	{
 		iStage = g_Stage[0][client];
 		SetNativeCellRef(2, g_bWrcpTimeractivated[client]);
