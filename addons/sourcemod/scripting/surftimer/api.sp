@@ -267,8 +267,15 @@ public int Native_GetPlayerInfo(Handle plugin, int numParams)
 		iStage = g_Stage[0][client];
 		SetNativeCellRef(2, g_bWrcpTimeractivated[client]);
 		SetNativeCellRef(3, g_bPracticeMode[client]);
-		SetNativeCellRef(4, iStage);
-		SetNativeCellRef(5, g_iInBonus[client]);
+
+		if (!IsFakeClient(client) ) {
+			SetNativeCellRef(4, iStage);
+			SetNativeCellRef(5, g_iInBonus[client]);
+		}
+		else {
+			SetNativeCellRef(4, g_iCurrentlyPlayingStage);
+			SetNativeCellRef(5, g_iCurrentlyPlayingBonus);
+		}
 	}
 
 	return iStage;

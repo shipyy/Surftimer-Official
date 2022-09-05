@@ -1086,6 +1086,7 @@ int g_iBonusToReplay[MAXZONEGROUPS + 1];
 float g_fReplayTimes[MAXZONEGROUPS][MAX_STYLES];
 int g_iManualBonusToReplay;
 int g_iCurrentlyPlayingStage;
+int g_iCurrentlyPlayingBonus;
 
 /*----------  Misc  ----------*/
 

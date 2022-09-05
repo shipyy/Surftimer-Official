@@ -513,6 +513,7 @@ public void PlayRecord(int client, int type, int style, int use_CP)
 		if (style == 0)
 		{
 			Format(buffer, sizeof(buffer), "%s (%s)", g_szBonusName, g_szBonusTime);
+			g_iCurrentlyPlayingBonus = bonus;
 			CS_SetClientClanTag(client, "BONUS Replay");
 			SetClientName(client, buffer);
 		}
