@@ -138,7 +138,7 @@ public int Native_GetMapData(Handle plugin, int numParams)
 	SetNativeString(1, szname, sizeof(szname), true);
 	SetNativeString(2, sztime, sizeof(sztime), true);
 
-	if(g_fRecordMapTime >= 0)
+	if(g_fRecordMapTime != 9999999.0)
 		time = g_fRecordMapTime;
 	else
 		time = -1.0;
@@ -162,7 +162,7 @@ public int Native_GetBonusData(Handle plugin, int numParams)
 	Format(szname, sizeof(szname), g_szBonusFastest[zonegroup]);
 	SetNativeString(2, szname, sizeof(szname), true);
 
-	if(g_fBonusFastest[zonegroup] > 0)
+	if(g_fBonusFastest[zonegroup] != 9999999.0)
 		WRtime = g_fBonusFastest[zonegroup];
 	else
 		WRtime = -1.0;

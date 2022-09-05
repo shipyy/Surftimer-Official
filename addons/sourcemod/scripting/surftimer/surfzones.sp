@@ -385,8 +385,6 @@ public void StartTouch(int client, int action[3])
 		{
 
 			if (g_bTimerRunning[client]) {
-				PrintToConsole(0, "===STARTED RECORDING MAP BECAUSE START TOUCH===");
-				
 				StopRecording(client);
 				StartRecording(client);
 				if (g_bhasStages)
