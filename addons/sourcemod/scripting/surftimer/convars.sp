@@ -5,6 +5,7 @@ int g_ZonerFlag;
 ConVar g_hZonerFlag = null;
 ConVar g_hZoneDisplayType = null;								// How zones are displayed (lower edge, full)
 ConVar g_hZonesToDisplay = null;								// Which zones are displayed
+ConVar g_hZonesBeamWidth = null;								// width of zone beams
 ConVar g_hChecker;												// Zone refresh rate
 Handle g_hZoneTimer = INVALID_HANDLE;
 // Zone Colors
@@ -142,6 +143,7 @@ void CreateConVars()
 	g_hChecker = AutoExecConfig_CreateConVar("ck_zone_checker", "5.0", "The duration in seconds when the beams around zones are refreshed.");
 	g_hZoneDisplayType = AutoExecConfig_CreateConVar("ck_zone_drawstyle", "0", "0 = Do not display zones, 1 = display the lower edges of zones, 2 = display whole zones");
 	g_hZonesToDisplay = AutoExecConfig_CreateConVar("ck_zone_drawzones", "1", "Which zones are visible for players. 1 = draw start & end zones, 2 = draw start, end, stage and bonus zones, 3 = draw all zones.");
+	g_hZonesBeamWidth = AutoExecConfig_CreateConVar("ck_zone_zonewidth", "1.0", "Width of the zones visible to players", _, true, 0.0, true, 1.0);
 	g_hSpawnToStartZone = AutoExecConfig_CreateConVar("ck_spawn_to_start_zone", "1.0", "1 = Automatically spawn to the start zone when the client joins the team.", _, true, 0.0, true, 1.0);
 	g_hSoundEnabled = AutoExecConfig_CreateConVar("ck_startzone_sound_enabled", "1.0", "Enable the sound after leaving the start zone.", _, true, 0.0, true, 1.0);
 	g_hSoundPath = AutoExecConfig_CreateConVar("ck_startzone_sound_path", "buttons\\button3.wav", "The path to the sound file that plays after the client leaves the start zone..");

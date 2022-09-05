@@ -793,7 +793,7 @@ public void DrawBeamBox(int client)
 {
 	int zColor[4];
 	getZoneTeamColor(g_CurrentZoneTeam[client], zColor);
-	TE_SendBeamBoxToClient(client, g_Positions[client][1], g_Positions[client][0], g_BeamSprite, g_HaloSprite, 0, 30, 1.0, 1.0, 1.0, 2, 0.0, zColor, 0, 1);
+	TE_SendBeamBoxToClient(client, g_Positions[client][1], g_Positions[client][0], g_BeamSprite, g_HaloSprite, 0, 30, GetConVarFloat(g_hZonesBeamWidth), 0.5, 1.0, 2, 0.0, zColor, 0, 1);
 	CreateTimer(1.0, BeamBox, client, TIMER_REPEAT);
 }
 
@@ -805,7 +805,7 @@ public Action BeamBox(Handle timer, any client)
 		{
 			int zColor[4];
 			getZoneTeamColor(g_CurrentZoneTeam[client], zColor);
-			TE_SendBeamBoxToClient(client, g_Positions[client][1], g_Positions[client][0], g_BeamSprite, g_HaloSprite, 0, 30, 1.0, 1.0, 1.0, 2, 0.0, zColor, 0, 1);
+			TE_SendBeamBoxToClient(client, g_Positions[client][1], g_Positions[client][0], g_BeamSprite, g_HaloSprite, 0, 30, GetConVarFloat(g_hZonesBeamWidth), 1.0, 1.0, 2, 0.0, zColor, 0, 1);
 			return Plugin_Continue;
 		}
 	}
@@ -877,7 +877,7 @@ public Action BeamBoxAll(Handle timer, any data)
 								buffer_a[x] = g_mapZones[i].PointA[x];
 								buffer_b[x] = g_mapZones[i].PointB[x];
 							}
-							TE_SendBeamBoxToClient(p, buffer_a, buffer_b, g_BeamSprite, g_HaloSprite, 0, 30, GetConVarFloat(g_hChecker), 1.0, 1.0, 2, 0.0, tzColor, 0, 0, i);
+							TE_SendBeamBoxToClient(p, buffer_a, buffer_b, g_BeamSprite, g_HaloSprite, 0, 30, GetConVarFloat(g_hChecker), GetConVarFloat(g_hZonesBeamWidth), 1.0, 2, 0.0, tzColor, 0, 0, i);
 						}
 					}
 					else
@@ -890,7 +890,7 @@ public Action BeamBoxAll(Handle timer, any data)
 								buffer_a[x] = g_mapZones[i].PointA[x];
 								buffer_b[x] = g_mapZones[i].PointB[x];
 							}
-							TE_SendBeamBoxToClient(p, buffer_a, buffer_b, g_BeamSprite, g_HaloSprite, 0, 30, GetConVarFloat(g_hChecker), 1.0, 1.0, 2, 0.0, zColor, 0, 0, i);
+							TE_SendBeamBoxToClient(p, buffer_a, buffer_b, g_BeamSprite, g_HaloSprite, 0, 30, GetConVarFloat(g_hChecker), GetConVarFloat(g_hZonesBeamWidth), 1.0, 2, 0.0, zColor, 0, 0, i);
 						}
 					}
 				}
@@ -966,16 +966,16 @@ public void BeamBox_OnPlayerRunCmd(int client)
 			if (g_Editing[client] == 10)
 			{
 				TR_GetEndPosition(g_fBonusStartPos[client][1]);
-				TE_SendBeamBoxToClient(client, g_fBonusStartPos[client][1], g_fBonusStartPos[client][0], g_BeamSprite, g_HaloSprite, 0, 30, 0.1, 1.0, 1.0, 2, 0.0, zColor, 0, 1);
+				TE_SendBeamBoxToClient(client, g_fBonusStartPos[client][1], g_fBonusStartPos[client][0], g_BeamSprite, g_HaloSprite, 0, 30, GetConVarFloat(g_hZonesBeamWidth), 1.0, 1.0, 2, 0.0, zColor, 0, 1);
 			}
 			else
 			{
 				TR_GetEndPosition(g_fBonusEndPos[client][1]);
-				TE_SendBeamBoxToClient(client, g_fBonusEndPos[client][1], g_fBonusEndPos[client][0], g_BeamSprite, g_HaloSprite, 0, 30, 0.1, 1.0, 1.0, 2, 0.0, zColor, 0, 1);
+				TE_SendBeamBoxToClient(client, g_fBonusEndPos[client][1], g_fBonusEndPos[client][0], g_BeamSprite, g_HaloSprite, 0, 30, GetConVarFloat(g_hZonesBeamWidth), 1.0, 1.0, 2, 0.0, zColor, 0, 1);
 			}
 		}
 		else
-			TE_SendBeamBoxToClient(client, g_Positions[client][1], g_Positions[client][0], g_BeamSprite, g_HaloSprite, 0, 30, 0.1, 1.0, 1.0, 2, 0.0, zColor, 0, 1);
+			TE_SendBeamBoxToClient(client, g_Positions[client][1], g_Positions[client][0], g_BeamSprite, g_HaloSprite, 0, 30, GetConVarFloat(g_hZonesBeamWidth), 1.0, 1.0, 2, 0.0, zColor, 0, 1);
 	}
 
 	if (g_iSelectedTrigger[client] > -1)
@@ -1002,7 +1002,7 @@ public void BeamBox_OnPlayerRunCmd(int client)
 				fMaxs[j] = (fMaxs[j] + position[j]);
 			}
 
-			TE_SendBeamBoxToClient(client, fMins, fMaxs, g_BeamSprite, g_HaloSprite, 0, 30, 1.0, 1.0, 1.0, 2, 0.0, view_as<int>({255, 255, 0, 255}), 0, 1);
+			TE_SendBeamBoxToClient(client, fMins, fMaxs, g_BeamSprite, g_HaloSprite, 0, 30, 1.0, GetConVarFloat(g_hZonesBeamWidth), 1.0, 2, 0.0, view_as<int>({255, 255, 0, 255}), 0, 1);
 		}
 	}
 }
