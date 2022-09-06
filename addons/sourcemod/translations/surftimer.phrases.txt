@@ -1903,4 +1903,25 @@
 		"#format"	"{1:s}"
 		"en"		"{1} Map Record has no CCP saved, Old Record"
 	}
+	"Map Already Nominated"
+	{
+		"#format"		"{1:s}"
+		"en"			"{1} {yellow}The map you chose has already been nominated."
+	}
+    "Max Nominations"
+	{
+		"#format"		"{1:s}"
+		"en"			"{1} {red}The maximum allowed nominations has been reached."
+	}
+    "Map Nomination Changed"
+	{
+		"#format"		"{1:s},{2:s},{3:s}"
+		"en"			"{1} {2} has changed their nomination to {yellow}{3}{default}."
+	}
+    
+	"Map Nominated"
+	{
+		"#format"		"{1:s},{2:s},{3:s}"
+		"en"			"{1} {2} has nominated {yellow}{3}{default}."
+	}
 }
