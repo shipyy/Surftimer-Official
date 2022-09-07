@@ -161,8 +161,9 @@ public Action Event_OnPlayerSpawn(Handle event, const char[] name, bool dontBroa
 
 			//START RECORDING
 			StartRecording(client);
-			if(g_bhasStages)
+			if(g_bhasStages && g_iClientInZone[client][2] == 0) {
 				Stage_StartRecording(client);
+			}
 
 			CreateTimer(1.5, CenterMsgTimer, client, TIMER_FLAG_NO_MAPCHANGE);
 
@@ -1368,40 +1369,44 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
 				//MAP START
 				//IF PLAYER IS IN STARTZONE , NOT MOVING, NOT ON A RUN AND NOT RECORDING ,WE CAN STOP RECORDING WHEN HE STOPS MOVING
-				if(speed <= 0 && g_aRecording[client] != null && !g_bTimerRunning[client] && g_Recording[client]){
+				if(speed <= 0 && g_Recording[client] && g_bInStartZone[client]){
 					StopRecording(client);
-					g_StageRecording[client] = false;
+					if(g_iClientInZone[client][2] == 0) {
+						g_StageRecording[client] = false;
+					}
 				}
 				//IF THE PLAYER IS NOT BEING RECORDED BUT STARTS MOVING AGAIN, START RECORDING PLAYER
-				if(speed > 0 && !g_Recording[client] && !g_bTimerRunning[client] && g_bInStartZone[client]){
+				if(speed > 0 && !g_Recording[client] && g_bInStartZone[client]){
 					StopRecording(client);
 					StartRecording(client);
-					if (g_bhasStages)
-					{
+					if (g_bhasStages && g_iClientInZone[client][2] == 0) {
 						Stage_StartRecording(client);
 					}
 				}
 				//STAGE ONLY CASE
 				if(speed > 0 && !g_StageRecording[client] && !g_bTimerRunning[client] && !g_Recording[client] && g_bInStageZone[client]){
-					if (g_bhasStages)
+					if (g_bhasStages && g_iClientInZone[client][2] == 0) {
 						Stage_StartRecording(client);
+					}
 				}
 				if(speed <= 0 && g_StageRecording[client] && !g_bTimerRunning[client] && g_bInStageZone[client]){
-					if (g_bhasStages)
+					if (g_bhasStages && g_iClientInZone[client][2] == 0) {
 						g_StageRecording[client] = false;
+					}
 				}
 
 				//STAGE START
 				//IF THE PLAYER GETS A WRCP DURING A RUN BUT STOPS AT THE STARTZONE WE TRIM THE FRAMES
 				if(speed <= 0 && g_aRecording[client] != null && g_bTimerRunning[client] && g_Recording[client] && g_StageRecording[client] && g_bInStageZone[client]){
-					if(g_bhasStages){
+					if(g_bhasStages && g_iClientInZone[client][2] == 0){
 						g_StageRecording[client] = false;
 						//g_iStageStartFrame[client] = g_iRecordedTicks[client];
 					}
 				}
 				if(speed > 0 && g_aRecording[client] != null && g_bTimerRunning[client] && g_Recording[client] && !g_StageRecording[client] && g_bInStageZone[client]){
-					if(g_bhasStages)
+					if(g_bhasStages && g_iClientInZone[client][2] == 0) {
 						Stage_StartRecording(client);
+					}
 				}
 			}
 		}

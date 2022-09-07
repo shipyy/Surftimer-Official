@@ -455,6 +455,8 @@ void SendMapCheckpointForward(
 
 	/* Finish the call, get the result */
 	Call_Finish();
+
+	delete CustomCheckpoints;
 }
 
 //CP SPEEDS CODE

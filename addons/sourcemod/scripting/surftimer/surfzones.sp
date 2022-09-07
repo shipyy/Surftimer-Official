@@ -385,11 +385,11 @@ public void StartTouch(int client, int action[3])
 		else if (action[0] == 1 || action[0] == 5) // Start Zone or Speed Start
 		{
 
-			if (g_bTimerRunning[client]) {
+			if (g_bTimerRunning[client] && !IsFakeClient(client)) {
 				StopRecording(client);
-				StartRecording(client);
-				if (g_bhasStages)
-					Stage_StartRecording(client);
+				if (g_bhasStages && g_iClientInZone[client][2] == 0) {
+					g_StageRecording[client] = false;
+				}
 			}
 
 			// Set Default Values
@@ -567,7 +567,9 @@ public void StartTouch(int client, int action[3])
 				g_bSaveLocTele[client] = false;
 			}
 
-			Stage_StartRecording(client);
+			if (g_bhasStages && g_iClientInZone[client][2] == 0 && !IsFakeClient(client)) {
+				Stage_StartRecording(client);
+			}
 		}
 		else if (action[0] == 4) // Checkpoint Zone
 		{

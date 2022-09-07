@@ -4374,8 +4374,15 @@ public void Checkpoint(int client, int zone, int zonegroup, float time, float sp
 		Call_PushFloat(g_fCheckpointServerRecord[zonegroup][zone]);
 		Call_PushString(sz_srDiff_colorless);
 
+		ArrayList CustomCheckpoints = new ArrayList();
+		for (int i = 0; i < 8; i++)
+			CustomCheckpoints.Push(g_fCustomCheckpointsTimes_Difference[client][i][zone]);
+		Call_PushCell(CustomCheckpoints);
+
 		//Finish the call, get the result
 		Call_Finish();
+
+		delete CustomCheckpoints;
 
 		//CHAT MESSAGES
 		if (percent > -1.0)
