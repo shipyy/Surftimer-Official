@@ -673,7 +673,7 @@ public void CL_OnEndTimerPress(int client)
 
 				g_bBonusFirstRecord[client] = true;
 				g_pr_showmsg[client] = true;
-				db_UpdateCheckpoints(client, g_szSteamID[client], zGroup);
+				//db_UpdateCheckpoints(client, g_szSteamID[client], zGroup);
 				db_insertBonus(client, g_szSteamID[client], szName, g_fFinalTime[client], zGroup);
 
 			}
@@ -685,7 +685,7 @@ public void CL_OnEndTimerPress(int client)
 
 				g_bBonusPBRecord[client] = true;
 				g_pr_showmsg[client] = true;
-				db_UpdateCheckpoints(client, g_szSteamID[client], zGroup);
+				//db_UpdateCheckpoints(client, g_szSteamID[client], zGroup);
 				db_updateBonus(client, g_szSteamID[client], szName, g_fFinalTime[client], zGroup);
 			}
 

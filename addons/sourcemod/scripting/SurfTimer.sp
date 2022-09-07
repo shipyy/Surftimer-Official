@@ -24,7 +24,7 @@
 #include <dhooks>
 #include <mapchooser>
 #include <surftimer>
-#include <chat-processor>
+// #include <chat-processor>
 
 /*===================================
 =            Definitions            =
@@ -368,8 +368,6 @@ public void OnMapEnd()
 
 public void OnConfigsExecuted()
 {
-	CreateCommandListeners();
-
 	// Get Chat Prefix
 	GetConVarString(g_hChatPrefix, g_szChatPrefix, sizeof(g_szChatPrefix));
 	GetConVarString(g_hChatPrefix, g_szMenuPrefix, sizeof(g_szMenuPrefix));
@@ -1166,6 +1164,7 @@ public void OnPluginStart()
 	CreateConVars();
 	CreateCommands();
 	CreateHooks();
+	CreateCommandListeners();
 
 	db_setupDatabase();
 	CreateCommandsNewMap();

@@ -2865,7 +2865,7 @@ public void SQL_UpdateRecordProCallback2(Handle owner, Handle hndl, const char[]
 	SQL_EscapeString(g_hDb, szUName, szEscName, MAX_NAME_LENGTH * 2 + 1);
 
 	if(g_MapRank[client] != g_OldMapRank[client]){
-		if(g_OldMapRank[client] == 99999)
+		if(g_OldMapRank[client] == 9999999)
 			db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, 0, 0, g_MapRank[client]);
 		else
 			db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, 0, g_OldMapRank[client], g_MapRank[client]);
@@ -5016,13 +5016,15 @@ public void db_viewMapRankBonusCallback(Handle owner, Handle hndl, const char[] 
 	SQL_EscapeString(g_hDb, szUName, szEscName, MAX_NAME_LENGTH * 2 + 1);
 
 	//ONLY INSERT WHEN PLAYER IMPROVES OR GETS SAME TIME
-	if(g_MapRankBonus[zgroup][client] != g_OldMapRankBonus[zgroup][client]){
-		if(g_OldMapRankBonus[zgroup][client] == 9999999)
-			db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, zgroup, 0, g_MapRankBonus[zgroup][client]);
-		else
-			db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, zgroup, g_OldMapRankBonus[zgroup][client], g_MapRankBonus[zgroup][client]);
+	if (g_bSettingsLoaded[client]) {
+		if(g_MapRankBonus[zgroup][client] != g_OldMapRankBonus[zgroup][client]){
+			if(g_OldMapRankBonus[zgroup][client] == 9999999)
+				db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, zgroup, 0, g_MapRankBonus[zgroup][client]);
+			else
+				db_InsertTrack(g_szSteamID[client], szEscName, g_szMapName, zgroup, g_OldMapRankBonus[zgroup][client], g_MapRankBonus[zgroup][client]);
 
-		db_UpdateTrack(g_szMapName, szEscName, g_OldMapRankBonus[zgroup][client], g_MapRankBonus[zgroup][client], zgroup, false);
+			db_UpdateTrack(g_szMapName, szEscName, g_OldMapRankBonus[zgroup][client], g_MapRankBonus[zgroup][client], zgroup, false);
+		}
 	}
 
 	switch (type)
