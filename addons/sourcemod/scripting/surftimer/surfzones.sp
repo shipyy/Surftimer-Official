@@ -307,7 +307,8 @@ public void StartTouch(int client, int action[3])
 		float currentspeed_XY = SquareRoot(Pow(CurVelVec[0], 2.0) + Pow(CurVelVec[1], 2.0));
 		float currentspeed_Z = SquareRoot(Pow(CurVelVec[2], 2.0));
 
-		if ((action[0] == 1 || action[0] == 2 || action[0] == 5) && g_bPracticeMode[client] && (currentspeed_XY > g_mapZones[g_iClientInZone[client][3]].PreSpeed || currentspeed_Z > g_mapZones[g_iClientInZone[client][3]].PreSpeed) ) {
+		if ((action[0] == 1 || (action[0] == 3 && g_Stage[0][client] == g_iClientInZone[client][2]) || action[0] == 5) && g_bPracticeMode[client] && (currentspeed_XY > g_mapZones[g_iClientInZone[client][3]].PreSpeed || currentspeed_Z > g_mapZones[g_iClientInZone[client][3]].PreSpeed) ) {
+			
 			Command_Teleport(client, 1); // teleport back to zone
 		}
 
