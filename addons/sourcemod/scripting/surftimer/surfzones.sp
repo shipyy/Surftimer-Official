@@ -384,14 +384,6 @@ public void StartTouch(int client, int action[3])
 		}
 		else if (action[0] == 1 || action[0] == 5) // Start Zone or Speed Start
 		{
-
-			if (g_bTimerRunning[client] && !IsFakeClient(client)) {
-				StopRecording(client);
-				if (g_bhasStages && g_iClientInZone[client][2] == 0) {
-					g_StageRecording[client] = false;
-				}
-			}
-
 			// Set Default Values
 			Client_Stop(client, 1);
 			ResetGravity(client);
@@ -406,6 +398,9 @@ public void StartTouch(int client, int action[3])
 			lastCheckpoint[g_iClientInZone[client][2]][client] = 1;
 			g_bSaveLocTele[client] = false;
 
+			// StopRecording(client); //Add pre
+			StartRecording(client); //Add pre
+
 			if (g_bPracticeMode[client])
 			{
 				g_bPracticeMode[client] = false;
@@ -417,6 +412,9 @@ public void StartTouch(int client, int action[3])
 				g_bWrcpTimeractivated[client] = false;
 				g_bPracSrcpTimerActivated[client] = false;
 				g_CurrentStage[client] = 0;
+
+				// Prevents the Stage(X) replay from starting before the Stage(X) start zone
+				g_iStageStartTouchTick[client] = g_iRecordedTicks[client]; //Add pre
 
 			}
 		}
@@ -485,6 +483,9 @@ public void StartTouch(int client, int action[3])
 			g_bInJump[client] = false;
 			g_bInDuck[client] = false;
 			g_KeyCount[client] = 0;
+
+			// Prevents the Stage(X) replay from starting before the Stage(X) start zone
+			g_iStageStartTouchTick[client] = g_iRecordedTicks[client]; //Add pre
 
 			// stop bot wrcp timer
 			if (client == g_WrcpBot)
@@ -565,10 +566,6 @@ public void StartTouch(int client, int action[3])
 			if (g_bPracticeMode[client]) 
 			{
 				g_bSaveLocTele[client] = false;
-			}
-
-			if (g_bhasStages && g_iClientInZone[client][2] == 0 && !IsFakeClient(client)) {
-				Stage_StartRecording(client);
 			}
 		}
 		else if (action[0] == 4) // Checkpoint Zone

@@ -981,11 +981,6 @@ int g_iPreStrafeBonus[3][MAXZONEGROUPS][MAX_STYLES][MAXPLAYERS + 1];
 // Latest prestrafe speed for stages
 int g_iPreStrafeStage[3][CPLIMIT][MAX_STYLES][MAXPLAYERS + 1];
 
-/*----------  Replay Variables  ----------*/
-
-bool g_Recording[MAXPLAYERS + 1]; //THIS VAR ALOWS TO STOP LOOPING THE CALL TO THE FUNCTION
-bool g_StageRecording[MAXPLAYERS + 1]; //THIS VAR ALOWS TO STOP LOOPING THE CALL TO THE FUNCTION
-
 // Checks if the bot is new, if so, set weapon
 bool g_bNewRecordBot;
 
@@ -1038,6 +1033,9 @@ int g_iCPStartFrame_CurrentRun[MAX_STYLES][CPLIMIT][MAXPLAYERS + 1];
 
 // Replay bot's frame
 int g_iReplayTick[MAXPLAYERS + 1];
+
+int g_iStageStartTouchTick[MAXPLAYERS + 1];
+int g_iStartPressTick[MAXPLAYERS + 1]; 
 
 // Stage replays stuff
 int g_iStageStartFrame[MAXPLAYERS+1];

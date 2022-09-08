@@ -210,6 +210,13 @@ public void CL_OnStartTimerPress(int client)
 	// Play Start Sound
 	PlayButtonSound(client);
 
+	if (g_iRecordedTicks[client] == 0)
+		g_iStartPressTick[client] = g_iRecordedTicks[client];
+	else if (g_iRecordedTicks[client] >= (g_iTickrate * GetConVarInt(g_hReplayPre)))
+		g_iStartPressTick[client] = g_iRecordedTicks[client] - (g_iTickrate * GetConVarInt(g_hReplayPre));
+	else if (g_iRecordedTicks[client] >= g_iTickrate)
+		g_iStartPressTick[client] = g_iRecordedTicks[client] - g_iTickrate;
+
 }
 
 // End Timer
@@ -838,7 +845,7 @@ public void CL_OnStartWrcpTimerPress(int client)
 			// Enable Trigger Output on Timer Restart
 			g_bTeleByCommand[client] = false;
 			g_WrcpStage[client] = g_Stage[0][client];
-			//Stage_StartRecording(client);
+			Stage_StartRecording(client);
 
 			if (g_iCurrentStyle[client] == 0 && g_bTimerRunning[client]) {
 				g_iStageAttemptsNew[client][g_Stage[0][client]-1] += 1;
