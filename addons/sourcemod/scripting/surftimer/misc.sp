@@ -968,10 +968,11 @@ public void GetCountry(int client)
 			char code2[3];
 			GetClientIP(client, IP, 16);
 
-			// COUNTRY
-			GeoipCountry(IP, g_szCountry[client], 100);
+			GeoipCountry(IP, g_szCountry[client], sizeof g_szCountry[]);
+			GeoipCode2(IP, g_szCountryCode[client]);
+
 			if (!strcmp(g_szCountry[client], NULL_STRING))
-				Format(g_szCountry[client], 100, "Unknown", g_szCountry[client]);
+				Format(g_szCountry[client], sizeof g_szCountry[], "Unknown", g_szCountry[client]);
 			else
 				if (StrContains(g_szCountry[client], "United", false) != -1 ||
 				StrContains(g_szCountry[client], "Republic", false) != -1 ||
@@ -984,15 +985,8 @@ public void GetCountry(int client)
 				StrContains(g_szCountry[client], "Philippines", false) != -1 ||
 				StrContains(g_szCountry[client], "Vatican", false) != -1)
 			{
-				Format(g_szCountry[client], 100, "The %s", g_szCountry[client]);
+				Format(g_szCountry[client], sizeof g_szCountry[], "The %s", g_szCountry[client]);
 			}
-			// CODE
-			if (GeoipCode2(IP, code2))
-			{
-				Format(g_szCountryCode[client], 16, "%s", code2);
-			}
-			else
-				Format(g_szCountryCode[client], 16, "??");
 		}
 	}
 }
