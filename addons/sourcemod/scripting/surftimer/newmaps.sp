@@ -61,15 +61,14 @@ public int NewMapMenuHandler(Menu menu, MenuAction action, int param1, int param
 			CPrintToChat(param1, "%t", "Max Nominations", g_szChatPrefix);
 			return 0;
 		}
-
-		if (result == Nominate_Replaced)
+		else if (result == Nominate_Replaced)
 		{
 			CPrintToChatAll("%t", "Map Nomination Changed", g_szChatPrefix, name, menuPieces[0]);
 			return 0;	
 		}
-		
-		CPrintToChatAll("%t", "Map Nominated", g_szChatPrefix, name, menuPieces[0]);
-
+		else {
+			CPrintToChatAll("%t", "Map Nominated", g_szChatPrefix, name, menuPieces[0]);
+		}
 	}
 
 	if (action == MenuAction_End)
