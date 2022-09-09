@@ -965,8 +965,7 @@ public void GetCountry(int client)
 		if (!IsFakeClient(client))
 		{
 			char IP[16];
-			char code2[3];
-			GetClientIP(client, IP, 16);
+			GetClientIP(client, IP, sizeof IP);
 
 			GeoipCountry(IP, g_szCountry[client], sizeof g_szCountry[]);
 			GeoipCode2(IP, g_szCountryCode[client]);
