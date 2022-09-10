@@ -4892,6 +4892,10 @@ public void SQL_selectMapTierCallback(Handle owner, Handle hndl, const char[] er
 		// Format tier string
 		tier = SQL_FetchInt(hndl, 0);
 		g_bRankedMap = view_as<bool>(SQL_FetchInt(hndl, 1));
+		
+		char szMapperName[MAX_NAME_LENGTH];
+		SQL_FetchString(hndl, 2, szMapperName, sizeof(szMapperName));
+
 		if (0 < tier < 9)
 		{
 			g_bTierFound = true;
@@ -4919,6 +4923,9 @@ public void SQL_selectMapTierCallback(Handle owner, Handle hndl, const char[] er
 					Format(g_sTierString, 512, "%s %c-%c %i Bonuses", g_sTierString, WHITE, ORANGE, (g_mapZoneGroupCount - 1));
 				else
 					Format(g_sTierString, 512, "%s %c-%c Bonus", g_sTierString, WHITE, ORANGE, (g_mapZoneGroupCount - 1));
+			
+			if (!StrEqual(szMapperName, "N/A", true))
+				Format(g_sTierString, 512, "%s %c| %cMade by %s", g_sTierString, WHITE, GREEN, szMapperName);
 		}
 	}
 	else
@@ -10172,7 +10179,7 @@ public void db_selectMapImprovement(int client, char szMapName[128])
 {
 	char szQuery[1024];
 
-	Format(szQuery, sizeof(szQuery), "SELECT mapname, (SELECT count(1) FROM ck_playertimes b WHERE a.mapname = b.mapname AND b.style = 0) as total, (SELECT tier FROM ck_maptier b WHERE a.mapname = b.mapname) as tier FROM ck_playertimes a where mapname LIKE '%c%s%c' AND style = 0 LIMIT 1;", PERCENT, szMapName, PERCENT);
+	Format(szQuery, sizeof(szQuery), "SELECT mapname, (SELECT count(1) FROM ck_playertimes b WHERE a.mapname = b.mapname AND b.style = 0) as total, (SELECT tier FROM ck_maptier b WHERE a.mapname = b.mapname) as tier, (SELECT mapper FROM ck_maptier b WHERE a.mapname = b.mapname) as mapper FROM ck_playertimes a where mapname LIKE '%c%s%c' AND style = 0 LIMIT 1;", PERCENT, szMapName, PERCENT);
 	SQL_TQuery(g_hDb, db_selectMapImprovementCallback, szQuery, client, DBPrio_Low);
 }
 
@@ -10189,10 +10196,15 @@ public void db_selectMapImprovementCallback(Handle owner, Handle hndl, const cha
 		char szMapName[32];
 		int totalplayers;
 		int tier;
+		char szMapperName[MAX_NAME_LENGTH];
 
 		SQL_FetchString(hndl, 0, szMapName, sizeof(szMapName));
 		totalplayers = SQL_FetchInt(hndl, 1);
 		tier = SQL_FetchInt(hndl, 2);
+		SQL_FetchString(hndl, 3, szMapperName, sizeof(szMapperName));
+
+		if (StrEqual(szMapperName, "N/A", true))
+			Format(szMapperName, sizeof szMapperName, "%s", "Unknown");
 
 		g_szMiMapName[client] = szMapName;
 		int type;
@@ -10413,7 +10425,7 @@ public void db_selectMapImprovementCallback(Handle owner, Handle hndl, const cha
 		if (type == 0)
 		{
 			Menu mi = CreateMenu(MapImprovementMenuHandler);
-			SetMenuTitle(mi, "[Point Reward: %s]\n------------------------------\nTier: %i\n \n[Completion Points]\n \nMap Finish Points: %i\n \n[Map Improvement Groups]\n \n[Group 1] Ranks 11-%i ~ %i Pts\n[Group 2] Ranks %i-%i ~ %i Pts\n[Group 3] Ranks %i-%i ~ %i Pts\n[Group 4] Ranks %i-%i ~ %i Pts\n[Group 5] Ranks %i-%i ~ %i Pts\n \nSR Pts: %i\n \nTotal Completions: %i\n \n",szMapName, tier, mapcompletion, g1top, RoundFloat(g1points), g2bot, g2top, RoundFloat(g2points), g3bot, g3top, RoundFloat(g3points), g4bot, g4top, RoundFloat(g4points), g5bot, g5top, RoundFloat(g5points), iwrpoints, totalplayers);
+			SetMenuTitle(mi, "[Point Reward: %s]\n------------------------------\nMapper: %s\nTier: %i\n \n[Completion Points]\n \nMap Finish Points: %i\n \n[Map Improvement Groups]\n \n[Group 1] Ranks 11-%i ~ %i Pts\n[Group 2] Ranks %i-%i ~ %i Pts\n[Group 3] Ranks %i-%i ~ %i Pts\n[Group 4] Ranks %i-%i ~ %i Pts\n[Group 5] Ranks %i-%i ~ %i Pts\n \nSR Pts: %i\n \nTotal Completions: %i\n \n",szMapName, szMapperName, tier, mapcompletion, g1top, RoundFloat(g1points), g2bot, g2top, RoundFloat(g2points), g3bot, g3top, RoundFloat(g3points), g4bot, g4top, RoundFloat(g4points), g5bot, g5top, RoundFloat(g5points), iwrpoints, totalplayers);
 			// AddMenuItem(mi, "", "", ITEMDRAW_SPACER);
 			AddMenuItem(mi, szMapName, "Top 10 Points");
 			SetMenuOptionFlags(mi, MENUFLAG_BUTTON_EXIT);

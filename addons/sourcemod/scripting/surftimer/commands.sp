@@ -61,6 +61,7 @@ void CreateCommands()
 	RegConsoleCmd("sm_mapinfo", Command_Tier, "[surftimer] Prints information on the current map");
 	RegConsoleCmd("sm_m", Command_Tier, "[surftimer] Prints information on the current map");
 	RegConsoleCmd("sm_difficulty", Command_Tier, "[surftimer] Prints information on the current map");
+	RegConsoleCmd("sm_mapper", Command_Mapper, "[surftimer] Prints the mapper of a map");
 	RegConsoleCmd("sm_howto", Command_HowTo, "[surftimer] Displays a youtube video on how to surf");
 
 
@@ -1656,6 +1657,28 @@ public Action Command_Tier(int client, int args)
 {
 	if (IsValidClient(client) && g_bTierFound)
 		CPrintToChat(client, "%t", "Timer1", g_szChatPrefix, g_sTierString);
+	
+	return Plugin_Handled;
+}
+
+public Action Command_Mapper(int client, int args)
+{
+	if (IsValidClient(client) && g_bTierFound) {
+
+		if (StrContains(g_sTierString, "Made by ", true) != -1) {
+
+			char szExplodedString[2][128];
+			ExplodeString(g_sTierString, "|", szExplodedString, 2, 128, false);
+
+			TrimString(szExplodedString[1]);
+			ReplaceString(szExplodedString[1], sizeof szExplodedString[], "Made by ", "", true);
+			
+			CPrintToChat(client, "%t", "Mapper", g_szChatPrefix, szExplodedString[1]);
+		}
+		else {
+			CPrintToChat(client, "%t", "Mapper_Unknown", g_szChatPrefix);
+		}
+	}
 	
 	return Plugin_Handled;
 }

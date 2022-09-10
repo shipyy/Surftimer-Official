@@ -1918,10 +1918,19 @@
 		"#format"		"{1:s},{2:s},{3:s}"
 		"en"			"{1} {2} has changed their nomination to {yellow}{3}{default}."
 	}
-    
 	"Map Nominated"
 	{
 		"#format"		"{1:s},{2:s},{3:s}"
 		"en"			"{1} {2} has nominated {yellow}{3}{default}."
+	}
+	"Mapper"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"		"{1} Map made by {blue}{2}{default}"
+	}
+	"Mapper_Unknown"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} {red}Unknown Mapper"
 	}
 }
