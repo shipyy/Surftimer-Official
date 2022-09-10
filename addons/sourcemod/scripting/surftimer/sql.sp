@@ -1944,9 +1944,9 @@ public void sql_selectPlayerProfileCallback(Handle owner, Handle hndl, const cha
 		Format(szStageRecords, 128,"Stage Records: %i", wrcps);
 		Format(szBonusRecords, 128, "Bonus Records: %i", wrbs);
 
-		AddMenuItem(menu, "%s", szMapRecords);
-		AddMenuItem(menu, "%s", szStageRecords);
-		AddMenuItem(menu, "%s", szBonusRecords);
+		AddMenuItem(menu, szSteamId, szMapRecords);
+		AddMenuItem(menu, szSteamId, szStageRecords);
+		AddMenuItem(menu, szSteamId, szBonusRecords);
 		AddMenuItem(menu, szSteamId, "Player Info");
 
 		if (IsValidClient(client))
