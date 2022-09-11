@@ -300,8 +300,15 @@ public void CL_OnEndTimerPress(int client)
 	{
 		if (style == 0)
 		{
-			g_fPBDifference[client][0] = g_fFinalTime[client] - g_fPersonalRecord[client];
-			g_fWRDifference[client][0] = g_fFinalTime[client] - g_fRecordMapTime;
+			if (g_fPersonalRecord[client] != 0.0)
+				g_fPBDifference[client][0] = g_fFinalTime[client] - g_fPersonalRecord[client];
+			else
+				g_fPBDifference[client][0] = 999999.0;
+			
+			if(g_fRecordMapTime != 9999999.0)
+				g_fWRDifference[client][0] = g_fFinalTime[client] - g_fRecordMapTime;
+			else
+				g_fWRDifference[client][0] = 999999.0;
 
 			// Make a new record bot?
 			if (GetConVarBool(g_hReplaceReplayTime) && (g_fFinalTime[client] < g_fReplayTimes[0][0] || g_fReplayTimes[0][0] == 0.0))
@@ -440,8 +447,15 @@ public void CL_OnEndTimerPress(int client)
 		}
 		else if (style != 0)
 		{	
-			g_fPBDifference[client][style] = g_fFinalTime[client] - g_fPersonalStyleRecord[style][client];
-			g_fWRDifference[client][style] = g_fFinalTime[client] - g_fRecordStyleMapTime[style];
+			if (g_fPersonalStyleRecord[style][client] != 0.0)
+				g_fPBDifference[client][style] = g_fFinalTime[client] - g_fPersonalStyleRecord[style][client];
+			else
+				g_fPBDifference[client][style] = 999999.0;
+
+			if (g_fRecordStyleMapTime[style] != 9999999.0)
+				g_fWRDifference[client][style] = g_fFinalTime[client] - g_fRecordStyleMapTime[style];
+			else
+				g_fWRDifference[client][style] = 999999.0;
 
 			// Make a new record bot?
 			if (GetConVarBool(g_hReplaceReplayTime) && (g_fFinalTime[client] < g_fReplayTimes[0][style] || g_fReplayTimes[0][style] == 0.0))
@@ -565,9 +579,16 @@ public void CL_OnEndTimerPress(int client)
 		=            Handle Bonus            =
 		====================================*/
 		if (style == 0)
-		{
-			g_fPBDifference_Bonus[client][0][zGroup] = g_fFinalTime[client] - g_fPersonalRecordBonus[zGroup][client];
-			g_fWRDifference_Bonus[client][0][zGroup] = g_fFinalTime[client] - g_fBonusFastest[zGroup];
+		{	
+			if (g_fPersonalRecordBonus[zGroup][client] != 0.0)
+				g_fPBDifference_Bonus[client][0][zGroup] = g_fFinalTime[client] - g_fPersonalRecordBonus[zGroup][client];
+			else
+				g_fPBDifference_Bonus[client][0][zGroup] = 999999.0;
+			
+			if (g_fBonusFastest[zGroup] != 9999999.0)
+				g_fWRDifference_Bonus[client][0][zGroup] = g_fFinalTime[client] - g_fBonusFastest[zGroup];
+			else
+				g_fWRDifference_Bonus[client][0][zGroup] = 999999.0;
 
 			if (GetConVarBool(g_hReplaceReplayTime) && (g_fFinalTime[client] < g_fReplayTimes[zGroup][0] || g_fReplayTimes[zGroup][0] == 0.0))
 			{
@@ -703,9 +724,16 @@ public void CL_OnEndTimerPress(int client)
 			}
 		}
 		else if (style != 0)
-		{
-			g_fPBDifference_Bonus[client][style][zGroup] = g_fFinalTime[client] - g_fStylePersonalRecordBonus[style][zGroup][client];
-			g_fWRDifference_Bonus[client][style][zGroup] = g_fFinalTime[client] - g_fStyleBonusFastest[style][zGroup]
+		{	
+			if (g_fStylePersonalRecordBonus[style][zGroup][client] != 0.0)
+				g_fPBDifference_Bonus[client][style][zGroup] = g_fFinalTime[client] - g_fStylePersonalRecordBonus[style][zGroup][client];
+			else
+				g_fPBDifference_Bonus[client][style][zGroup] = 999999.0;
+			
+			if (g_fStyleBonusFastest[style][zGroup] != 9999999.0)
+				g_fWRDifference_Bonus[client][style][zGroup] = g_fFinalTime[client] - g_fStyleBonusFastest[style][zGroup];
+			else
+				g_fWRDifference_Bonus[client][style][zGroup] = 999999.0;
 
 			if (GetConVarBool(g_hReplaceReplayTime) && (g_fFinalTime[client] < g_fReplayTimes[zGroup][style] || g_fReplayTimes[zGroup][style] == 0.0))
 			{
