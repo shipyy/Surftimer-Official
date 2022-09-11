@@ -4043,19 +4043,19 @@ public void Checkpoint(int client, int zone, int zonegroup, float time, float sp
 			if (g_bCheckpointRecordFound[zonegroup])
 				g_fCustomCheckpointsTimes_Difference[client][i][zone] = g_fCheckpointServerRecord[zonegroup][zone] - time;
 			else
-				g_fCustomCheckpointsTimes_Difference[client][i][zone] = 666666.0;
+				g_fCustomCheckpointsTimes_Difference[client][i][zone] = 999999.0;
 		}
 		else if (i == 1) {
 			if (g_bCheckpointsFound[zonegroup][client])
 				g_fCustomCheckpointsTimes_Difference[client][i][zone] = g_fCheckpointTimesRecord[zonegroup][client][zone] - time;
 			else
-				g_fCustomCheckpointsTimes_Difference[client][i][zone] = 666666.0;
+				g_fCustomCheckpointsTimes_Difference[client][i][zone] = 999999.0;
 		}
 		else {
 			if (g_fCustomCheckpointsTimes[i][zone] > 0.0)
 				g_fCustomCheckpointsTimes_Difference[client][i][zone] = g_fCustomCheckpointsTimes[i][zone] - time;
 			else
-				g_fCustomCheckpointsTimes_Difference[client][i][zone] = 666666.0;
+				g_fCustomCheckpointsTimes_Difference[client][i][zone] = 999999.0;
 		}
 	}
 
