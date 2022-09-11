@@ -417,6 +417,16 @@
 		"#format"	"{1:s},{2:s},{3:s},{4:s},{5:s},{6:i},{7:i},{8:s}"
 		"en"		"{1} {yellow}{2}{default} finished {red}{3} {default}in {lightgreen}{4}{default}. Missing their best time by [{red}{5}{default}]. [Rank: {lightgreen}{6}/{7} {default}| Record: {lightgreen}{8}{default}]"
 	}
+	"BPress7"
+	{
+		"#format"	"{1:s},{2:s},{3:s},{4:s},{5:i}"
+		"en"		"{1} {blue}[Practice]{default} {red}{2}{default} finished the bonus in {yellow}{3}{default} [{blue}{4}{default} | {blue}Rank {5}{default}]"
+	}
+	"BPress8"
+	{
+		"#format"	"{1:s},{2:s},{3:s},{4:s},{5:i}"
+		"en"		"{1} {blue}[Practice]{default} {red}{2}{default} finished the map in {yellow}{3}{default} [{blue}{4}{default} | {blue}Rank {5}{default}]"
+	}
 	"ErrorStageTime"
 	{
 		"#format"	"{1:s},{2:i}"

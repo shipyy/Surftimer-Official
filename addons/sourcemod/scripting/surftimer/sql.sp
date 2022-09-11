@@ -2613,6 +2613,7 @@ public void db_currentRunRank_Prac(int client, int style, int zgroup)
 		Handle data = CreateDataPack();
 		WritePackCell(data, client);
 		WritePackCell(data, zgroup);
+		WritePackCell(data, style);
 		WritePackFloat(data, g_fCurrentRunTime[client]);
 
 		Format(szQuery, sizeof(szQuery), "SELECT count(runtimepro)+1 FROM ck_playertimes WHERE mapname = '%s' AND style = '%i' AND runtimepro < '%f';", g_szMapName, style, g_fCurrentRunTime[client]);
@@ -2623,6 +2624,7 @@ public void db_currentRunRank_Prac(int client, int style, int zgroup)
 		Handle data = CreateDataPack();
 		WritePackCell(data, client);
 		WritePackCell(data, zgroup);
+		WritePackCell(data, style);
 		WritePackFloat(data, g_fCurrentRunTime[client]);
 
 		Format(szQuery, sizeof(szQuery), "SELECT count(runtime)+1 FROM ck_bonus WHERE mapname = '%s' AND style = '%i' AND zonegroup = '%i' AND runtime < '%f'", g_szMapName, zgroup, style, g_fCurrentRunTime[client]);
@@ -2644,6 +2646,7 @@ public void SQL_CurrentRunRank_PracCallback(Handle owner, Handle hndl, const cha
 		ResetPack(data);
 		int client = ReadPackCell(data);
 		int zgroup = ReadPackCell(data);
+		int style = ReadPackCell(data);
 		float runtime = ReadPackFloat(data);
 		delete view_as<DataPack>(data);
 
@@ -2651,36 +2654,96 @@ public void SQL_CurrentRunRank_PracCallback(Handle owner, Handle hndl, const cha
 
 		char sz_srDiff[128];
 		float f_srDiff;
+		float f_PBDiff;
 
-		if (zgroup == 0)
-			f_srDiff = (g_fRecordMapTime - runtime);
-		else
-			f_srDiff = (g_fBonusFastest[zgroup] - runtime);
+		//FORMAT WR DIFERENCES DEPENDING ON ZONEGROUP AND STYLE
+		if (style == 0) {
+			if (zgroup == 0) {
+				if(g_fRecordMapTime != 9999999.0)
+					f_srDiff = runtime - g_fRecordMapTime;
+				else
+					f_srDiff = 999999.0;
+			}
+			else {
+				if (g_fBonusFastest[zgroup] != 9999999.0)
+					f_srDiff = runtime - g_fBonusFastest[zgroup];
+				else
+					f_srDiff = 999999.0;
+			}
+		}
+		else {
+			if (zgroup == 0) {
+				if (g_fRecordStyleMapTime[style] != 9999999.0)
+					f_srDiff = runtime - g_fRecordStyleMapTime[style];
+				else
+					f_srDiff = 999999.0;
+			}
+			else {
+				if (g_fStyleBonusFastest[style][zgroup] != 9999999.0)
+					f_srDiff = runtime - g_fStyleBonusFastest[style][zgroup];
+				else
+					f_srDiff = 999999.0;
+			}
+		}
 
 		FormatTimeFloat(client, f_srDiff, 3, sz_srDiff, 128);
-
-		if (f_srDiff > 0.0)
-		{
-			Format(sz_srDiff, 128, "%cSR: %c-%s%c", WHITE, LIGHTGREEN, sz_srDiff, WHITE);
-		}
+		if (f_srDiff != 999999.0)
+			if (f_srDiff > 0.0)
+				Format(sz_srDiff, 128, "%cSR: %c+%s%c", WHITE, RED, sz_srDiff, WHITE);
+			else
+				Format(sz_srDiff, 128, "%cSR: %c-%s%c", WHITE, LIGHTGREEN, sz_srDiff, WHITE);
 		else
-		{
-			Format(sz_srDiff, 128, "%cSR: %c+%s%c", WHITE, RED, sz_srDiff, WHITE);
-		}
+			Format(sz_srDiff, 128, "SR: N/A");
+			
+		//FORMAT PB DIFERENCES DEPENDING ON ZONEGROUP AND STYLE
+		if (style == 0)
+			if (zgroup == 0)
+				if (g_fPersonalRecord[client] != 0.0)
+					f_PBDiff = runtime - g_fPersonalRecord[client];
+				else
+					f_PBDiff = 999999.0;
+			else
+				if (g_fPersonalRecordBonus[zgroup][client] != 0.0)
+					f_PBDiff = runtime - g_fPersonalRecordBonus[zgroup][client];
+				else
+					f_PBDiff = 999999.0;
+		else
+			if (zgroup == 0)
+				if (g_fPersonalStyleRecord[style][client] != 0.0)
+					f_PBDiff = runtime - g_fPersonalStyleRecord[style][client];
+				else
+					f_PBDiff = 999999.0;
+			else
+				if (g_fStylePersonalRecordBonus[style][zgroup][client] != 0.0)
+					f_PBDiff = runtime - g_fStylePersonalRecordBonus[style][zgroup][client];
+				else
+					f_PBDiff = 999999.0;
 
 		char szSpecMessage[512];
-	
-		if (zgroup > 0){
-			CPrintToChat(client, "%t", "BPress4", g_szChatPrefix, g_szPracticeTime[client], sz_srDiff, g_iPracRunTimeRank[client]);
-			Format(szSpecMessage, sizeof(szSpecMessage), "%t", "BPress4", g_szChatPrefix, g_szPracticeTime[client], sz_srDiff, g_iPracRunTimeRank[client]);
+		if (style == 0) {
+			if (zgroup > 0){
+				CPrintToChat(client, "%t", "BPress4", g_szChatPrefix, g_szPracticeTime[client], sz_srDiff, g_iPracRunTimeRank[client]);
+				Format(szSpecMessage, sizeof(szSpecMessage), "%t", "BPress4", g_szChatPrefix, g_szPracticeTime[client], sz_srDiff, g_iPracRunTimeRank[client]);
+			}
+			else{
+				CPrintToChat(client, "%t", "BPress5", g_szChatPrefix, g_szPracticeTime[client], sz_srDiff , g_iPracRunTimeRank[client]);
+				Format(szSpecMessage, sizeof(szSpecMessage), "%t", "BPress5", g_szChatPrefix, g_szPracticeTime[client], sz_srDiff, g_iPracRunTimeRank[client]);
+			}
 		}
-		else{
-			CPrintToChat(client, "%t", "BPress5", g_szChatPrefix, g_szPracticeTime[client], sz_srDiff , g_iPracRunTimeRank[client]);
-			Format(szSpecMessage, sizeof(szSpecMessage), "%t", "BPress5", g_szChatPrefix, g_szPracticeTime[client], sz_srDiff, g_iPracRunTimeRank[client]);
+		else {
+			if (zgroup > 0){
+				CPrintToChat(client, "%t", "BPress7", g_szChatPrefix, g_szStyleRecordPrint[style], g_szPracticeTime[client], sz_srDiff, g_iPracRunTimeRank[client]);
+				Format(szSpecMessage, sizeof(szSpecMessage), "%t", "BPress7", g_szChatPrefix, g_szStyleRecordPrint[style], g_szPracticeTime[client], sz_srDiff, g_iPracRunTimeRank[client]);
+			}
+			else{
+				CPrintToChat(client, "%t", "BPress8", g_szChatPrefix, g_szStyleRecordPrint[style], g_szPracticeTime[client], sz_srDiff, g_iPracRunTimeRank[client]);
+				Format(szSpecMessage, sizeof(szSpecMessage), "%t", "BPress8", g_szChatPrefix, g_szStyleRecordPrint[style], g_szPracticeTime[client], sz_srDiff, g_iPracRunTimeRank[client]);
+			}
 		}
 
 		CheckpointToSpec(client, szSpecMessage);
-		
+
+		SendPracticeFinishForward(client, runtime, f_PBDiff, f_srDiff, zgroup);
 	}
 }
 

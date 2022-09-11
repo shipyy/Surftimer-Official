@@ -279,8 +279,6 @@ public void CL_OnEndTimerPress(int client)
 		// Get CurrentRunTime and format it to a string
 		FormatTimeFloat(client, g_fCurrentRunTime[client], 3, g_szPracticeTime[client], 32);
 		db_currentRunRank_Prac(client, g_iCurrentStyle[client], g_iClientInZone[client][2]);
-		
-		SendPracticeFinishForward(client);
 
 		// Stop Timer
 		Client_Stop(client, 1);

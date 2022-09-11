@@ -368,7 +368,7 @@ void Register_Forwards()
 	//DEFAULT
 	g_MapCheckpointForward = new GlobalForward("surftimer_OnCheckpoint", ET_Event, Param_Cell, Param_Float, Param_String, Param_Float, Param_String, Param_Float, Param_String, Param_Cell);
 	g_BonusFinishForward = new GlobalForward("surftimer_OnBonusFinished", ET_Event, Param_Cell, Param_Float, Param_String, Param_Float, Param_Float, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
-	g_PracticeFinishForward = new GlobalForward("surftimer_OnPracticeFinished", ET_Event, Param_Cell, Param_Float, Param_String);
+	g_PracticeFinishForward = new GlobalForward("surftimer_OnPracticeFinished", ET_Event, Param_Cell, Param_Float, Param_Float, Param_Float, Param_Cell);
 	g_NewRecordForward = new GlobalForward("surftimer_OnNewRecord", ET_Event, Param_Cell, Param_Cell, Param_String, Param_String, Param_Cell);
 	g_NewWRCPForward = new GlobalForward("surftimer_OnNewWRCP", ET_Event, Param_Cell, Param_Cell, Param_String, Param_String, Param_Cell);
 	g_MapStartForward = new GlobalForward("surftimer_OnMapStart", ET_Event, Param_Cell, Param_Cell, Param_Cell, Param_Cell);
@@ -540,15 +540,17 @@ void SendBonusFinishForward(int client, int rank, int zGroup, int style)
  * 
  * @param client           Index of the client.
  */
-void SendPracticeFinishForward(int client)
+void SendPracticeFinishForward(int client, float runtime, float fPBDifference, float fWRDifference, int zonegroup)
 {
 	/* Start function call */
 	Call_StartForward(g_PracticeFinishForward);
 
 	/* Push parameters one at a time */
 	Call_PushCell(client);
-	Call_PushFloat(g_fFinalTime[client]);
-	Call_PushString(g_szFinalTime[client]);
+	Call_PushFloat(runtime);
+	Call_PushFloat(fPBDifference);
+	Call_PushFloat(fWRDifference);
+	Call_PushCell(zonegroup);
 
 	/* Finish the call, get the result */
 	Call_Finish();
