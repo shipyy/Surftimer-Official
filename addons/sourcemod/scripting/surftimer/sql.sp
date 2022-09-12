@@ -2073,9 +2073,9 @@ public void RecordsMenu(int client, int option, char szSteamID[32])
 	char szQuery[512];
 
 	switch(option){
-		case 0: Format(szQuery, 512, sql_MapRecords, szSteamID, g_ProfileStyleSelect[client]);
-		case 1:	Format(szQuery, 512, sql_StageRecords, szSteamID, g_ProfileStyleSelect[client]);
-		case 2: Format(szQuery, 512, sql_BonusRecords, szSteamID, g_ProfileStyleSelect[client]);
+		case 0: Format(szQuery, 512, sql_MapRecords, g_ProfileStyleSelect[client], szSteamID);
+		case 1:	Format(szQuery, 512, sql_StageRecords, g_ProfileStyleSelect[client], szSteamID);
+		case 2: Format(szQuery, 512, sql_BonusRecords, g_ProfileStyleSelect[client], szSteamID);
 	}
 
 	SQL_TQuery(g_hDb, sql_selectRecordsMenuCallback, szQuery, pack ,DBPrio_Low);

@@ -74,10 +74,11 @@ char sql_CountRankedPlayers[] = "SELECT COUNT(steamid) FROM ck_playerrank WHERE 
 char sql_CountRankedPlayers2[] = "SELECT COUNT(steamid) FROM ck_playerrank where points > 0 AND style = %i;";
 char sql_selectPlayerProfile[] = "SELECT steamid, steamid64, name, country, points, wrpoints, wrbpoints, wrcppoints, top10points, groupspoints, mappoints, bonuspoints, finishedmapspro, finishedbonuses, finishedstages, wrs, wrbs, wrcps, top10s, `groups`, avgmaprank,  lastseen FROM ck_playerrank WHERE steamid = '%s' AND style = '%i';";
 char sql_AVGMapRank[] = "SELECT AVG(map_rank) FROM (SELECT mapname as map, (SELECT COUNT(*) FROM ck_playertimes WHERE runtimepro <= (SELECT runtimepro FROM ck_playertimes WHERE steamid = '%s' AND mapname = map AND runtimepro > -1.0 AND style = '%i') AND mapname = map AND style = '%i' AND runtimepro > -1.0 ORDER BY runtimepro) as map_rank FROM ck_playertimes WHERE steamid = '%s' AND style = '%i') as map_ranks_tables;";
-char sql_MapRecords[] = "SELECT 0, mapname, runtimepro FROM ck_playertimes WHERE steamid = '%s' AND style = '%i';";
-char sql_StageRecords[] = "SELECT 1, mapname, stage, runtimepro FROM ck_wrcps WHERE steamid = '%s' AND style = '%i';";
-char sql_BonusRecords[] = "SELECT 2, mapname, zonegroup, runtime FROM ck_bonus WHERE steamid = '%s' AND style = '%i';";
-// ck_playertemp
+char sql_MapRecords[] = "SELECT 0, mapname, MIN(runtimepro), steamid FROM `ck_playertimes` WHERE style = '%i' GROUP BY mapname HAVING steamid = '%s';"
+char sql_StageRecords[] = "SELECT 1, mapname, stage, MIN(runtimepro), steamid FROM `ck_wrcps` WHERE style = '%i' GROUP BY mapname, stage HAVING steamid = '%s';";
+char sql_BonusRecords[] = "SELECT 2, mapname, zonegroup, MIN(runtime), steamid FROM `ck_bonus` WHERE style = '%i' GROUP BY mapname, zonegroup HAVING steamid = '%s';";
+
+// ck_playertemp, steamid
 char sql_createPlayertmp[] = "CREATE TABLE IF NOT EXISTS ck_playertemp (steamid VARCHAR(32), mapname VARCHAR(32), cords1 FLOAT NOT NULL DEFAULT '-1.0', cords2 FLOAT NOT NULL DEFAULT '-1.0', cords3 FLOAT NOT NULL DEFAULT '-1.0', angle1 FLOAT NOT NULL DEFAULT '-1.0',angle2 FLOAT NOT NULL DEFAULT '-1.0',angle3 FLOAT NOT NULL DEFAULT '-1.0', EncTickrate INT(12) DEFAULT '-1.0', runtimeTmp FLOAT NOT NULL DEFAULT '-1.0', Stage INT, zonegroup INT NOT NULL DEFAULT 0, PRIMARY KEY(steamid,mapname)) DEFAULT CHARSET=utf8mb4;";
 char sql_insertPlayerTmp[] = "INSERT INTO ck_playertemp (cords1, cords2, cords3, angle1,angle2,angle3,runtimeTmp,steamid,mapname,EncTickrate,Stage,zonegroup) VALUES ('%f','%f','%f','%f','%f','%f','%f','%s', '%s', '%i', %i, %i);";
 char sql_updatePlayerTmp[] = "UPDATE ck_playertemp SET cords1 = '%f', cords2 = '%f', cords3 = '%f', angle1 = '%f', angle2 = '%f', angle3 = '%f', runtimeTmp = '%f', mapname ='%s', EncTickrate='%i', Stage = %i, zonegroup = %i WHERE steamid = '%s';";
