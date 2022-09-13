@@ -636,6 +636,7 @@ public void readMapycycle()
 			g_pr_MapCount[0]++;
 		}
 	}
+
 	return;
 }
 

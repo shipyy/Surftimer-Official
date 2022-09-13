@@ -859,6 +859,8 @@ bool g_iDisableTriggers[MAXPLAYERS + 1];
 // auto reset
 bool g_iAutoReset[MAXPLAYERS + 1];
 
+int g_iDefaultStyle[MAXPLAYERS + 1];
+
 /*----------  Run Variables  ----------*/
 
 // Clients personal record in map

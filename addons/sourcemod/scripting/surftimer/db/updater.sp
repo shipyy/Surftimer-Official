@@ -65,8 +65,13 @@ public void CheckDatabaseForUpdates()
             db_upgradeDatabase(10);
             return;
         }
+        if (!SQL_FastQuery(g_hDb, "SELECT default_style FROM ck_playeroptions2 LIMIT 1"))
+        {
+            db_upgradeDatabase(11);
+            return;
+        }
 
-        LogMessage("Version 10 looks good.");
+        LogMessage("Version 11 looks good.");
     }
 }
 
@@ -138,6 +143,10 @@ public void db_upgradeDatabase(int ver)
     else if (ver == 10)
     {
         SQL_FastQuery(g_hDb, "ALTER TABLE ck_playerrank ADD COLUMN avgmaprank int(12) NOT NULL DEFAULT '0' AFTER groups;");
+    }
+    else if (ver == 11)
+    {
+        SQL_FastQuery(g_hDb, "ALTER TABLE ck_playeroptions2 ADD COLUMN default_style INT(11) NOT NULL DEFAULT '0';");
     }
 
     CheckDatabaseForUpdates();

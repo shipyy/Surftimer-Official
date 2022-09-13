@@ -179,6 +179,16 @@ void CreateCommands()
 	RegConsoleCmd("sm_style", Client_SelectStyle, "[surftimer] open style select menu.");
 	RegConsoleCmd("sm_styles", Client_SelectStyle, "[surftimer] open style select menu.");
 
+	//STYLE COMMANDS
+	RegConsoleCmd("sm_n", StyleSelect_Client, "[surftimer] selects given style");
+	RegConsoleCmd("sm_sw", StyleSelect_Client, "[surftimer] selects given style");
+	RegConsoleCmd("sm_hsw", StyleSelect_Client, "[surftimer] selects given style");
+	RegConsoleCmd("sm_bw", StyleSelect_Client, "[surftimer] selects given style");
+	RegConsoleCmd("sm_ff", StyleSelect_Client, "[surftimer] selects given style");
+	RegConsoleCmd("sm_fs", StyleSelect_Client, "[surftimer] selects given style");
+	RegConsoleCmd("sm_sm", StyleSelect_Client, "[surftimer] selects given style");
+	RegConsoleCmd("sm_lg", StyleSelect_Client, "[surftimer] selects given style");
+
 	// Test
 	RegAdminCmd("sm_test", sm_test, ADMFLAG_CUSTOM6);
 	RegAdminCmd("sm_vel", Client_GetVelocity, ADMFLAG_ROOT);
@@ -3728,6 +3738,11 @@ public void MiscellaneousOptions(int client)
 	else if(g_iCustomCheckpointCompareType[client] == 8)
 		AddMenuItem(menu, "", "Compare To : [G5]");
 	
+	char szItem[32];
+	Format(szItem, sizeof szItem, "Default Style : %s", g_szStyleMenuPrint[g_iDefaultStyle[client]]);
+	AddMenuItem(menu, "", szItem);
+	
+	SetMenuPagination(menu, 5);
 	SetMenuExitBackButton(menu, true);
 	DisplayMenu(menu, client, MENU_TIME_FOREVER);
 }
@@ -3748,6 +3763,7 @@ public int MiscellaneousOptionsHandler(Menu menu, MenuAction action, int param1,
 			case 7: HintsText(param1, true);
 			case 8: TimeleftText(param1, true);
 			case 9: CheckpointComparisonType(param1, true);
+			case 10: DefaultStyle_Changer(param1, true);
 		}
 	}
 	else if (action == MenuAction_Cancel)
@@ -4451,6 +4467,119 @@ public int StyleSelectMenuHandler(Menu menu, MenuAction action, int param1, int 
 	}
 
 	return 0;
+}
+
+public Action StyleSelect_Client(int client, int params)
+{
+	if (!IsValidClient(client))
+		return Plugin_Handled;
+
+	char szInput[32];
+	GetCmdArg(0, szInput, sizeof szInput);
+
+	if (StrContains(szInput, "sm_", true) == 0)
+		ReplaceString(szInput, sizeof szInput, "sm_", "", true);
+
+	StringToUpper(szInput);
+
+	StyleSelect_Handler(client, szInput);
+	
+	return Plugin_Handled;
+}
+
+public void StyleSelect_Handler(int client, char szStyle[32])
+{
+	if (StrContains(szStyle, "HSW", false) != -1)
+	{
+		g_iCurrentStyle[client] = 2;
+		g_iInitalStyle[client] = 2;
+		Format(g_szInitalStyle[client], 128, "Half-Sideways");
+		Format(g_szStyleHud[client], 32, "[HSW]");
+		g_bRankedStyle[client] = true;
+		g_bFunStyle[client] = false;
+	}
+	else if (StrContains(szStyle, "SW", false) != -1)
+	{
+		g_iCurrentStyle[client] = 1;
+		g_iInitalStyle[client] = 1;
+		Format(g_szInitalStyle[client], 128, "Sideways");
+		Format(g_szStyleHud[client], 32, "[SW]");
+		g_bRankedStyle[client] = true;
+		g_bFunStyle[client] = false;
+	}
+	else if (StrContains(szStyle, "BW", false) != -1)
+	{
+		g_iCurrentStyle[client] = 3;
+		g_iInitalStyle[client] = 3;
+		Format(g_szInitalStyle[client], 128, "Backwards");
+		Format(g_szStyleHud[client], 32, "[BW]");
+		g_bRankedStyle[client] = true;
+		g_bFunStyle[client] = false;
+	}
+	else if (StrContains(szStyle, "LG", false) != -1)
+	{
+		g_iCurrentStyle[client] = 4;
+		g_iInitalStyle[client] = 4;
+		Format(g_szInitalStyle[client], 128, "Low-Gravity");
+		Format(g_szStyleHud[client], 32, "[LG]");
+		SetEntityGravity(client, 0.5);
+		g_bRankedStyle[client] = false;
+		g_bFunStyle[client] = true;
+	}
+	else if (StrContains(szStyle, "SM", false) != -1)
+	{
+		g_iCurrentStyle[client] = 5;
+		g_iInitalStyle[client] = 5;
+		Format(g_szInitalStyle[client], 128, "Slow Motion");
+		Format(g_szStyleHud[client], 32, "[SM]");
+		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", 0.5);
+		g_bRankedStyle[client] = false;
+		g_bFunStyle[client] = true;
+	}
+	else if (StrContains(szStyle, "FF", false) != -1)
+	{
+		g_iCurrentStyle[client] = 6;
+		g_iInitalStyle[client] = 6;
+		Format(g_szInitalStyle[client], 128, "Fast Forward");
+		Format(g_szStyleHud[client], 32, "[FF]");
+		SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", 1.5);
+		g_bRankedStyle[client] = false;
+		g_bFunStyle[client] = true;
+	}
+	else if (StrContains(szStyle, "FS", false) != -1)
+	{
+		g_iCurrentStyle[client] = 7;
+		g_iInitalStyle[client] = 7;
+		Format(g_szInitalStyle[client], 128, "Freestyle");
+		Format(g_szStyleHud[client], 32, "[FS]");
+		g_bRankedStyle[client] = false;
+		g_bFunStyle[client] = true;
+		g_bAutoBhop = true;
+		g_bAutoBhopClient[client] = true;
+	}
+	else
+	{
+		g_iCurrentStyle[client] = 0;
+		g_iInitalStyle[client] = 0;
+		Format(g_szInitalStyle[client], 128, "Normal");
+		Format(g_szStyleHud[client], 32, "");
+		g_bRankedStyle[client] = true;
+		g_bFunStyle[client] = false;
+	}
+
+	Command_Restart(client, 1);
+	CreateTimer(0.1, RestartPlayer, client);
+}
+
+void DefaultStyle_Changer(int client, bool menu = false)
+{
+	if(g_iDefaultStyle[client] != 7)
+		g_iDefaultStyle[client]++;
+	else
+		g_iDefaultStyle[client] = 0;
+
+	if (menu)
+		MiscellaneousOptions(client);
 }
 
 // Rate Limiting Command - Limits every 2 seconds
