@@ -1943,4 +1943,13 @@
 		"#format"	"{1:s}"
 		"en"		"{1} {red}Unknown Mapper"
 	}
+	"style_acronyms_help_chat"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} Open {yellow}console{default} to see the all the {red}Style Acroynms{default}"
+	}
+	"style_acronyms_help"
+	{
+		"en"		"\nStyle Acronyms are the following : \nNormal - n \nSideways - sw \nHalf-Sideways - hsw \nBackwards - bw \nLow-Gravity - lg \nSlow Motion - sm \nFast Forward - ff \nFreestyle - fs \n"
+	}
 }

@@ -159,6 +159,7 @@ void CreateCommands()
 	//RegConsoleCmd("sm_chud", Command_CentreSpeedHud, "[surftimer] Use Center HUD");
 	RegConsoleCmd("sm_prinfo_help", Command_PRinfo_help, "[surftimer] Show in console how to use the command");
 	RegConsoleCmd("sm_csd", Command_CenterSpeed, "[surftimer] [settings] on/off - toggle center speed display");
+	RegConsoleCmd("sm_style_acronyms", Client_StyleAcronyms, "[surftimer] shows every style format available");
 
 
 	// New Commands
@@ -434,6 +435,17 @@ public Action Command_CentreSpeedHud(int client, int args){
 	}
 	else
 		CPrintToChat(client, "%t", "CenterHUDOff", g_szChatPrefix);
+
+	return Plugin_Handled;
+
+}
+
+public Action Client_StyleAcronyms(int client, int args){
+
+	if(IsValidClient(client)){
+		CPrintToChat(client, "%t", "style_acronyms_help_chat", g_szChatPrefix);
+		PrintToConsole(client, "%t", "style_acronyms_help");
+	}
 
 	return Plugin_Handled;
 
