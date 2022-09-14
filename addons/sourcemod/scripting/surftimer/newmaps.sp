@@ -47,6 +47,7 @@ public int NewMapMenuHandler(Menu menu, MenuAction action, int param1, int param
 		//split date from menu entry
 		char menuPieces[2][128];
 		ExplodeString(displayName, "since", menuPieces, sizeof(menuPieces), sizeof(menuPieces[]));
+		TrimString(menuPieces[0]);
 
 		NominateResult result = NominateMap(menuPieces[0], false, param1);
 		
