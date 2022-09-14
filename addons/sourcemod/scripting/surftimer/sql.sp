@@ -4131,6 +4131,8 @@ public void SQL_LoadCCP_StageTimesCallback(Handle owner, Handle hndl, const char
 		db_LoadStageAttempts(client);
 	}
 	else {
+		g_bStageTimesFound[client] = false ;
+		
 		if (!g_bSettingsLoaded[client])
 		{
 			g_fTick[client][1] = GetGameTime();
@@ -4328,12 +4330,14 @@ public void db_UpdateCCP(int client, int zGroup)
 	Transaction tAction = new Transaction();
 
 	if (g_bStageTimesFound[client]){
+		PrintToConsole(0, "===Updating %s CCP===", g_szSteamID[client]);
 		for(int i = 0; i < g_TotalStages; i++){
 			Format(szQuery, sizeof(szQuery), sql_updateCCP, g_fStageTimesNew[client][i], g_iStageAttemptsNew[client][i], g_szSteamID[client], g_szMapName, i+1);
 			tAction.AddQuery(szQuery);
 		}
 	}
 	else{
+		PrintToConsole(0, "===Inserting %s CCP===", g_szSteamID[client]);
 		for(int i = 0; i < g_TotalStages; i++){
 			Format(szQuery, sizeof(szQuery), sql_insertCCP, g_szSteamID[client], g_szMapName, i+1, g_fStageTimesNew[client][i], g_iStageAttemptsNew[client][i]);
 			tAction.AddQuery(szQuery);
