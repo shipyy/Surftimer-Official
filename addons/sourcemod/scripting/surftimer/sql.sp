@@ -6240,11 +6240,14 @@ public void sql_selectLatestRecordsCallback(Handle owner, Handle hndl, const cha
 		return;
 	}
 
-	char szName[64];
+	char szNewHolderName[64];
+	char szPreviousHolderName[64];
 	char szMapName[64];
 	char szDate[64];
 	char szTime[32];
+	char szTimeDifference[32];
 	float ftime;
+	float wr_difference;
 	PrintToConsole(data, "----------------------------------------------------------------------------------------------------");
 	PrintToConsole(data, "Last map records:");
 	if (SQL_HasResultSet(hndl))
@@ -6256,13 +6259,25 @@ public void sql_selectLatestRecordsCallback(Handle owner, Handle hndl, const cha
 		char szItem[128];
 		while (SQL_FetchRow(hndl))
 		{
-			SQL_FetchString(hndl, 0, szName, 64);
-			ftime = SQL_FetchFloat(hndl, 1);
+			SQL_FetchString(hndl, 0, szNewHolderName, 64);
+			SQL_FetchString(hndl, 1, szPreviousHolderName, 64);
+
+			ftime = SQL_FetchFloat(hndl, 2);
 			FormatTimeFloat(data, ftime, 3, szTime, sizeof(szTime));
-			SQL_FetchString(hndl, 2, szMapName, 64);
-			SQL_FetchString(hndl, 3, szDate, 64);
-			Format(szItem, sizeof(szItem), "%s - %s by %s (%s)", szMapName, szTime, szName, szDate);
+
+			wr_difference = SQL_FetchFloat(hndl, 3);
+			if ( wr_difference != -1.0)
+				FormatTimeFloat(data, wr_difference, 3, szTimeDifference, sizeof(szTimeDifference));
+			else
+				Format(szTimeDifference, sizeof(szTimeDifference), "%s", "N/A");
+
+			SQL_FetchString(hndl, 4, szMapName, 64);
+			SQL_FetchString(hndl, 5, szDate, 64);
+
+			Format(szItem, sizeof(szItem), "%s\nPrevious Holder - %s\nNew Holder: %s\nNew Time: %s (%s)\n%s\n \n", szMapName, szPreviousHolderName, szNewHolderName, szTime, szTimeDifference, szDate);
+
 			PrintToConsole(data, szItem);
+
 			AddMenuItem(menu, "", szItem, ITEMDRAW_DISABLED);
 			i++;
 		}
@@ -6274,6 +6289,7 @@ public void sql_selectLatestRecordsCallback(Handle owner, Handle hndl, const cha
 		else
 		{
 			SetMenuOptionFlags(menu, MENUFLAG_BUTTON_EXIT);
+			SetMenuPagination(menu, 3);
 			DisplayMenu(menu, data, MENU_TIME_FOREVER);
 		}
 	}
@@ -6693,10 +6709,10 @@ public void db_Populate_ck_track_bonus_Callback(Handle owner, Handle hndl, const
 
 }
 
-public void db_InsertLatestRecords(char szSteamID[32], char szName[128], float FinalTime)
+public void db_InsertLatestRecords(char szSteamID[32], char szNewRecordHolder[128], char szPreviousRecordHolder[128], float finaltime, float WR_Difference)
 {
 	char szQuery[512];
-	Format(szQuery, sizeof(szQuery), sql_insertLatestRecords, szSteamID, szName, FinalTime, g_szMapName);
+	Format(szQuery, sizeof(szQuery), sql_insertLatestRecords, szSteamID, szNewRecordHolder, szPreviousRecordHolder, finaltime, WR_Difference, g_szMapName);
 	SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, _, DBPrio_Low);
 }
 

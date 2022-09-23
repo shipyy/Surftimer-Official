@@ -70,8 +70,13 @@ public void CheckDatabaseForUpdates()
             db_upgradeDatabase(11);
             return;
         }
+        if (!SQL_FastQuery(g_hDb, "SELECT wr_difference FROM ck_latestrecords LIMIT 1"))
+        {
+            db_upgradeDatabase(12);
+            return;
+        }
 
-        LogMessage("Version 11 looks good.");
+        LogMessage("Version 12 looks good.");
     }
 }
 
@@ -147,6 +152,12 @@ public void db_upgradeDatabase(int ver)
     else if (ver == 11)
     {
         SQL_FastQuery(g_hDb, "ALTER TABLE ck_playeroptions2 ADD COLUMN default_style INT(11) NOT NULL DEFAULT '0';");
+    }
+    else if (ver == 12)
+    {
+        SQL_FastQuery(g_hDb, "ALTER TABLE ck_latestrecords RENAME COLUMN name TO New_Holder;");
+        SQL_FastQuery(g_hDb, "ALTER TABLE ck_latestrecords ADD COLUMN Previous_Holder varchar(32) NOT NULL DEFAULT 'N/A' AFTER New_Holder;");
+        SQL_FastQuery(g_hDb, "ALTER TABLE ck_latestrecords ADD COLUMN wr_difference decimal(12, 6) NOT NULL DEFAULT '-1.000000' AFTER runtime;");
     }
 
     CheckDatabaseForUpdates();

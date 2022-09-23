@@ -977,6 +977,9 @@ int g_OldMapRank[MAXPLAYERS + 1];
 // Current map's record player's name
 char g_szRecordPlayer[MAX_NAME_LENGTH];
 
+// Current map's record player's name
+char g_szPreviousRecordPlayer[MAX_NAME_LENGTH];
+
 // Latest prestrafe speed for linear and stage map
 int g_iPreStrafe[3][CPLIMIT][MAX_STYLES][MAXPLAYERS + 1];
 
