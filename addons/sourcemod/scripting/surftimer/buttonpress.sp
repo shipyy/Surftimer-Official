@@ -349,8 +349,12 @@ public void CL_OnEndTimerPress(int client)
 					Format(g_szRecordPlayer, 128, "%s", szName);
 					FormatTimeFloat(1, g_fRecordMapTime, 3, g_szRecordMapTime, 128);
 
+					float wr_difference = -1.0;
+					if (g_fRecordMapTime != 9999999.0)
+						wr_difference = g_fFinalTime[client] - g_fRecordMapTime;
+
 					// Insert latest record
-					db_InsertLatestRecords(g_szSteamID[client], g_szRecordPlayer, g_szPreviousRecordPlayer, g_fFinalTime[client], g_fFinalTime[client] - g_fRecordMapTime);
+					db_InsertLatestRecords(g_szSteamID[client], g_szRecordPlayer, g_szPreviousRecordPlayer, g_fFinalTime[client], wr_difference);
 
 					// Update Checkpoints
 					if (!g_bPositionRestored[client])
@@ -393,8 +397,12 @@ public void CL_OnEndTimerPress(int client)
 				Format(g_szRecordPlayer, 128, "%s", szName);
 				FormatTimeFloat(1, g_fRecordMapTime, 3, g_szRecordMapTime, 128);
 
+				float wr_difference = -1.0;
+				if (g_fRecordMapTime != 9999999.0)
+					wr_difference = g_fFinalTime[client] - g_fRecordMapTime;
+
 				// Insert latest record
-				db_InsertLatestRecords(g_szSteamID[client], g_szRecordPlayer, g_szPreviousRecordPlayer, g_fFinalTime[client], g_fFinalTime[client] - g_fRecordMapTime);
+				db_InsertLatestRecords(g_szSteamID[client], g_szRecordPlayer, g_szPreviousRecordPlayer, g_fFinalTime[client], wr_difference);
 
 				// Update Checkpoints
 				if (g_bCheckpointsEnabled[client] && !g_bPositionRestored[client])
