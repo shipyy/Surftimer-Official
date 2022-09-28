@@ -4337,6 +4337,7 @@ public void db_UpdateCCP(int client, int zGroup)
 		}
 	}
 	else{
+		g_bStageTimesFound[client] = true;
 		PrintToConsole(0, "===Inserting %s CCP===", g_szSteamID[client]);
 		for(int i = 0; i < g_TotalStages; i++){
 			Format(szQuery, sizeof(szQuery), sql_insertCCP, g_szSteamID[client], g_szMapName, i+1, g_fStageTimesNew[client][i], g_iStageAttemptsNew[client][i]);
