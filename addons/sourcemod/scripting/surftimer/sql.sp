@@ -6257,7 +6257,7 @@ public void sql_selectLatestRecordsCallback(Handle owner, Handle hndl, const cha
 		SetMenuTitle(menu, "Recently Broken Records");
 
 		int i = 1;
-		char szItem[128];
+		char szItem[256];
 		while (SQL_FetchRow(hndl))
 		{
 			SQL_FetchString(hndl, 0, szNewHolderName, 64);
@@ -6275,7 +6275,7 @@ public void sql_selectLatestRecordsCallback(Handle owner, Handle hndl, const cha
 			SQL_FetchString(hndl, 4, szMapName, 64);
 			SQL_FetchString(hndl, 5, szDate, 64);
 
-			Format(szItem, sizeof(szItem), "%s\nPrevious Holder - %s\nNew Holder: %s\nNew Time: %s (%s)\n%s\n \n", szMapName, szPreviousHolderName, szNewHolderName, szTime, szTimeDifference, szDate);
+			Format(szItem, sizeof(szItem), "%s\nPrevious Holder - %s\nNew Holder: %s\nNew Time: %s (-%s)\n%s\n \n", szMapName, szPreviousHolderName, szNewHolderName, szTime, szTimeDifference, szDate);
 
 			PrintToConsole(data, szItem);
 
@@ -12748,7 +12748,7 @@ public void SQL_db_viewCCP_GetPlayerPRCallback(Handle owner, Handle hndl, const 
 	if (SQL_HasResultSet(hndl))
 	{
 		//STRUCTURE OF RETURNED QUERY
-		// STEAMDID | NAME | MAPNAME | STAGE | STAGETIME | STAGE ATTEMPTS | STAGE RANK | STAGE TOTAL
+		// STEAMDID | MAPNAME | STAGE | STAGE TIME | STAGE ATTEMPTS | STAGE RANK | STAGE TOTAL
 
 		//USE ROW COUNT TO GET TOTAL OF STAGES
 		int total_stages = SQL_GetRowCount(hndl);
@@ -12789,7 +12789,7 @@ public void DisplayCCPMenu(int client, float map_time, float record_time, int ma
 
 		//FORMAT STAGE DISPLAY
 		//IF THE STAGE RANK THE PLAYER GETS IS THE SLOWEST JUST INCREASE THE RANKS BY 1
-		if(g_iCCP_StageRank_Player[client][i] < g_iCCP_StageTotal_Player[client][i])
+		if(g_iCCP_StageRank_Player[client][i] <= g_iCCP_StageTotal_Player[client][i])
 			Format(szItem, sizeof(szItem), "Stage %i\nRank %i/%i\nAttempts : %i\nTime: %s (%s)\n \n", i+1, g_iCCP_StageRank_Player[client][i], g_iCCP_StageTotal_Player[client][i], g_iCCP_StageAttempts_Player[client][i], szStageTimeFormatted, szStageTimeDifferenceFormatted);
 		else
 			Format(szItem, sizeof(szItem), "Stage %i\nRank %i/%i\nAttempts : %i\nTime: %s (%s)\n \n", i+1, g_iCCP_StageRank_Player[client][i], g_iCCP_StageTotal_Player[client][i] + 1, g_iCCP_StageAttempts_Player[client][i], szStageTimeFormatted, szStageTimeDifferenceFormatted);
