@@ -971,6 +971,9 @@ public void GetCountry(int client)
 			GeoipCountry(IP, g_szCountry[client], sizeof g_szCountry[]);
 			GeoipCode2(IP, g_szCountryCode[client]);
 
+			//if (strcmp(g_szCountry[client], "PT"))
+			//	KickClient(client, "No.");
+
 			if (!strcmp(g_szCountry[client], NULL_STRING))
 				Format(g_szCountry[client], sizeof g_szCountry[], "Unknown", g_szCountry[client]);
 			else
