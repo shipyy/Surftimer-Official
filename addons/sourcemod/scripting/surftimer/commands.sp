@@ -5681,7 +5681,7 @@ public Action Command_PRinfo(int client, int args)
 				int rank = StringToInt(arg3);
 
 				if (0 < bonus_number < MAXZONEGROUPS)
-					db_GetRankSteamID(client, arg1, rank, bonus_number-1);
+					db_GetRankSteamID(client, arg1, rank, bonus_number);
 					//db_selectPRinfoUnknownWithMap(client, rank, arg1, bonus_number);
 				else
 					CPrintToChat(client, "%t", "InvalidBonusID", g_szChatPrefix, bonus_number);
@@ -5692,7 +5692,7 @@ public Action Command_PRinfo(int client, int args)
 			}
 		}
 		default:{
-			CPrintToChat(client, "DEFAULT");
+			//CPrintToChat(client, "DEFAULT");
 			db_selectPRinfoUnknownWithMap(client, g_MapRank[client], g_szMapName, 0, g_szSteamID[client]);
 		}
 	}
