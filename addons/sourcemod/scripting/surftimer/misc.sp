@@ -2142,9 +2142,9 @@ public void FormatTimeFloat(int client, float time, int type, char[] string, int
 	int idays;
 	if (type != 6)
 		time = FloatAbs(time);
-	imilli = RoundToZero(time * 100);
+	imilli = RoundToZero(time * 1000);
 	imilli2 = RoundToZero(time * 10);
-	imilli = imilli % 100;
+	imilli = imilli % 1000;
 	imilli2 = imilli2 % 10;
 	iseconds = RoundToZero(time);
 	iseconds = iseconds % 60;
@@ -2155,9 +2155,12 @@ public void FormatTimeFloat(int client, float time, int type, char[] string, int
 	idays = RoundToZero( ((time / 60) / 60) / 24);
 
 	if (imilli < 10)
+		Format(szMilli, 16, "00%dms", imilli);
+	else if (imilli < 100)
 		Format(szMilli, 16, "0%dms", imilli);
 	else
 		Format(szMilli, 16, "%dms", imilli);
+	
 	if (iseconds < 10)
 		Format(szSeconds, 16, "0%ds", iseconds);
 	else
@@ -2232,9 +2235,12 @@ public void FormatTimeFloat(int client, float time, int type, char[] string, int
 	if (type == 3)
 	{
 		if (imilli < 10)
+			Format(szMilli, 16, "00%d", imilli);
+		else if (imilli < 100)
 			Format(szMilli, 16, "0%d", imilli);
 		else
 			Format(szMilli, 16, "%d", imilli);
+
 		if (iseconds < 10)
 			Format(szSeconds, 16, "0%d", iseconds);
 		else
@@ -2255,9 +2261,12 @@ public void FormatTimeFloat(int client, float time, int type, char[] string, int
 	if (type == 4)
 	{
 		if (imilli < 10)
+			Format(szMilli, 16, "00%d", imilli);
+		else if (imilli < 100)
 			Format(szMilli, 16, "0%d", imilli);
 		else
 			Format(szMilli, 16, "%d", imilli);
+
 		if (iseconds < 10)
 			Format(szSeconds, 16, "0%d", iseconds);
 		else
@@ -2278,9 +2287,12 @@ public void FormatTimeFloat(int client, float time, int type, char[] string, int
 	if (type == 5)
 	{
 		if (imilli < 10)
+			Format(szMilli, 16, "00%d", imilli);
+		else if (imilli < 100)
 			Format(szMilli, 16, "0%d", imilli);
 		else
 			Format(szMilli, 16, "%d", imilli);
+
 		if (iseconds < 10)
 			Format(szSeconds, 16, "0%d", iseconds);
 		else
@@ -2304,10 +2316,20 @@ public void FormatTimeFloat(int client, float time, int type, char[] string, int
 	// +-00:00:00
 	if (type == 6)
 	{
+		if (time < 0.0) {
+			imilli *= -1;
+			iseconds *= -1;
+			iminutes *= -1;
+			ihours *= -1;
+		}
+
 		if (imilli < 10)
+			Format(szMilli, 16, "00%d", imilli);
+		else if (imilli < 100)
 			Format(szMilli, 16, "0%d", imilli);
 		else
 			Format(szMilli, 16, "%d", imilli);
+
 		if (iseconds < 10)
 			Format(szSeconds, 16, "0%d", iseconds);
 		else
@@ -2338,11 +2360,11 @@ public void FormatTimeFloat(int client, float time, int type, char[] string, int
 		imilli = imilli % 1000;
 		if (imilli < 10)
 			Format(szMilli, 16, "00%dms", imilli);
+		else if (imilli < 100)
+			Format(szMilli, 16, "0%dms", imilli);
 		else
-			if (imilli < 100)
-				Format(szMilli, 16, "0%dms", imilli);
-			else
-				Format(szMilli, 16, "%dms", imilli);
+			Format(szMilli, 16, "%dms", imilli);
+
 
 		if(idays > 0){
 			Format(szDays, 16, "%dd", idays);
