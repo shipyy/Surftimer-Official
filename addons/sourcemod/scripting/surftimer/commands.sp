@@ -91,6 +91,7 @@ void CreateCommands()
 	RegConsoleCmd("sm_addloc", Command_recreatePlayerCheckpoint, "[surftimer] Recreates a saveloc with supplied information, where the player can teleport back to");
 	RegConsoleCmd("sm_teleprev", Command_previousSaveloc, "[surftimer] Cycles backwards through created savelocs.");
 	RegConsoleCmd("sm_telenext", Command_nextSaveloc, "[surftimer] Cycles forwards through created savelocs.");
+	RegConsoleCmd("sm_locmenu", Command_SavelocMenu, "[surftimer] User friendly menu To perform action related to saveloccing.");
 
 	// Admin Commands
 	RegConsoleCmd("sm_ckadmin", Admin_ckPanel, "[surftimer] Displays the SurfTimer admin menu panel");
@@ -715,6 +716,7 @@ public Action Command_createPlayerCheckpoint(int client, int args)
 	if (g_iSaveLocCount[client] < MAX_LOCS)
 	{
 		g_iSaveLocCount[client]++;
+		g_iCurrentSavelocID[client] = g_iSaveLocCount[client];
 		
 		GetClientAbsOrigin(client, g_fSaveLocCoords[client][g_iSaveLocCount[client]]);
 		GetClientEyeAngles(client, g_fSaveLocAngle[client][g_iSaveLocCount[client]]);
@@ -1035,6 +1037,7 @@ public Action Command_clearPlayerCheckpoints(int client, int args)
 		g_iLastSaveLocIdClient[client] = 0;
 		g_iPreviousSaveLocIdClient[client] = 0;
 		g_iSaveLocCount[client] = 0;
+		g_iCurrentSavelocID[client] = 0;
 
 		CPrintToChat(client, "%t", "Commands14", g_szChatPrefix);
 		Command_Restart(client, 1);
@@ -1048,6 +1051,7 @@ public Action Command_SaveLocList(int client, int args)
 	if (g_iSaveLocCount[client] < 1)
 	{
 		CPrintToChat(client, "%t", "Commands11", g_szChatPrefix);
+		Command_SavelocMenu(client, 0);
 		return Plugin_Handled;
 	}
 
@@ -1096,7 +1100,8 @@ public void SaveLocMenu(int client)
 		pos = 48;
 	else if (pos < 60)
 		pos = 54;
-	SetMenuOptionFlags(menu, MENUFLAG_BUTTON_EXIT);
+
+	SetMenuExitBackButton(menu, true);
 	DisplayMenuAtItem(menu, client, pos, MENU_TIME_FOREVER);
 }
 
@@ -1108,12 +1113,23 @@ public int SaveLocListHandler(Menu menu, MenuAction action, int param1, int para
 		char szId[32];
 		GetMenuItem(menu, param2, szId, 32);
 		int id = StringToInt(szId);
+		g_iCurrentSavelocID[param1] = id;
 		CPrintToChat(param1, "%t", "Commands13", g_szChatPrefix, id);
 		TeleportToSaveloc(param1, id);
 		SaveLocMenu(param1);
 	}
-	else if (action == MenuAction_End)
+	else if (action == MenuAction_Cancel) {
+		if (g_LocMenu[param1]){
+			g_LocMenu[param1] = false;
+			Command_SavelocMenu(param1, 0);
+		}
+		else {
+			delete menu;
+		}
+	}
+	else if (action == MenuAction_End) {
 		delete menu;
+	}
 
 	return 0;
 }
@@ -6139,6 +6155,7 @@ public Action Command_previousSaveloc(int client, int args)
 	}
 
 	int desiredSavelocID = g_iLastSaveLocIdClient[client] - 1;
+	g_iCurrentSavelocID[client] = desiredSavelocID;
 	if (desiredSavelocID <= 0)
 	{
 		CPrintToChat(client, "%t", "Commands16", g_szChatPrefix);
@@ -6163,6 +6180,7 @@ public Action Command_nextSaveloc(int client, int args)
 	}
 
 	int desiredSavelocID = g_iLastSaveLocIdClient[client] + 1;
+	g_iCurrentSavelocID[client] = desiredSavelocID;
 	if (desiredSavelocID > g_iSaveLocCount[client])
 	{
 		CPrintToChat(client, "%t", "Commands15", g_szChatPrefix);
@@ -6171,6 +6189,87 @@ public Action Command_nextSaveloc(int client, int args)
 	
 	CPrintToChat(client, "%t", "Commands13", g_szChatPrefix, desiredSavelocID);
 	TeleportToSaveloc(client, desiredSavelocID);
+
+	return Plugin_Handled;
+}
+
+public Action Command_SavelocMenu(int client, int args)
+{
+	if (!IsValidClient(client))
+		return Plugin_Handled;
+
+	Menu saveloc_menu = new Menu(saveloc_menu_handler);
+
+	AddMenuItem(saveloc_menu, "", "New Saveloc", ITEMDRAW_DEFAULT);
+	AddMenuItem(saveloc_menu, "", "Teleport", ITEMDRAW_DEFAULT);
+	AddMenuItem(saveloc_menu, "", "Previous Saveloc", ITEMDRAW_DEFAULT);
+	AddMenuItem(saveloc_menu, "", "Next Saveloc", ITEMDRAW_DEFAULT);
+	AddMenuItem(saveloc_menu, "", "Clear Saveloc", ITEMDRAW_DEFAULT);
+	AddMenuItem(saveloc_menu, "", "Print Saveloc", ITEMDRAW_DEFAULT);
+	AddMenuItem(saveloc_menu, "", "Saveloc List", ITEMDRAW_DEFAULT);
+	SetMenuTitle(saveloc_menu, "Saveloc Menu\n \n");
+	SetMenuPagination(saveloc_menu, 10);
+	DisplayMenu(saveloc_menu, client, MENU_TIME_FOREVER);
+
+	return Plugin_Handled;
+}
+
+
+public int saveloc_menu_handler(Menu menu, MenuAction action, int client, int item)
+{
+	if(action == MenuAction_Select) {
+		switch (item) {
+			case 0: {
+				Command_createPlayerCheckpoint(client, 0);
+				Command_SavelocMenu(client, 0);
+			}
+			case 1: {
+				Command_goToPlayerCheckpoint(client, 0);
+				Command_SavelocMenu(client, 0);
+			}
+			case 2: {
+				Command_previousSaveloc(client, 0);
+				Command_SavelocMenu(client, 0);
+			}
+			case 3: {
+				Command_nextSaveloc(client, 0);
+				Command_SavelocMenu(client, 0);
+			}
+			case 4: {
+				Command_clearPlayerCheckpoints(client, 0);
+				Command_SavelocMenu(client, 0);
+			}
+			case 5: {
+				Command_PrintCurrentSaveloc(client, 0);
+				Command_SavelocMenu(client, 0);
+			}
+			case 6: {
+				g_LocMenu[client] = true;
+				Command_SaveLocList(client, 0);
+			}
+			default: Command_SaveLocList(client, 0);
+		}
+	}
+	else if(action == MenuAction_End)
+		delete menu;
+
+	return 0;
+}
+
+public Action Command_PrintCurrentSaveloc(int client, int args)
+{
+	if (!IsValidClient(client))
+		return Plugin_Handled;
+
+	int id = g_iCurrentSavelocID[client];
+
+	if (g_iSaveLocCount[client] != 0) {
+		CPrintToChat(client, "%t", "CheckpointRecreationToChat", RoundToNearest(g_fSaveLocCoords[client][id][0]), RoundToNearest(g_fSaveLocCoords[client][id][1]), RoundToNearest(g_fSaveLocCoords[client][id][2]), RoundToNearest(g_fSaveLocAngle[client][id][0]), RoundToNearest(g_fSaveLocAngle[client][id][1]), RoundToNearest(g_fSaveLocAngle[client][id][2]), RoundToNearest(g_fSaveLocVel[client][id][0]), RoundToNearest(g_fSaveLocVel[client][id][1]), RoundToNearest(g_fSaveLocVel[client][id][2]), g_iPlayerPracLocationSnap[client][id], g_fPlayerPracTimeSnap[client][id], g_fPracModeStartTime[client], g_fPlayerPracSrcpTimeSnap[client][id], g_fStartPracSrcpTime[client], g_iSaveLocInBonus[client][id]);
+		PrintToConsole(client, "%t", "CheckpointRecreationToConsole", g_iSaveLocCount[client], RoundToNearest(g_fSaveLocCoords[client][id][0]), RoundToNearest(g_fSaveLocCoords[client][id][1]), RoundToNearest(g_fSaveLocCoords[client][id][2]), RoundToNearest(g_fSaveLocAngle[client][id][0]), RoundToNearest(g_fSaveLocAngle[client][id][1]), RoundToNearest(g_fSaveLocAngle[client][id][2]), RoundToNearest(g_fSaveLocVel[client][id][0]), RoundToNearest(g_fSaveLocVel[client][id][1]), RoundToNearest(g_fSaveLocVel[client][id][2]), g_iPlayerPracLocationSnap[client][id], g_fPlayerPracTimeSnap[client][id], g_fPracModeStartTime[client], g_fPlayerPracSrcpTimeSnap[client][id], g_fStartPracSrcpTime[client], g_iSaveLocInBonus[client][id]);
+	}
+	else {
+		CPrintToChat(client, "%t", "Commands11", g_szChatPrefix);
+	}
 
 	return Plugin_Handled;
 }
