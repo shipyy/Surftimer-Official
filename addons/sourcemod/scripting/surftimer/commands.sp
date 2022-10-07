@@ -32,9 +32,10 @@ void CreateCommands()
 	RegConsoleCmd("sm_stop", Client_Stop, "[surftimer] stops your timer");
 	RegConsoleCmd("sm_ranks", Client_Ranks, "[surftimer] Displays a menu with available player ranks");
 	RegConsoleCmd("sm_pause", Client_Pause, "[surftimer] on/off pause (timer on hold and movement frozen)");
-	RegConsoleCmd("sm_latest", Client_Latest, "[surftimer] shows latest map records");
+	//RegConsoleCmd("sm_latest", Client_Latest, "[surftimer] shows latest map records");
 	RegConsoleCmd("sm_rr", Client_Latest, "[surftimer] shows latest map records");
-	RegConsoleCmd("sm_rb", Client_Latest, "[surftimer] shows latest map records");
+	//RegConsoleCmd("sm_rb", Client_Latest, "[surftimer] shows latest map records");
+	RegConsoleCmd("sm_rrb", Client_LatestBonus, "[surftimer] shows latest bonus records");
 	RegConsoleCmd("sm_hide", Client_Hide, "[surftimer] on/off - hides other players");
 	RegConsoleCmd("sm_togglecheckpoints", ToggleCheckpoints, "[surftimer] on/off - Enable player checkpoints");
 	RegConsoleCmd("+noclip", NoClip, "[surftimer] Player noclip on");
@@ -2637,7 +2638,13 @@ void HideMethod(int client, bool menu = false)
 
 public Action Client_Latest(int client, int args)
 {
-	db_ViewLatestRecords(client);
+	db_ViewLatestRecords(client, 0);
+	return Plugin_Handled;
+}
+
+public Action Client_LatestBonus(int client, int args)
+{
+	db_ViewLatestRecords(client, 1);
 	return Plugin_Handled;
 }
 

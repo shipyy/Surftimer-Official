@@ -75,8 +75,13 @@ public void CheckDatabaseForUpdates()
             db_upgradeDatabase(12);
             return;
         }
+        if (!SQL_FastQuery(g_hDb, "SELECT zonegroup FROM ck_latestrecords LIMIT 1"))
+        {
+            db_upgradeDatabase(13);
+            return;
+        }
 
-        LogMessage("Version 12 looks good.");
+        LogMessage("Version 13 looks good.");
     }
 }
 
@@ -158,6 +163,10 @@ public void db_upgradeDatabase(int ver)
         SQL_FastQuery(g_hDb, "ALTER TABLE ck_latestrecords RENAME COLUMN name TO New_Holder;");
         SQL_FastQuery(g_hDb, "ALTER TABLE ck_latestrecords ADD COLUMN Previous_Holder varchar(32) NOT NULL DEFAULT 'N/A' AFTER New_Holder;");
         SQL_FastQuery(g_hDb, "ALTER TABLE ck_latestrecords ADD COLUMN wr_difference decimal(12, 6) NOT NULL DEFAULT '-1.000000' AFTER runtime;");
+    }
+    else if (ver == 13)
+    {
+        SQL_FastQuery(g_hDb, "ALTER TABLE ck_latestrecords ADD COLUMN zonegroup INT NOT NULL DEFAULT '0' AFTER map;");
     }
 
     CheckDatabaseForUpdates();

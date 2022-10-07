@@ -249,6 +249,9 @@ char g_szBonusFastest[MAXZONEGROUPS][MAX_NAME_LENGTH];
 // Fastest bonus time in 00:00:00:00 format
 char g_szBonusFastestTime[MAXZONEGROUPS][64];
 
+// Name of the previous #1 in the current maps bonus
+char g_szOldBonusFastest[MAXZONEGROUPS][MAX_NAME_LENGTH];
+
 // Clients personal bonus record in the current map
 float g_fPersonalRecordBonus[MAXZONEGROUPS][MAXPLAYERS + 1];
 

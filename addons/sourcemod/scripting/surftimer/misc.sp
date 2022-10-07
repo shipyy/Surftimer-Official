@@ -3391,7 +3391,7 @@ public void CenterHudDead(int client)
 			}
 			else 
 			{
-				obsAika = "<font color='#f32'>00:00:00</font>";
+				obsAika = "<font color='#f32'>00:00:000</font>";
 			}
 			
 			char timerText[32] = "";
@@ -3473,7 +3473,7 @@ public void CenterHudAlive(int client)
 					Format(module[i], 128, "<font color='#f32'>Disabled	</font>");
 				else
 				{
-					Format(module[i], 128, "<font color='#f32'>00:00:00	</font>");
+					Format(module[i], 128, "<font color='#f32'>00:00:000	</font>");
 				}
 
 				if (g_iCurrentStyle[client] != 0)
@@ -5739,6 +5739,9 @@ void RemoveColors(char[] message, int maxlength)
  */
 stock void EmitSoundToClientNoPreCache(int client, const char[] szPath, bool addPlay = true)
 {
+	if(!g_bEnableQuakeSounds[client])
+		return;
+
 	char szBuffer[256];
 	if(addPlay)
 	{

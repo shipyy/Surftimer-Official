@@ -42,8 +42,9 @@ char sql_deleteCheckpoints[] = "DELETE FROM ck_checkpoints WHERE mapname = '%s'"
 
 // ck_latestrecords
 char sql_createLatestRecords[] = "CREATE TABLE IF NOT EXISTS ck_latestrecords (steamid VARCHAR(32), name VARCHAR(32), runtime FLOAT NOT NULL DEFAULT '-1.0', map VARCHAR(32), date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, PRIMARY KEY(steamid,map,date)) DEFAULT CHARSET=utf8mb4;";
-char sql_insertLatestRecords[] = "INSERT INTO ck_latestrecords (steamid, New_Holder, Previous_Holder, runtime, wr_difference, map) VALUES('%s','%s','%s','%f','%f','%s');";
-char sql_selectLatestRecords[] = "SELECT New_Holder, Previous_Holder, runtime, wr_difference, map, date FROM ck_latestrecords ORDER BY date DESC LIMIT 50";
+char sql_insertLatestRecords[] = "INSERT INTO ck_latestrecords (steamid, New_Holder, Previous_Holder, runtime, wr_difference, map, zonegroup) VALUES('%s','%s','%s','%f','%f','%s','%i');";
+char sql_selectLatestRecords[] = "SELECT New_Holder, Previous_Holder, runtime, wr_difference, map, date, zonegroup FROM ck_latestrecords WHERE zonegroup = 0 ORDER BY date DESC LIMIT 50";
+char sql_selectLatestBonusRecords[] = "SELECT New_Holder, Previous_Holder, runtime, wr_difference, map, date, zonegroup FROM ck_latestrecords WHERE zonegroup > 0 ORDER BY date DESC LIMIT 50";
 
 // ck_maptier
 char sql_createMapTier[] = "CREATE TABLE IF NOT EXISTS ck_maptier (mapname VARCHAR(54) NOT NULL, tier INT(12), maxvelocity FLOAT NOT NULL DEFAULT '3500.0', announcerecord INT(11) NOT NULL DEFAULT '0', gravityfix INT(11) NOT NULL DEFAULT '1', ranked INT(11) NOT NULL DEFAULT '1', PRIMARY KEY(mapname)) DEFAULT CHARSET=utf8mb4;";

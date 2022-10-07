@@ -1722,7 +1722,8 @@ public Action Hook_FootstepCheck(int clients[64], int &numClients, char sample[P
 					}
 				}
 			}
-			EmitSound(clients, numClients, sample, entity);
+			if (g_bEnableQuakeSounds[entity])
+				EmitSound(clients, numClients, sample, entity);
 			// return Plugin_Changed;
 
 			return Plugin_Stop;
@@ -1734,4 +1735,10 @@ public Action Hook_FootstepCheck(int clients[64], int &numClients, char sample[P
 public Action Hook_ShotgunShot(const char[] te_name, const int[] players, int numClients, float delay) 
 {
 	return Plugin_Handled;
+}
+
+public Action Event_GrenadeThrown(Event event, const char[] name, bool dontBroadcast)
+{
+    event.BroadcastDisabled = true;
+    return Plugin_Changed;
 }

@@ -350,11 +350,11 @@ public void CL_OnEndTimerPress(int client)
 					FormatTimeFloat(1, g_fRecordMapTime, 3, g_szRecordMapTime, 128);
 
 					float wr_difference = -1.0;
-					if (g_fOldRecordMapTime != 9999999.0)
+					if (g_fOldRecordMapTime != 0.0)
 						wr_difference = g_fFinalTime[client] - g_fOldRecordMapTime;
 
 					// Insert latest record
-					db_InsertLatestRecords(g_szSteamID[client], g_szRecordPlayer, g_szPreviousRecordPlayer, g_fFinalTime[client], wr_difference);
+					db_InsertLatestRecords(g_szSteamID[client], g_szRecordPlayer, g_szPreviousRecordPlayer, g_fFinalTime[client], wr_difference, 0);
 
 					// Update Checkpoints
 					if (!g_bPositionRestored[client])
@@ -398,7 +398,7 @@ public void CL_OnEndTimerPress(int client)
 				FormatTimeFloat(1, g_fRecordMapTime, 3, g_szRecordMapTime, 128);
 
 				// Insert latest record
-				db_InsertLatestRecords(g_szSteamID[client], g_szRecordPlayer, g_szPreviousRecordPlayer, g_fFinalTime[client], -1.0);
+				db_InsertLatestRecords(g_szSteamID[client], g_szRecordPlayer, g_szPreviousRecordPlayer, g_fFinalTime[client], -1.0, 0);
 
 				// Update Checkpoints
 				if (g_bCheckpointsEnabled[client] && !g_bPositionRestored[client])
@@ -638,8 +638,15 @@ public void CL_OnEndTimerPress(int client)
 				{
 					g_fOldBonusRecordTime[zGroup] = g_fBonusFastest[zGroup];
 					g_fBonusFastest[zGroup] = g_fFinalTime[client];
+					Format(g_szOldBonusFastest[zGroup], 128, "%s", g_szBonusFastest[zGroup]);
 					Format(g_szBonusFastest[zGroup], 128, "%s", szName);
 					FormatTimeFloat(1, g_fBonusFastest[zGroup], 3, g_szBonusFastestTime[zGroup], 128);
+
+					float wr_difference = -1.0;
+					if (g_fOldBonusRecordTime[zGroup] != 0.0)
+						wr_difference = g_fFinalTime[client] - g_fOldBonusRecordTime[zGroup];
+
+					db_InsertLatestRecords(g_szSteamID[client], g_szBonusFastest[zGroup], g_szOldBonusFastest[zGroup], g_fBonusFastest[zGroup], wr_difference, zGroup);
 
 					// Update Checkpoints
 					if (g_bCheckpointsEnabled[client] && !g_bPositionRestored[client])
@@ -680,8 +687,12 @@ public void CL_OnEndTimerPress(int client)
 
 				g_fOldBonusRecordTime[zGroup] = g_fBonusFastest[zGroup];
 				g_fBonusFastest[zGroup] = g_fFinalTime[client];
+				Format(g_szOldBonusFastest[zGroup], 128, "%s", szName);
 				Format(g_szBonusFastest[zGroup], 128, "%s", szName);
 				FormatTimeFloat(1, g_fBonusFastest[zGroup], 3, g_szBonusFastestTime[zGroup], 128);
+
+				// Insert latest record
+				db_InsertLatestRecords(g_szSteamID[client], g_szBonusFastest[zGroup], g_szOldBonusFastest[zGroup], g_fBonusFastest[zGroup], -1.0, zGroup);
 
 				// Update Checkpoints
 				if (g_bCheckpointsEnabled[client] && !g_bPositionRestored[client])

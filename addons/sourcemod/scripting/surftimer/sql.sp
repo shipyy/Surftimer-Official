@@ -6228,9 +6228,20 @@ public void db_deletePlayerTmps()
 	SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, _, DBPrio_Low);
 }
 
-public void db_ViewLatestRecords(int client)
+public void db_ViewLatestRecords(int client, int type)
 {
-	SQL_TQuery(g_hDb, sql_selectLatestRecordsCallback, sql_selectLatestRecords, client, DBPrio_Low);
+	char szQuery[512];
+
+	if (type == 0)
+		Format(szQuery, sizeof(szQuery), sql_selectLatestRecords);
+	else if (type == 1)
+		Format(szQuery, sizeof(szQuery), sql_selectLatestBonusRecords);
+
+	Handle pack = CreateDataPack();
+	WritePackCell(pack, client);
+	WritePackCell(pack, type);
+
+	SQL_TQuery(g_hDb, sql_selectLatestRecordsCallback, szQuery, pack, DBPrio_Low);
 }
 
 public void sql_selectLatestRecordsCallback(Handle owner, Handle hndl, const char[] error, any data)
@@ -6238,8 +6249,14 @@ public void sql_selectLatestRecordsCallback(Handle owner, Handle hndl, const cha
 	if (hndl == null)
 	{
 		LogError("[SurfTimer] SQL Error (sql_selectLatestRecordsCallback): %s", error);
+		CloseHandle(data);
 		return;
 	}
+
+	ResetPack(data);
+	int client = ReadPackCell(data);
+	int type = ReadPackCell(data);
+	CloseHandle(data);
 
 	char szNewHolderName[64];
 	char szPreviousHolderName[64];
@@ -6249,12 +6266,11 @@ public void sql_selectLatestRecordsCallback(Handle owner, Handle hndl, const cha
 	char szTimeDifference[32];
 	float ftime;
 	float wr_difference;
-	PrintToConsole(data, "----------------------------------------------------------------------------------------------------");
-	PrintToConsole(data, "Last map records:");
+	int zonegroup;
+	PrintToConsole(client, "----------------------------------------------------------------------------------------------------");
 	if (SQL_HasResultSet(hndl))
 	{
 		Menu menu = CreateMenu(LatestRecordsMenuHandler);
-		SetMenuTitle(menu, "Recently Broken Records");
 
 		int i = 1;
 		char szItem[256];
@@ -6264,40 +6280,72 @@ public void sql_selectLatestRecordsCallback(Handle owner, Handle hndl, const cha
 			SQL_FetchString(hndl, 1, szPreviousHolderName, 64);
 
 			ftime = SQL_FetchFloat(hndl, 2);
-			FormatTimeFloat(data, ftime, 3, szTime, sizeof(szTime));
+			FormatTimeFloat(client, ftime, 3, szTime, sizeof(szTime));
 
 			wr_difference = SQL_FetchFloat(hndl, 3);
-			if ( wr_difference != -1.0)
-				FormatTimeFloat(data, wr_difference, 3, szTimeDifference, sizeof(szTimeDifference));
-			else
+			if ( wr_difference != -1.0) {
+				FormatTimeFloat(client, wr_difference, 3, szTimeDifference, sizeof(szTimeDifference));
+				Format(szTimeDifference, sizeof(szTimeDifference), "-%s", szTimeDifference);
+			}
+			else {
 				Format(szTimeDifference, sizeof(szTimeDifference), "%s", "N/A");
+				Format(szPreviousHolderName, sizeof(szPreviousHolderName), "N/A", szPreviousHolderName);
+			}
 
 			SQL_FetchString(hndl, 4, szMapName, 64);
 			SQL_FetchString(hndl, 5, szDate, 64);
+			zonegroup = SQL_FetchInt(hndl, 6);
 
-			Format(szItem, sizeof(szItem), "%s\nPrevious Holder - %s\nNew Holder: %s\nNew Time: %s (-%s)\n%s\n \n", szMapName, szPreviousHolderName, szNewHolderName, szTime, szTimeDifference, szDate);
+			if (zonegroup == 0)
+				Format(szItem, sizeof(szItem), "%s\nPrevious Holder - %s\nNew Holder: %s\nNew Time: %s (%s)\n%s\n \n", szMapName, szPreviousHolderName, szNewHolderName, szTime, szTimeDifference, szDate);
+			else
+				Format(szItem, sizeof(szItem), "%s | Bonus %d\nPrevious Holder - %s\nNew Holder: %s\nNew Time: %s (%s)\n%s\n \n", szMapName, zonegroup, szPreviousHolderName, szNewHolderName, szTime, szTimeDifference, szDate);
 
-			PrintToConsole(data, szItem);
+
+			PrintToConsole(client, szItem);
 
 			AddMenuItem(menu, "", szItem, ITEMDRAW_DISABLED);
 			i++;
 		}
-		if (i == 1)
-		{
-			PrintToConsole(data, "No records found.");
+
+		//NO RESULTS FOUND
+		if (i == 1) {
+			if (type == 0) {
+				PrintToConsole(client, "Last map records:");
+				PrintToConsole(client, "No map records found.");
+				CPrintToChat(client, "%s No map records found.", g_szChatPrefix);
+			}
+			else {
+				PrintToConsole(client, "Last bonus records:");
+				PrintToConsole(client, "No bonus records found.");
+				CPrintToChat(client, "%s No bonus records found.", g_szChatPrefix);
+			}
+
 			delete menu;
 		}
-		else
-		{
+		//RESULTS FOUND
+		else {
+			if (type == 0) {
+				PrintToConsole(client, "Last map records:");
+				SetMenuTitle(menu, "Recently Broken Records\n \n");
+			}
+			else {
+				PrintToConsole(client, "Last bonus records:");
+				SetMenuTitle(menu, "Recently Broken Bonus Records\n \n");
+			}
+
 			SetMenuOptionFlags(menu, MENUFLAG_BUTTON_EXIT);
 			SetMenuPagination(menu, 3);
-			DisplayMenu(menu, data, MENU_TIME_FOREVER);
+			DisplayMenu(menu, client, MENU_TIME_FOREVER);
 		}
 	}
-	else
-	PrintToConsole(data, "No records found.");
-	PrintToConsole(data, "----------------------------------------------------------------------------------------------------");
-	CPrintToChat(data, "%t", "ConsoleOutput", g_szChatPrefix);
+	else {
+		PrintToConsole(client, "No records found.");
+		CPrintToChat(client, "%s No records found.", g_szChatPrefix);
+	}
+
+	PrintToConsole(client, "----------------------------------------------------------------------------------------------------");
+	CPrintToChat(client, "%t", "ConsoleOutput", g_szChatPrefix);
 }
 
 public int LatestRecordsMenuHandler(Handle menu, MenuAction action, int param1, int param2)
@@ -6710,10 +6758,10 @@ public void db_Populate_ck_track_bonus_Callback(Handle owner, Handle hndl, const
 
 }
 
-public void db_InsertLatestRecords(char szSteamID[32], char szNewRecordHolder[128], char szPreviousRecordHolder[128], float finaltime, float WR_Difference)
+public void db_InsertLatestRecords(char szSteamID[32], char szNewRecordHolder[128], char szPreviousRecordHolder[128], float finaltime, float WR_Difference, int zonegroup)
 {
 	char szQuery[512];
-	Format(szQuery, sizeof(szQuery), sql_insertLatestRecords, szSteamID, szNewRecordHolder, szPreviousRecordHolder, finaltime, WR_Difference, g_szMapName);
+	Format(szQuery, sizeof(szQuery), sql_insertLatestRecords, szSteamID, szNewRecordHolder, szPreviousRecordHolder, finaltime, WR_Difference, g_szMapName, zonegroup);
 	SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, _, DBPrio_Low);
 }
 
