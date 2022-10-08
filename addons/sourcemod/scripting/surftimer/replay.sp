@@ -36,20 +36,20 @@ static void SetReplayTime(int zGrp, int stage, int style)
 	ExplodeString(sTime, ":", sBuffer, 4, 54);
 	float time = (StringToFloat(sBuffer[0]) * 60);
 	time += StringToFloat(sBuffer[1]);
-	time += (StringToFloat(sBuffer[2]) / 100);
+	time += (StringToFloat(sBuffer[2]) / 1000);
 	if (zGrp == 0 && stage == 0)
 	{
 		// Map
 		if (style == 0)
 		{
-			if ((g_fRecordMapTime - 0.01) < time < (g_fRecordMapTime) + 0.01)
+			if ((g_fRecordMapTime - 0.001) < time < (g_fRecordMapTime) + 0.001)
 			{
 				time = g_fRecordMapTime;
 			}
 		}
 		else
 		{
-			if ((g_fRecordStyleMapTime[style] - 0.01) < time < (g_fRecordStyleMapTime[style]) + 0.01)
+			if ((g_fRecordStyleMapTime[style] - 0.001) < time < (g_fRecordStyleMapTime[style]) + 0.001)
 			{
 				time = g_fRecordStyleMapTime[style];
 			}
@@ -58,7 +58,8 @@ static void SetReplayTime(int zGrp, int stage, int style)
 	else if (stage > 0)
 	{
 		// Stage
-		if ((g_fStageRecord[stage] - 0.01) < time < (g_fStageRecord[stage]) + 0.01)
+		PrintToConsole(0, "+++ STAGE %d | TIME %f +++", stage, time);
+		if ((g_fStageRecord[stage] - 0.001) < time < (g_fStageRecord[stage]) + 0.001)
 		{
 			g_fStageReplayTimes[stage] = g_fStageRecord[stage];
 		}
@@ -74,14 +75,14 @@ static void SetReplayTime(int zGrp, int stage, int style)
 		// Bonus
 		if (style == 0)
 		{
-			if ((g_fBonusFastest[zGrp] - 0.01) < time < (g_fBonusFastest[zGrp]) + 0.01)
+			if ((g_fBonusFastest[zGrp] - 0.001) < time < (g_fBonusFastest[zGrp]) + 0.001)
 			{
 				time = g_fBonusFastest[zGrp];
 			}
 		}
 		else
 		{
-			if ((g_fStyleBonusFastest[style][zGrp] - 0.01) < time < (g_fStyleBonusFastest[style][zGrp]) + 0.01)
+			if ((g_fStyleBonusFastest[style][zGrp] - 0.001) < time < (g_fStyleBonusFastest[style][zGrp]) + 0.001)
 			{
 				time = g_fStyleBonusFastest[style][zGrp];
 			}
