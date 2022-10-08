@@ -58,7 +58,6 @@ static void SetReplayTime(int zGrp, int stage, int style)
 	else if (stage > 0)
 	{
 		// Stage
-		PrintToConsole(0, "+++ STAGE %d | TIME %f +++", stage, time);
 		if ((g_fStageRecord[stage] - 0.001) < time < (g_fStageRecord[stage]) + 0.001)
 		{
 			g_fStageReplayTimes[stage] = g_fStageRecord[stage];
