@@ -120,6 +120,7 @@ public int Handle_VoteMenuExtend(Menu menu, MenuAction action, int param1, int p
 		{
 			CPrintToChatAll("%t", "CVote9", g_szChatPrefix, RoundToNearest(100.0*percent), iTotalVotes);
 			CPrintToChatAll("%t", "CVote10", g_szChatPrefix);
+			GameRules_SetProp("m_iRoundTime", GameRules_GetProp("m_iRoundTime", 4, 0) + RoundToFloor(10.0*60), 4, 0, true);
 			extendMap(600);
 		}
 	}
