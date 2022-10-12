@@ -4208,9 +4208,9 @@ public void Checkpoint(int client, int zone, int zonegroup, float time, float sp
 /////
 
 	//WR
-	if (g_bCheckpointSpeedsRecordFound[zonegroup] && g_fCheckpointSpeedServerRecord[zonegroup][zone] > 0.0 && g_bTimerRunning[client])
+	if (g_bCheckpointSpeedsRecordFound[zonegroup] && g_fCheckpointSpeedServerRecord[zone] > 0.0 && g_bTimerRunning[client])
 	{	
-		f_srSpeedDiff = ( g_fCheckpointSpeedServerRecord[0][zone] - speed);
+		f_srSpeedDiff = ( g_fCheckpointSpeedServerRecord[zone] - speed);
 		Format(sz_srSpeedDiff, 128, "%i", RoundToNearest(f_srSpeedDiff));
 
 		//SLOWER THAN WR

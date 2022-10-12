@@ -3658,11 +3658,11 @@ public void sql_selectRecordCheckpointsCallback(Handle owner, Handle hndl, const
 
 public void db_viewRecordCheckpointSpeedsInMap()
 {
-	for (int k = 0; k < MAXZONEGROUPS; k++){
+	for (int k = 0; k < MAXZONEGROUPS; k++)
 		g_bCheckpointSpeedsRecordFound[k] = false;
-		for (int i = 0; i < CPLIMIT; i++)
-			g_fCheckpointSpeedServerRecord[k][i] = 0.0;
-	}
+
+	for (int i = 0; i < CPLIMIT; i++)
+			g_fCheckpointSpeedServerRecord[i] = 0.0;
 
 	char szQuery[1028];
 	Format(szQuery, sizeof(szQuery), sql_selectRecordCheckpointSpeeds, g_szMapName, g_szMapName);
@@ -3688,9 +3688,9 @@ public void sql_selectRecordCheckpointSpeedsCallback(Handle owner, Handle hndl, 
 			zonegroup = SQL_FetchInt(hndl, 0);
 			cp = SQL_FetchInt(hndl, 1);
 
-			g_fCheckpointSpeedServerRecord[zonegroup][cp-1] = SQL_FetchFloat(hndl, 2);
+			g_fCheckpointSpeedServerRecord[cp-1] = SQL_FetchFloat(hndl, 2);
 
-			if (!g_bCheckpointSpeedsRecordFound[zonegroup] && g_fCheckpointSpeedServerRecord[zonegroup][cp-1] > 0.0)
+			if (!g_bCheckpointSpeedsRecordFound[zonegroup] && g_fCheckpointSpeedServerRecord[cp-1] > 0.0)
 				g_bCheckpointSpeedsRecordFound[zonegroup] = true;
 		}
 	}
