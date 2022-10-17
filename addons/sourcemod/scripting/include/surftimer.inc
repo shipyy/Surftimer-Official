@@ -160,6 +160,13 @@ native void surftimer_GetPlayerInfo(int& client, int& iWrcpTimer, int& iPracMode
 native float surftimer_GetClientSync(int client);
 
 /**
+ * teleport player to start zone
+ *
+ * @param client			The client's ID.
+ */
+native int surftimer_RestartTimer(int client);
+
+/**
  * Retrieves the client's current style.
  *
  * @param client			The client's ID.

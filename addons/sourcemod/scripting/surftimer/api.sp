@@ -320,6 +320,14 @@ public any Native_GetClientSync(Handle plugin, int numParams)
 	return GetStrafeSync(client, true);
 }
 
+public int Native_RestartTimer(Handle plugin, int numParams)
+{
+	int client = GetNativeCell(1);
+	Command_Restart(client, 1);
+
+	return 0;
+}
+
 public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max)
 {
 	RegPluginLibrary("surftimer");
@@ -343,6 +351,7 @@ public APLRes AskPluginLoad2(Handle myself, bool late, char[] error, int err_max
 	CreateNative("surftimer_SafeTeleport", Native_SafeTeleport);
 	CreateNative("surftimer_IsClientVip", Native_IsClientVip);
 	CreateNative("surftimer_GetClientSync", Native_GetClientSync);
+	CreateNative("surftimer_RestartTimer", Native_RestartTimer);
 	MarkNativeAsOptional("Store_GetClientCredits");
 	MarkNativeAsOptional("Store_SetClientCredits");
 	g_bLateLoaded = late;

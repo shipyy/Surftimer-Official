@@ -378,7 +378,6 @@ public Action Command_ToggleCps(int client, int args) {
 }
 
 public Action Command_SilentSpec(int client, int args) {
-	if (!IsPlayerVip(client)) return Plugin_Handled;
 	
 	if (g_iSilentSpectate[client]) {
 		g_iSilentSpectate[client] = false;
