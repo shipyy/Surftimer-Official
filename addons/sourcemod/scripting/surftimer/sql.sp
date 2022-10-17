@@ -4711,7 +4711,7 @@ public void SQL_selectReplayCPTicksCallback(Handle owner, Handle hndl, const cha
 			frame = SQL_FetchInt(hndl, 1);
 			style = SQL_FetchInt(hndl, 2);
 
-			g_iCPStartFrame[style][cp] = frame;
+			g_iCPStartFrame[style][cp-1] = frame;
 
 			if (!g_bReplayTickFound[style] && g_iCPStartFrame[style][cp - 1] > 0)
 				g_bReplayTickFound[style] = true;
@@ -4722,7 +4722,7 @@ public void SQL_selectReplayCPTicksCallback(Handle owner, Handle hndl, const cha
 			for(int j = 0; j < CPLIMIT; j++)
 				g_iCPStartFrame[i][j] = 0;
 	}
-	
+
 	if (!g_bServerDataLoaded)
 	{
 		g_fServerLoading[1] = GetGameTime();

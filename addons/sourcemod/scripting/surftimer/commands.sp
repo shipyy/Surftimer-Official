@@ -6104,8 +6104,6 @@ public int PlayRecordCPMenuHandler(Handle menu, MenuAction action, int param1, i
 			selected_CP = StringToInt(szBuffer_CP_split[1]);
 		}
 
-		//PrintToChatAll("SELECTED CP NUMBER %d", selected_CP);
-
 		int bot;
 		g_iSelectedReplayType = 0;
 		bot = g_RecordBot;
