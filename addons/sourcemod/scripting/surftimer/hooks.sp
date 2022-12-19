@@ -1636,13 +1636,15 @@ public Action Event_PlayerJump(Handle event, char[] name, bool dontBroadcast)
 						g_bResetOneJump[client] = false;
 						float diff = GetClientTickTime(client) - g_fJumpedInZoneTime[client];
 						g_bJumpedInZone[client] = false;
-						if ((diff <= 0.9 && g_iCurrentStyle[client] != 4 && g_iCurrentStyle[client] != 5) || (diff <= 1.6 && (g_iCurrentStyle[client] == 4 || g_iCurrentStyle[client] == 5)))
-						{
-							CPrintToChat(client, "%t", "Hooks15", g_szChatPrefix);
-							Handle pack;
-							CreateDataTimer(0.05, DelayedVelocityCap, pack);
-							WritePackCell(pack, client);
-							WritePackFloat(pack, 0.0);
+						if (!g_bPracticeMode[client]) {
+							if ((diff <= 0.9 && g_iCurrentStyle[client] != 4 && g_iCurrentStyle[client] != 5) || (diff <= 1.6 && (g_iCurrentStyle[client] == 4 || g_iCurrentStyle[client] == 5)))
+							{
+								CPrintToChat(client, "%t", "Hooks15", g_szChatPrefix);
+								Handle pack;
+								CreateDataTimer(0.05, DelayedVelocityCap, pack);
+								WritePackCell(pack, client);
+								WritePackFloat(pack, 0.0);
+							}
 						}
 					}
 				}

@@ -133,7 +133,9 @@ public void CL_OnStartTimerPress(int client)
 			//CCP INCREMENT ATTEMPTS
 			g_iStageAttemptsNew[client][0] += 1;
 
+			char szRecordDifferenceUnformatted[128];
 			char szRecordDifference[128];
+			char szPersonalDifferenceUnformatted[128];
 			char szPersonalDifference[128];
 			char szSpeed[128];
 			char preMessage[128];
@@ -144,31 +146,37 @@ public void CL_OnStartTimerPress(int client)
 
 			if (iPrestrafeRecord == 0)
 			{
+				Format(szRecordDifferenceUnformatted, sizeof szRecordDifferenceUnformatted, "%s", "N/A");
 				Format(szRecordDifference, sizeof(szRecordDifference), "%c%s%c", GRAY, "N/A", WHITE);
 			}
 			else if (prestrafe >= iPrestrafeRecord)
 			{
 				iRecordDifference = prestrafe - iPrestrafeRecord;
+				Format(szRecordDifferenceUnformatted, sizeof szRecordDifferenceUnformatted, "+%i", iRecordDifference);
 				Format(szRecordDifference, sizeof(szRecordDifference), "%c+%i%c", GREEN, iRecordDifference, WHITE);
 			}
 			else
 			{
 				iRecordDifference = iPrestrafeRecord - prestrafe;
+				Format(szRecordDifferenceUnformatted, sizeof szRecordDifferenceUnformatted, "-%i", iRecordDifference);
 				Format(szRecordDifference, sizeof(szRecordDifference), "%c-%i%c", RED, iRecordDifference, WHITE);
 			}
 
 			if (iPersonalPrestrafeRecord == 0)
 			{
+				Format(szPersonalDifferenceUnformatted, sizeof szPersonalDifferenceUnformatted, "%s", "N/A");
 				Format(szPersonalDifference, sizeof(szPersonalDifference), "%c%s%c", GRAY, "N/A", WHITE);
 			}
 			else if (prestrafe >= iPersonalPrestrafeRecord)
 			{
 				iPersonalDifference = prestrafe - iPersonalPrestrafeRecord;
+				Format(szPersonalDifferenceUnformatted, sizeof szPersonalDifferenceUnformatted, "+%i", iPersonalDifference);
 				Format(szPersonalDifference, sizeof(szPersonalDifference), "%c+%i%c", GREEN, iPersonalDifference, WHITE);
 			}
 			else
 			{
 				iPersonalDifference = iPersonalPrestrafeRecord - prestrafe;
+				Format(szPersonalDifferenceUnformatted, sizeof szPersonalDifferenceUnformatted, "-%i", iPersonalDifference);
 				Format(szPersonalDifference, sizeof(szPersonalDifference), "%c-%i%c", RED, iPersonalDifference, WHITE);
 			}
 
@@ -201,10 +209,10 @@ public void CL_OnStartTimerPress(int client)
 					CPrintToChat(i, preMessage);
 			}
 
-			if (g_iClientInZone[client][2] == 0)
-				SendMapStartForward(client, prestrafe, iPersonalDifference, iRecordDifference);
-		}
+			//PRESTRAFE FORWARD
+			SendMapStartForward(client, prestrafe, szPersonalDifferenceUnformatted, szRecordDifferenceUnformatted);
 
+		}
 	}
 
 	// Play Start Sound
@@ -897,7 +905,9 @@ public void CL_OnStartWrcpTimerPress(int client)
 			}
 		}
 		if (g_Stage[0][client] >= 1 && !g_bPracticeMode[client] && !IsFakeClient(client)) {
+			char szRecordDifferenceUnformatted[128];
 			char szRecordDifference[128];
+			char szPersonalDifferenceUnformatted[128];
 			char szPersonalDifference[128];
 			char szSpeed[128];
 			char preMessage[128];
@@ -917,31 +927,37 @@ public void CL_OnStartWrcpTimerPress(int client)
 
 			if (iPrestrafeRecord == 0)
 			{
+				Format(szRecordDifferenceUnformatted, sizeof szRecordDifferenceUnformatted, "%s", "N/A");
 				Format(szRecordDifference, sizeof(szRecordDifference), "%c%s%c", GRAY, "N/A", WHITE);
 			}
 			else if (prestrafe >= iPrestrafeRecord)
 			{
 				iRecordDifference = prestrafe - iPrestrafeRecord;
+				Format(szRecordDifferenceUnformatted, sizeof szRecordDifferenceUnformatted, "+%i", iRecordDifference);
 				Format(szRecordDifference, sizeof(szRecordDifference), "%c+%i%c", GREEN, iRecordDifference, WHITE);
 			}
 			else
 			{
 				iRecordDifference = iPrestrafeRecord - prestrafe;
+				Format(szRecordDifferenceUnformatted, sizeof szRecordDifferenceUnformatted, "-%i", iRecordDifference);
 				Format(szRecordDifference, sizeof(szRecordDifference), " %c-%i%c", RED, iRecordDifference, WHITE);
 			}
 
 			if (iPersonalPrestrafeRecord == 0)
 			{
+				Format(szPersonalDifferenceUnformatted, sizeof szPersonalDifferenceUnformatted, "%s", "N/A");
 				Format(szPersonalDifference, sizeof(szPersonalDifference), "%c%s%c", GRAY, "N/A", WHITE);
 			}
 			else if (prestrafe >= iPersonalPrestrafeRecord)
 			{
 				iPersonalDifference = prestrafe - iPersonalPrestrafeRecord;
+				Format(szPersonalDifferenceUnformatted, sizeof szPersonalDifferenceUnformatted, "+%i", iPersonalDifference);
 				Format(szPersonalDifference, sizeof(szPersonalDifference), "%c+%i%c", GREEN, iPersonalDifference, WHITE);
 			}
 			else
 			{
 				iPersonalDifference = iPersonalPrestrafeRecord - prestrafe;
+				Format(szPersonalDifferenceUnformatted, sizeof szPersonalDifferenceUnformatted, "-%i", iPersonalDifference);
 				Format(szPersonalDifference, sizeof(szPersonalDifference), " %c-%i%c", RED, iPersonalDifference, WHITE);
 			}
 
@@ -969,6 +985,9 @@ public void CL_OnStartWrcpTimerPress(int client)
 				if (g_iPrespeedText[i])
 					CPrintToChat(i, preMessage);
 			}
+
+			//PRESTRAFE FORWARD
+			SendStageStartForward(client, prestrafe, szPersonalDifferenceUnformatted, szRecordDifferenceUnformatted);
 		}
 	}
 }

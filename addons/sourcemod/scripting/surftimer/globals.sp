@@ -742,6 +742,7 @@ GlobalForward g_PracticeFinishForward;
 GlobalForward g_NewRecordForward;
 GlobalForward g_NewWRCPForward;
 GlobalForward g_MapStartForward;
+GlobalForward g_StageStartForward;
 
 /*----------  SQL Variables  ----------*/
 
