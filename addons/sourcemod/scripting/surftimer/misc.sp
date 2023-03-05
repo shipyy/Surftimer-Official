@@ -102,9 +102,10 @@ public void LoadClientSetting(int client, int setting)
 			case 8: db_viewCheckpoints(client, g_szSteamID[client], g_szMapName);
 			case 9: db_LoadCCP(client);
 			case 10: db_viewPRinfo(client, g_szSteamID[client], g_szMapName);
+			case 11: db_viewPlayerMapAttributes(client, g_szSteamID[client], g_szMapName);
 			default: db_viewPersonalRecords(client, g_szSteamID[client], g_szMapName);
 		}
-		g_iSettingToLoad[client]++;
+		//g_iSettingToLoad[client]++;
 	}
 }
 
@@ -1374,6 +1375,12 @@ public void SetClientDefaults(int client)
 
 	g_bWrcpEndZone[client] = false;
 	g_iClientInZone[client][2] = 0;
+
+	//IMO
+	for(int i = 0; i < 8; i++)
+	{
+		g_iPlayerMapAttributes[client][i] = 0;
+	}
 }
 
 float GetClientTickTime(int client)

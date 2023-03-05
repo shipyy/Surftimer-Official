@@ -687,3 +687,10 @@ public Action RestartPlayer(Handle timer, any client)
 	
 	return Plugin_Continue;
 }
+
+public Action RefreshMapAttributes(Handle timer)
+{
+	db_getMapAttributes();
+
+	return Plugin_Handled;
+}

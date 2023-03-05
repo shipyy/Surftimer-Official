@@ -1952,4 +1952,14 @@
 	{
 		"en"		"\nStyle Acronyms are the following : \nNormal - n \nSideways - sw \nHalf-Sideways - hsw \nBackwards - bw \nLow-Gravity - lg \nSlow Motion - sm \nFast Forward - ff \nFreestyle - fs \n"
 	}
+	"Vote Submited"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} {green}Vote Submited!"
+	}
+	"Vote Not Submited"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"		"{1} {red} Retry again in {yellow}{2}{red}!"
+	}
 }

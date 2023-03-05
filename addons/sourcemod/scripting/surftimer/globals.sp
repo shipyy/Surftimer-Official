@@ -1516,6 +1516,12 @@ int g_iRankToDelete[MAXPLAYERS + 1];
 Handle HUD_Handle;
 Handle Timeleft_Handle;
 
+//IMO VARIABLES
+float g_fMapAttributeValues[8];
+int g_iPlayerMapAttributes[MAXPLAYERS + 1][8]; //REFER TO g_szMapAttributes FOR INDEXING
+int g_iPlayerMapAttributes_temp[MAXPLAYERS + 1][8]; //TEMP VALUES FOR VOTING IN CASE IT IS NOT ALLOWED
+bool g_bhasVoted[MAXPLAYERS + 1];
+
 /*===================================
 =         Predefined Arrays         =
 ===================================*/
@@ -1609,6 +1615,18 @@ char RadioCMDS[][] =  // Disable radio commands
 	"getinpos", "stormfront", "report", "roger", "enemyspot", "needbackup", "sectorclear", "inposition",
 	"reportingin", "getout", "negative", "enemydown", "cheer", "thanks", "nice", "compliment", "go_a",
 	"go_b", "sorry", "needrop", "playerradio", "playerchatwheel", "chatwheel_ping", "player_ping"
+};
+
+char g_szMapAttributes[][] =
+{
+	"Tier",
+	"Longevity",
+	"Difficulty",
+	"Texture",
+	"Fun",
+	"Unit",
+	"Tech",
+	"Bonuses"
 };
 
 /*======  End of Declarations  ======*/

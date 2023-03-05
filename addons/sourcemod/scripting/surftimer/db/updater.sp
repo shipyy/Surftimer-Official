@@ -80,8 +80,13 @@ public void CheckDatabaseForUpdates()
             db_upgradeDatabase(13);
             return;
         }
+        if (!SQL_FastQuery(g_hDb, "SELECT mapname FROM ck_playervotes LIMIT 1"))
+        {
+            db_upgradeDatabase(14);
+            return;
+        }
 
-        LogMessage("Version 13 looks good.");
+        LogMessage("Version 14 looks good.");
     }
 }
 
@@ -167,6 +172,10 @@ public void db_upgradeDatabase(int ver)
     else if (ver == 13)
     {
         SQL_FastQuery(g_hDb, "ALTER TABLE ck_latestrecords ADD COLUMN zonegroup INT NOT NULL DEFAULT '0' AFTER map;");
+    }
+    else if (ver == 14)
+    {
+        SQL_FastQuery(g_hDb, sql_create_playervotes);
     }
 
     CheckDatabaseForUpdates();

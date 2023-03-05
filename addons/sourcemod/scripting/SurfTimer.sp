@@ -310,6 +310,9 @@ public void OnMapStart()
 	//CSD Hud Synchronizer
 	HUD_Handle = CreateHudSynchronizer();
 	Timeleft_Handle = CreateHudSynchronizer();
+
+	//MAP RATINGS REFRESH TIMER
+	CreateTimer(360.0, RefreshMapAttributes, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE);
 }
 
 public void OnMapEnd()
@@ -491,7 +494,7 @@ public void OnClientPutInServer(int client)
 		// Start loading client settings
 		g_bLoadingSettings[client] = true;
 		g_iSettingToLoad[client] = 0;
-		LoadClientSetting(client, g_iSettingToLoad[client]);
+		LoadClientSetting(client, 0);
 	}
 }
 
