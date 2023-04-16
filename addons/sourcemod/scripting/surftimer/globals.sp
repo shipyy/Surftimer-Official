@@ -1422,11 +1422,23 @@ ConVar g_hHostName = null;
 Handle g_hDestinations;
 
 // CPR command
-float g_fClientCPs[MAXPLAYERS + 1][36];
+float g_fPlayer1CPs_Time[MAXPLAYERS + 1][64];
+float g_fPlayer2CPs_Time[MAXPLAYERS + 1][64];
 
-float g_fTargetTime[MAXPLAYERS + 1];
-char g_szTargetCPR[MAXPLAYERS + 1][MAX_NAME_LENGTH];
+float g_fPlayer1CPs_Speed[MAXPLAYERS + 1][64];
+float g_fPlayer2CPs_Speed[MAXPLAYERS + 1][64];
+
+float g_fPlayer1Time[MAXPLAYERS + 1];
+float g_fPlayer2Time[MAXPLAYERS + 1];
+
+char g_szPlayer1Name[MAXPLAYERS + 1][MAX_NAME_LENGTH];
+char g_szPlayer2Name[MAXPLAYERS + 1][MAX_NAME_LENGTH];
+
 char g_szCPRMapName[MAXPLAYERS + 1][128];
+
+int g_iCPR_CPS_Count[MAXPLAYERS + 1];
+
+bool g_bCPR_MapFound[MAXPLAYERS + 1];
 
 //PRINFO command
 float g_fTimeinZone[MAXPLAYERS + 1][MAXZONEGROUPS];

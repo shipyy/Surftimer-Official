@@ -1634,6 +1634,11 @@
 		"#format"	"{1:s},{2:s}"
 		"en"		"{1} No result found for {yellow}{2}"
 	}
+	"SQL41"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"		"{1} No times found for {yellow}{2}."
+	}
 	"DeleteRecordsNewValue"
 	{
 		"#format"	"{1:s}"

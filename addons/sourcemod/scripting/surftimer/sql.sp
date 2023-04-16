@@ -11897,173 +11897,434 @@ public void SQL_SetJoinMsgCallback(Handle owner, Handle hndl, const char[] error
 // 	}
 // }
 
-public void db_selectCPR(int client, int rank, const char szMapName[128], const char szSteamId[32])
+// public void db_selectCPR(int client, int rank, const char szMapName[128], const char szSteamId[32])
+// {
+// 	Handle pack = CreateDataPack();
+// 	WritePackCell(pack, client);
+// 	WritePackCell(pack, rank);
+// 	WritePackString(pack, szSteamId);
+
+// 	char szQuery[512];
+// 	Format(szQuery, sizeof(szQuery), "SELECT `steamid`, `name`, `mapname`, `runtimepro` FROM `ck_playertimes` WHERE `steamid` = '%s' AND `mapname` = '%s' AND style = 0", g_szSteamID[client], szMapName);
+// 	SQL_TQuery(g_hDb, SQL_SelectCPRTimeCallback, szQuery, pack, DBPrio_Low);
+// }
+
+// public void SQL_SelectCPRTimeCallback(Handle owner, Handle hndl, const char[] error, any pack)
+// {
+// 	if (hndl == null)
+// 	{
+// 		LogError("[surftimer] SQL Error (SQL_SelectCPRTimeCallback): %s", error);
+// 		CloseHandle(pack);
+// 		return;
+// 	}
+
+// 	ResetPack(pack);
+// 	int client = ReadPackCell(pack);
+
+// 	if (SQL_HasResultSet(hndl) && SQL_FetchRow(hndl))
+// 	{
+// 		SQL_FetchString(hndl, 2, g_szCPRMapName[client], 128);
+// 		g_fClientCPs[client][0] = SQL_FetchFloat(hndl, 3);
+
+// 		char szQuery[512];
+// 		Format(szQuery, sizeof(szQuery), "SELECT cp, time FROM ck_checkpoints WHERE steamid = '%s' AND mapname = '%s' AND zonegroup = 0;", g_szSteamID[client], g_szCPRMapName[client]);
+// 		SQL_TQuery(g_hDb, SQL_SelectCPRCallback, szQuery, pack, DBPrio_Low);
+// 	}
+// 	else
+// 	{
+// 		CPrintToChat(client, "%t", "SQLTwo7", g_szChatPrefix);
+// 		CloseHandle(pack);
+// 	}
+// }
+
+// public void SQL_SelectCPRCallback(Handle owner, Handle hndl, const char[] error, any pack)
+// {
+// 	if (hndl == null)
+// 	{
+// 		LogError("[surftimer] SQL Error (SQL_SelectCPRCallback): %s", error);
+// 		CloseHandle(pack);
+// 		return;
+// 	}
+
+// 	if (SQL_HasResultSet(hndl))
+// 	{
+// 		ResetPack(pack);
+// 		int client = ReadPackCell(pack);
+// 		int cp;
+// 		while(SQL_FetchRow(hndl))
+// 		{	
+// 			cp = SQL_FetchInt(hndl, 0);
+// 			g_fClientCPs[client][cp] = SQL_FetchFloat(hndl, 1);
+// 		}
+// 		db_selectCPRTarget(pack);
+// 	}
+// }
+
+// public void db_selectCPRTarget(any pack)
+// {
+// 	ResetPack(pack);
+// 	int client = ReadPackCell(pack);
+// 	int rank = ReadPackCell(pack);
+// 	rank = rank - 1;
+
+// 	char szQuery[512];
+// 	// USING PLAYER NAME
+// 	if (rank == -1)
+// 	{
+// 		char szSteamId[32];
+// 		ReadPackString(pack, szSteamId, 32);
+// 		Format(szQuery, sizeof(szQuery), "SELECT `steamid`, `name`, `mapname`, `runtimepro` FROM `ck_playertimes` WHERE `mapname` = '%s' AND steamid = '%s' AND style = 0", g_szCPRMapName[client], szSteamId);
+// 	}
+// 	else
+// 		Format(szQuery, sizeof(szQuery), "SELECT `steamid`, `name`, `mapname`, `runtimepro` FROM `ck_playertimes` WHERE `mapname` = '%s' AND style = 0 ORDER BY `runtimepro` ASC LIMIT %i, 1;", g_szCPRMapName[client], rank);
+// 	SQL_TQuery(g_hDb, SQL_SelectCPRTargetCallback, szQuery, pack, DBPrio_Low);
+// }
+
+// public void SQL_SelectCPRTargetCallback(Handle owner, Handle hndl, const char[] error, any pack)
+// {
+// 	if (hndl == null)
+// 	{
+// 		LogError("[surftimer] SQL Error (SQL_SelectCPRTargetCallback): %s", error);
+// 		CloseHandle(pack);
+// 		return;
+// 	}
+
+// 	if (SQL_HasResultSet(hndl) && SQL_FetchRow(hndl))
+// 	{
+// 		ResetPack(pack);
+// 		int client = ReadPackCell(pack);
+
+// 		char szSteamId[32];
+// 		SQL_FetchString(hndl, 0, szSteamId, sizeof(szSteamId));
+// 		SQL_FetchString(hndl, 1, g_szTargetCPR[client], sizeof(g_szTargetCPR));
+// 		g_fTargetTime[client] = SQL_FetchFloat(hndl, 3);
+// 		db_selectCPRTargetCPs(szSteamId, pack);
+// 	}
+// }
+
+// public void db_selectCPRTargetCPs(const char[] szSteamId, any pack)
+// {
+// 	ResetPack(pack);
+// 	int client = ReadPackCell(pack);
+
+// 	char szQuery[512];
+// 	Format(szQuery, sizeof(szQuery), "SELECT cp, time FROM ck_checkpoints WHERE steamid = '%s' AND `mapname` = '%s' AND zonegroup = 0;", szSteamId, g_szCPRMapName[client]);
+// 	SQL_TQuery(g_hDb, SQL_SelectCPRTargetCPsCallback, szQuery, pack, DBPrio_Low);
+// }
+
+// public void SQL_SelectCPRTargetCPsCallback(Handle owner, Handle hndl, const char[] error, any pack)
+// {
+// 	if (hndl == null)
+// 	{
+// 		LogError("[surftimer] SQL Error (SQL_SelectCPRTargetCPsCallback): %s", error);
+// 		CloseHandle(pack);
+// 		return;
+// 	}
+
+// 	if (SQL_HasResultSet(hndl))
+// 	{
+// 		ResetPack(pack);
+// 		int client = ReadPackCell(pack);
+// 		int rank = ReadPackCell(pack);
+
+// 		Menu menu = CreateMenu(CPRMenuHandler);
+// 		char szTitle[256], szName[MAX_NAME_LENGTH];
+// 		GetClientName(client, szName, sizeof(szName));
+// 		Format(szTitle, sizeof(szTitle), "%s VS %s on %s\n \n", szName, g_szTargetCPR[client], g_szCPRMapName[client], rank);
+// 		SetMenuTitle(menu, szTitle);
+
+// 		float targetCPs, comparedCPs;
+// 		char szCPR[32], szCompared[32], szItem[256];
+
+// 		int cp;
+
+// 		while(SQL_FetchRow(hndl))
+// 		{
+// 			cp = SQL_FetchInt(hndl, 0);
+
+// 			targetCPs = SQL_FetchFloat(hndl, 1);
+// 			comparedCPs = (g_fClientCPs[client][cp] - targetCPs);
+
+// 			if (targetCPs == 0.0 || g_fClientCPs[client][cp] == 0.0)
+// 				continue;
+// 			FormatTimeFloat(client, targetCPs, 3, szCPR, sizeof(szCPR));
+// 			FormatTimeFloat(client, comparedCPs, 6, szCompared, sizeof(szCompared));
+// 			Format(szItem, sizeof(szItem), "CP %i: %s (%s)", cp, szCPR, szCompared);
+// 			AddMenuItem(menu, "", szItem, ITEMDRAW_DISABLED);
+// 		}
+
+// 		char szTime[32], szCompared2[32];
+// 		float compared = g_fClientCPs[client][0] - g_fTargetTime[client];
+// 		FormatTimeFloat(client, g_fClientCPs[client][0], 3, szTime, sizeof(szTime));
+// 		FormatTimeFloat(client, compared, 6, szCompared2, sizeof(szCompared2));
+// 		Format(szItem, sizeof(szItem), "Total Time: %s (%s)", szTime, szCompared2);
+// 		AddMenuItem(menu, "", szItem, ITEMDRAW_DISABLED);
+// 		SetMenuOptionFlags(menu, MENUFLAG_BUTTON_EXIT);
+// 		DisplayMenu(menu, client, MENU_TIME_FOREVER);
+// 	}
+
+// 	CloseHandle(pack);
+// }
+
+// public int CPRMenuHandler(Menu menu, MenuAction action, int param1, int param2)
+// {
+// 	if (action == MenuAction_End)
+// 		delete menu;
+
+// 	return 0;
+// }
+
+//CHECK IF MAPNAME INPUT EXISTS IN DATABASE, THIS PROBABLY HAS TO BE MADE BECAUSE OF INPUTS LIKE surf_y and surf_z WHICH SEEM TO NOT WORK WITH FUNTION FINDMAP()
+
+public void db_CheckMapNameInServer(int client, char sMapName[128])
 {
+	char szQuery[256];
+	if ( StrContains(sMapName, "surf", false) != -1) {
+		Format(szQuery, sizeof szQuery, "SELECT DISTINCT mapname FROM ck_maptier WHERE mapname = '%s';", sMapName);
+	}
+	else {
+		Format(szQuery, sizeof szQuery, "SELECT DISTINCT mapname FROM ck_maptier WHERE mapname = 'surf_%s';", sMapName);
+	}
+
+
+	SQL_TQuery(g_hDb, SQL_CheckMapNameInServerCallback, szQuery, client, DBPrio_High);
+}
+
+public void SQL_CheckMapNameInServerCallback(Handle owner, Handle hndl, const char[] error, any client)
+{
+	if (hndl == null)
+	{
+		LogError("[surftimer] SQL Error (SQL_CheckMapNameInServerCallback): %s", error);
+		return;
+	}
+
+	if (SQL_HasResultSet(hndl) && SQL_GetRowCount(hndl) != 0) {
+		g_bCPR_MapFound[client] = true;
+	}
+	else {
+		g_bCPR_MapFound[client] = false;
+	}
+
+}
+
+public void db_CPR(int client, char sMapName[128], char player1_name[MAX_NAME_LENGTH], char player2_name[MAX_NAME_LENGTH], int player1_rank, int player2_rank)
+{
+	//cpr
+	if ( strcmp(sMapName, "", false) == 0 && strcmp(player1_name, "", false) == 0 && strcmp(player2_name, "", false) == 0 && player1_rank == -1 && player2_rank == -1 ) {
+		db_GetPlayerInfo(client, 1, "", g_szSteamID[client], g_szMapName, -1);
+		db_GetPlayerInfo(client, 2, "", "", g_szMapName, -1);
+	}
+
+	//WHEN ARG_1 IS MAPNAME
+	if ( strcmp(sMapName, "", false) != 0)
+	{
+		//cpr <mapname>
+		if ( strcmp(player1_name, "", false) == 0 && strcmp(player2_name, "", false) == 0 && player1_rank == -1 && player2_rank == -1 ) {
+			db_GetPlayerInfo(client, 1, "", g_szSteamID[client], sMapName, -1);
+			db_GetPlayerInfo(client, 2, "", "", sMapName, -1);
+		}
+		//cpr <mapname> <rank>
+		else if ( player1_rank != -1 && player2_rank == -1 ) {
+			db_GetPlayerInfo(client, 1, "", "", sMapName, player1_rank);
+			db_GetPlayerInfo(client, 2, "", "", sMapName, -1);
+		}
+		//cpr <mapname> <playername>
+		else if ( strcmp(player1_name, "", false) != 0 && strcmp(player2_name, "", false) == 0) {
+			db_GetPlayerInfo(client, 1, player1_name, "", sMapName, player1_rank);
+			db_GetPlayerInfo(client, 2, "", "", sMapName, -1);
+		}
+		//cpr <mapname> <name> <name>
+		else if ( strcmp(player1_name, "", false) != 0 && strcmp(player2_name, "", false) != 0) {
+			db_GetPlayerInfo(client, 1, player1_name, "", sMapName, -1);
+			db_GetPlayerInfo(client, 2, player2_name, "", sMapName, -1);
+		}
+		//cpr <mapname> <rank> <rank>
+		else if ( player1_rank != -1 && player2_rank != -1) {
+			db_GetPlayerInfo(client, 1, "", "", sMapName, player1_rank);
+			db_GetPlayerInfo(client, 2, "", "", sMapName, player2_rank);
+		}
+	}
+	else {
+		//cpr <@rank>
+		//cpr <@group>
+		if ( player1_rank != -1 && player2_rank == -1) {
+			db_GetPlayerInfo(client, 1, "", "", g_szMapName, player1_rank);
+			db_GetPlayerInfo(client, 2, "", "", g_szMapName, -1);
+		}
+		//cpr <name>
+		else if ( strcmp(player1_name, "", false) != 0 && strcmp(player2_name, "", false) == 0 ) {
+			db_GetPlayerInfo(client, 1, player1_name, "", g_szMapName, -1);
+			db_GetPlayerInfo(client, 2, player2_name, "", g_szMapName, -1);
+		}
+		//cpr <name> <name>
+		if ( strcmp(player1_name, "", false) != 0 && strcmp(player2_name, "", false) != 0 ) {
+			db_GetPlayerInfo(client, 1, "", g_szSteamID[client], g_szMapName, -1);
+			db_GetPlayerInfo(client, 2, "", "", g_szMapName, -1);
+		}
+		//cpr <rank> <rank>
+		else if ( player1_rank != -1 && player2_rank != -1) {
+			db_GetPlayerInfo(client, 1, "", "", g_szMapName, player1_rank);
+			db_GetPlayerInfo(client, 2, "", "", g_szMapName, player2_rank);
+		}
+	}
+}
+
+public void db_GetPlayerInfo(int client, int player, char sPlayerName[MAX_NAME_LENGTH], char sz_SteamID[32], char szMapName[128], int rank)
+{
+	char szQuery[1024];
+
 	Handle pack = CreateDataPack();
 	WritePackCell(pack, client);
-	WritePackCell(pack, rank);
-	WritePackString(pack, szSteamId);
+	WritePackCell(pack, player);
 
-	char szQuery[512];
-	Format(szQuery, sizeof(szQuery), "SELECT `steamid`, `name`, `mapname`, `runtimepro` FROM `ck_playertimes` WHERE `steamid` = '%s' AND `mapname` = '%s' AND style = 0", g_szSteamID[client], szMapName);
-	SQL_TQuery(g_hDb, SQL_SelectCPRTimeCallback, szQuery, pack, DBPrio_Low);
+	//PLAYER RUNTIME WITH PLAYERNAME
+	if ( strcmp(sPlayerName, "", false) != 0) {
+		Format(szQuery, sizeof szQuery, "SELECT `steamid`, `name`, `mapname`, `runtimepro` FROM `ck_playertimes` WHERE `name` = '%s' AND `mapname` = '%s' AND style = 0;", sPlayerName, szMapName);
+	}
+	//PLAYER RUNTIME WITH RANK
+	else if ( rank != -1 ) {
+		Format(szQuery, sizeof szQuery, "SELECT `steamid`, `name`, `mapname`, `runtimepro` FROM `ck_playertimes` WHERE `mapname` = '%s' AND style = 0 ORDER BY runtimepro LIMIT %d, 1;", szMapName, rank - 1);
+	}
+	//PLAYER RUNTIME WITH STEAMID
+	else if ( strcmp(sz_SteamID, "", false) != 0 && player == 1) {
+		Format(szQuery, sizeof szQuery, "SELECT `steamid`, `name`, `mapname`, `runtimepro` FROM `ck_playertimes` WHERE `steamid` = '%s' AND `mapname` = '%s' AND style = 0;", sz_SteamID, szMapName);
+	}
+	//MAP RECORD RUNTIME
+	else if ( strcmp(sz_SteamID, "", false) == 0 && rank == -1 && player == 2) {
+		Format(szQuery, sizeof szQuery, "SELECT `steamid`, `name`, `mapname`, `runtimepro` FROM `ck_playertimes` WHERE `mapname` = '%s' AND style = 0 ORDER BY runtimepro LIMIT 1;", szMapName);
+	}
+
+	SQL_TQuery(g_hDb, SQL_GetPlayerInfo_Runtime_Callback, szQuery, pack, DBPrio_Low);
 }
 
-public void SQL_SelectCPRTimeCallback(Handle owner, Handle hndl, const char[] error, any pack)
+public void SQL_GetPlayerInfo_Runtime_Callback(Handle owner, Handle hndl, const char[] error, any pack)
 {
 	if (hndl == null)
 	{
-		LogError("[surftimer] SQL Error (SQL_SelectCPRTimeCallback): %s", error);
+		LogError("[surftimer] SQL Error (SQL_GetPlayerInfo_Runtime_Callback): %s", error);
 		CloseHandle(pack);
 		return;
 	}
 
 	ResetPack(pack);
 	int client = ReadPackCell(pack);
+	int player = ReadPackCell(pack);
+	CloseHandle(pack);
 
-	if (SQL_HasResultSet(hndl) && SQL_FetchRow(hndl))
-	{
-		SQL_FetchString(hndl, 2, g_szCPRMapName[client], 128);
-		g_fClientCPs[client][0] = SQL_FetchFloat(hndl, 3);
-
-		char szQuery[512];
-		Format(szQuery, sizeof(szQuery), "SELECT cp, time FROM ck_checkpoints WHERE steamid = '%s' AND mapname = '%s' AND zonegroup = 0;", g_szSteamID[client], g_szCPRMapName[client]);
-		SQL_TQuery(g_hDb, SQL_SelectCPRCallback, szQuery, pack, DBPrio_Low);
-	}
-	else
-	{
-		CPrintToChat(client, "%t", "SQLTwo7", g_szChatPrefix);
-		CloseHandle(pack);
-	}
-}
-
-public void SQL_SelectCPRCallback(Handle owner, Handle hndl, const char[] error, any pack)
-{
-	if (hndl == null)
-	{
-		LogError("[surftimer] SQL Error (SQL_SelectCPRCallback): %s", error);
-		CloseHandle(pack);
-		return;
-	}
-
-	if (SQL_HasResultSet(hndl))
-	{
-		ResetPack(pack);
-		int client = ReadPackCell(pack);
-		int cp;
-		while(SQL_FetchRow(hndl))
-		{	
-			cp = SQL_FetchInt(hndl, 0);
-			g_fClientCPs[client][cp] = SQL_FetchFloat(hndl, 1);
+	if ( SQL_HasResultSet(hndl) && SQL_FetchRow(hndl) ) {
+		if ( player == 1 ) {
+			g_fPlayer1Time[client] = SQL_FetchFloat(hndl, 3);
+			SQL_FetchString(hndl, 1, g_szPlayer1Name[client], sizeof g_szPlayer1Name);
 		}
-		db_selectCPRTarget(pack);
+		else {
+			g_fPlayer2Time[client] = SQL_FetchFloat(hndl, 3);
+			SQL_FetchString(hndl, 1, g_szPlayer2Name[client], sizeof g_szPlayer2Name);
+		}
+
+		char szSteamID[32];
+		SQL_FetchString(hndl, 0, szSteamID, sizeof szSteamID);
+
+		SQL_FetchString(hndl, 2, g_szCPRMapName[client], sizeof(g_szCPRMapName[]));
+
+		db_GetPlayerCPs(client, player, szSteamID);
 	}
 }
 
-public void db_selectCPRTarget(any pack)
+public void db_GetPlayerCPs(int client, int player, char sz_SteamID[32])
 {
-	ResetPack(pack);
-	int client = ReadPackCell(pack);
-	int rank = ReadPackCell(pack);
-	rank = rank - 1;
 
-	char szQuery[512];
-	// USING PLAYER NAME
-	if (rank == -1)
-	{
-		char szSteamId[32];
-		ReadPackString(pack, szSteamId, 32);
-		Format(szQuery, sizeof(szQuery), "SELECT `steamid`, `name`, `mapname`, `runtimepro` FROM `ck_playertimes` WHERE `mapname` = '%s' AND steamid = '%s' AND style = 0", g_szCPRMapName[client], szSteamId);
-	}
-	else
-		Format(szQuery, sizeof(szQuery), "SELECT `steamid`, `name`, `mapname`, `runtimepro` FROM `ck_playertimes` WHERE `mapname` = '%s' AND style = 0 ORDER BY `runtimepro` ASC LIMIT %i, 1;", g_szCPRMapName[client], rank);
-	SQL_TQuery(g_hDb, SQL_SelectCPRTargetCallback, szQuery, pack, DBPrio_Low);
+	Handle pack = CreateDataPack();
+	WritePackCell(pack, client);
+	WritePackCell(pack, player);
+
+	char szQuery[1024];
+	Format(szQuery, sizeof szQuery, "SELECT cp, time, speed FROM ck_checkpoints WHERE steamid = '%s' AND mapname = '%s' AND zonegroup = 0;", sz_SteamID, g_szCPRMapName[client]);
+
+	SQL_TQuery(g_hDb, SQL_GetPlayerCPs_Callback, szQuery, pack, DBPrio_Low);
 }
 
-public void SQL_SelectCPRTargetCallback(Handle owner, Handle hndl, const char[] error, any pack)
+public void SQL_GetPlayerCPs_Callback(Handle owner, Handle hndl, const char[] error, any pack)
 {
 	if (hndl == null)
 	{
-		LogError("[surftimer] SQL Error (SQL_SelectCPRTargetCallback): %s", error);
+		LogError("[surftimer] SQL Error (SQL_GetPlayerCPs_Callback): %s", error);
 		CloseHandle(pack);
 		return;
 	}
 
-	if (SQL_HasResultSet(hndl) && SQL_FetchRow(hndl))
-	{
-		ResetPack(pack);
-		int client = ReadPackCell(pack);
-
-		char szSteamId[32];
-		SQL_FetchString(hndl, 0, szSteamId, sizeof(szSteamId));
-		SQL_FetchString(hndl, 1, g_szTargetCPR[client], sizeof(g_szTargetCPR));
-		g_fTargetTime[client] = SQL_FetchFloat(hndl, 3);
-		db_selectCPRTargetCPs(szSteamId, pack);
-	}
-}
-
-public void db_selectCPRTargetCPs(const char[] szSteamId, any pack)
-{
 	ResetPack(pack);
 	int client = ReadPackCell(pack);
+	int player = ReadPackCell(pack);
+	CloseHandle(pack);
 
-	char szQuery[512];
-	Format(szQuery, sizeof(szQuery), "SELECT cp, time FROM ck_checkpoints WHERE steamid = '%s' AND `mapname` = '%s' AND zonegroup = 0;", szSteamId, g_szCPRMapName[client]);
-	SQL_TQuery(g_hDb, SQL_SelectCPRTargetCPsCallback, szQuery, pack, DBPrio_Low);
-}
-
-public void SQL_SelectCPRTargetCPsCallback(Handle owner, Handle hndl, const char[] error, any pack)
-{
-	if (hndl == null)
-	{
-		LogError("[surftimer] SQL Error (SQL_SelectCPRTargetCPsCallback): %s", error);
-		CloseHandle(pack);
-		return;
-	}
-
-	if (SQL_HasResultSet(hndl))
-	{
-		ResetPack(pack);
-		int client = ReadPackCell(pack);
-		int rank = ReadPackCell(pack);
-
-		Menu menu = CreateMenu(CPRMenuHandler);
-		char szTitle[256], szName[MAX_NAME_LENGTH];
-		GetClientName(client, szName, sizeof(szName));
-		Format(szTitle, sizeof(szTitle), "%s VS %s on %s\n \n", szName, g_szTargetCPR[client], g_szCPRMapName[client], rank);
-		SetMenuTitle(menu, szTitle);
-
-		float targetCPs, comparedCPs;
-		char szCPR[32], szCompared[32], szItem[256];
+	if ( SQL_HasResultSet(hndl) ) {
 
 		int cp;
 
-		while(SQL_FetchRow(hndl))
+		g_iCPR_CPS_Count[client] = 0;
+
+		while( SQL_FetchRow(hndl) )
 		{
 			cp = SQL_FetchInt(hndl, 0);
+			g_iCPR_CPS_Count[client]++;
 
-			targetCPs = SQL_FetchFloat(hndl, 1);
-			comparedCPs = (g_fClientCPs[client][cp] - targetCPs);
-
-			if (targetCPs == 0.0 || g_fClientCPs[client][cp] == 0.0)
-				continue;
-			FormatTimeFloat(client, targetCPs, 3, szCPR, sizeof(szCPR));
-			FormatTimeFloat(client, comparedCPs, 6, szCompared, sizeof(szCompared));
-			Format(szItem, sizeof(szItem), "CP %i: %s (%s)", cp, szCPR, szCompared);
-			AddMenuItem(menu, "", szItem, ITEMDRAW_DISABLED);
+			if ( player == 1 ) {
+				g_fPlayer1CPs_Time[client][cp - 1] = SQL_FetchFloat(hndl, 1);
+				g_fPlayer1CPs_Speed[client][cp - 1] = SQL_FetchFloat(hndl, 2);
+			}
+			else {
+				g_fPlayer2CPs_Time[client][cp - 1] = SQL_FetchFloat(hndl, 1);
+				g_fPlayer2CPs_Speed[client][cp - 1] = SQL_FetchFloat(hndl, 2);
+			}
 		}
 
-		char szTime[32], szCompared2[32];
-		float compared = g_fClientCPs[client][0] - g_fTargetTime[client];
-		FormatTimeFloat(client, g_fClientCPs[client][0], 3, szTime, sizeof(szTime));
-		FormatTimeFloat(client, compared, 6, szCompared2, sizeof(szCompared2));
-		Format(szItem, sizeof(szItem), "Total Time: %s (%s)", szTime, szCompared2);
+		//DISPLAY INFO TO MENU VIA CLIENT
+		if ( player == 2 )
+			PrintMenuToClient(client);
+	}
+}
+
+public void PrintMenuToClient(int client)
+{
+
+	Menu menu = CreateMenu(CPRMenuHandler);
+
+	char szTitle[256];
+	Format(szTitle, sizeof(szTitle), "%s VS %s on %s\n \n", g_szPlayer1Name[client], g_szPlayer2Name[client], g_szCPRMapName[client]);
+	SetMenuTitle(menu, szTitle);
+
+	float comparedCPs_Time;
+	// float comparedCPs_Speed;
+	char szCPTime[32], szComparedCPs[32], szItem[256];
+
+	for(int i = 0; i < g_iCPR_CPS_Count[client]; i++)
+	{
+		comparedCPs_Time = g_fPlayer1CPs_Time[client][i] - g_fPlayer2CPs_Time[client][i];
+		// comparedCPs_Speed = g_fPlayer1CPs_Speed[client][i] - g_fPlayer2CPs_Speed[client][i];
+
+		if (g_fPlayer1CPs_Time[client][i] == 0.0 || g_fPlayer2CPs_Time[client][i] == 0.0)
+			continue;
+
+		FormatTimeFloat(client, g_fPlayer1CPs_Time[client][i], 3, szCPTime, sizeof szCPTime);
+		FormatTimeFloat(client, comparedCPs_Time, 6, szComparedCPs, sizeof szComparedCPs);
+
+		Format(szItem, sizeof(szItem), "CP %i: %s (%s)", i+1, szCPTime, szComparedCPs);
 		AddMenuItem(menu, "", szItem, ITEMDRAW_DISABLED);
-		SetMenuOptionFlags(menu, MENUFLAG_BUTTON_EXIT);
-		DisplayMenu(menu, client, MENU_TIME_FOREVER);
 	}
 
-	CloseHandle(pack);
+	char szPlayer1Time[32];
+	char szFinalTimeCompared[32];
+
+	float compared = g_fPlayer1Time[client][0] - g_fPlayer2Time[client];
+
+	FormatTimeFloat(client, g_fPlayer1Time[client][0], 3, szPlayer1Time, sizeof szPlayer1Time);
+	FormatTimeFloat(client, compared, 6, szFinalTimeCompared, sizeof szFinalTimeCompared);
+
+	Format(szItem, sizeof(szItem), "Total Time: %s (%s)", szPlayer1Time, szFinalTimeCompared);
+	AddMenuItem(menu, "", szItem, ITEMDRAW_DISABLED);
+
+	SetMenuOptionFlags(menu, MENUFLAG_BUTTON_EXIT);
+	DisplayMenu(menu, client, MENU_TIME_FOREVER);
 }
 
 public int CPRMenuHandler(Menu menu, MenuAction action, int param1, int param2)

@@ -5638,48 +5638,279 @@ public Action Command_CPR(int client, int args)
 			CReplyToCommand(client, "%t", "Commands84", g_szChatPrefix);
 			return Plugin_Handled;
 		}
-		db_selectCPR(client, 1, g_szMapName, "");
+		//db_selectCPR(client, 1, g_szMapName, "");
+		db_CPR(client, g_szMapName, "", "", -1, -1);
 	}
 	else
 	{
-		char arg[128];
-		GetCmdArg(1, arg, sizeof(arg));
-		if (StrContains(arg, "surf_") != -1)
+		char arg_1[128];
+		GetCmdArg(1, arg_1, sizeof arg_1);
+
+		// HAS MAPNAME
+		// int s_MapNameSelected_Index;
+		// s_MapNameSelected_Index = FindStringInArray(g_MapList, arg);
+		// PrintToConsole(client, "INDEX %d", s_MapNameSelected_Index);
+
+		g_bCPR_MapFound[client] = false;
+		// db_CheckMapNameInServer(client, arg_1);
+
+		char szMapName[128];
+
+		if ( StrContains(arg_1, "@", false) == -1 )
 		{
-			db_selectCPR(client, 1, arg, "");
-		}
-		else if (StrContains(arg, "@") != -1)
-		{
-			ReplaceString(arg, 128, "@", "");
-			char arg2[128];
-			int rank = StringToInt(arg);
-			GetCmdArg(2, arg2, sizeof(arg2));
-			if (!arg2[0])
-				db_selectCPR(client, rank, g_szMapName, "");
-			else
-				db_selectCPR(client, rank, arg2, "");
-		}
-		else
-		{
-			char szPlayerName[MAX_NAME_LENGTH];
-			bool found = false;
-			for (int i = 1; i <= MaxClients; i++)
+			if ( StrContains(arg_1, "surf", false) == -1)
 			{
-				if (IsValidClient(i) && i != client)
-				{
-					GetClientName(i, szPlayerName, MAX_NAME_LENGTH);
-					StringToUpper(szPlayerName);
-					if ((StrContains(szPlayerName, arg) != -1))
-					{
-						found = true;
-						db_selectCPR(client, 0, g_szMapName, g_szSteamID[i]);
-						break;
+				Format(szMapName, sizeof szMapName, "surf_%s", arg_1);
+			}
+			else {
+				szMapName = arg_1;
+			}
+		}
+
+		if ( FindStringInArray(g_MapList, szMapName) != -1) {
+			g_bCPR_MapFound[client] = true;
+		}
+
+		if ( g_bCPR_MapFound[client] ) {
+			if ( StrContains(arg_1, "surf", false) == -1)
+				Format(arg_1, sizeof arg_1, "surf_%s", arg_1);
+
+			switch (args) {
+				//cpr <mapname>
+				case 1: {
+					db_CPR(client, arg_1, "", "", -1, -1);
+				}
+				//cpr <mapname> <name>
+				//cpr <mapname> <@rank>
+				//cpr <mapname> <@group>
+				case 2: {
+					char arg_2[128];
+					GetCmdArg(2, arg_2, sizeof arg_2);
+
+					int rank;
+
+					//CONTAINS RANK
+					if ( arg_2[0] == '@') {
+						ReplaceString(arg_2, sizeof arg_2, "@", "", false);
+
+						if ( arg_2[0] == 'g' || arg_2[0] == 'G' ) {
+							switch ( arg_2[1] ) {
+								case '1': rank = g_G1Top;
+								case '2': rank = g_G2Top;
+								case '3': rank = g_G3Top;
+								case '4': rank = g_G4Top;
+								case '5': rank = g_G5Top;
+							}
+						}
+						else {
+							rank = StringToInt(arg_2);
+						}
+
+						if ( g_MapTimesCount < rank )
+							CPrintToChat(client, "%t", "SQL41", g_szChatPrefix, arg_2);
+						else
+							db_CPR(client, arg_1, "", "", rank, -1);
+					}
+					//CONTAINS NAME
+					else {
+						db_CPR(client, arg_1, arg_2, "", -1, -1);
+					}
+				}
+				//cpr <mapname> <name> <name>
+				//cpr <mapname> <rank> <rank>
+				//cpr <mapname> <group> <group>
+				case 3: {
+					char arg_2[128];
+					char arg_3[128];
+
+					GetCmdArg(2, arg_2, sizeof arg_2);
+					GetCmdArg(3, arg_3, sizeof arg_3);
+
+					int player1_rank;
+					int player2_rank;
+
+					//CONTAINS RANK
+					if ( arg_2[0] == '@' && arg_3[0] == '@') {
+						ReplaceString(arg_2, sizeof arg_2, "@", "", false);
+						ReplaceString(arg_3, sizeof arg_3, "@", "", false);
+
+						//FORMAT PLAYER 1 RANK
+						if ( arg_2[0] == 'g' || arg_2[0] == 'G' ) {
+							switch ( arg_2[1] ) {
+								case '1': player1_rank = g_G1Top;
+								case '2': player1_rank = g_G2Top;
+								case '3': player1_rank = g_G3Top;
+								case '4': player1_rank = g_G4Top;
+								case '5': player1_rank = g_G5Top;
+							}
+						}
+						else {
+							player1_rank = StringToInt(arg_2);
+						}
+
+						//FORMAT PLAYER 2 RANK
+						if ( arg_3[0] == 'g' || arg_3[0] == 'G' ) {
+							switch ( arg_3[1] ) {
+								case '1': player2_rank = g_G1Top;
+								case '2': player2_rank = g_G2Top;
+								case '3': player2_rank = g_G3Top;
+								case '4': player2_rank = g_G4Top;
+								case '5': player2_rank = g_G5Top;
+							}
+						}
+						else {
+							player2_rank = StringToInt(arg_3);
+						}
+
+						if ( g_MapTimesCount < player1_rank )
+							CPrintToChat(client, "%t", "SQL41", g_szChatPrefix, arg_2);
+						else if ( g_MapTimesCount < player2_rank )
+							CPrintToChat(client,"%t", "SQL41", g_szChatPrefix, arg_3);
+						else
+							db_CPR(client, arg_1, "", "", player1_rank, player2_rank);
+					}
+					//CONTAINS NAME
+					else {
+						db_CPR(client, arg_1, arg_2, arg_3, -1, -1);
 					}
 				}
 			}
-			if (!found)
-				CReplyToCommand(client, "%t", "Commands85", g_szChatPrefix);
 		}
+		//DOESNT HAVE MAPNAME
+		else {
+			switch (args) {
+				//cpr <name>
+				//cpr <@rank>
+				//cpr <@group>
+				case 1: {
+					GetCmdArg(1, arg_1, sizeof arg_1);
+
+					int rank;
+
+					//CONTAINS RANK
+					if ( arg_1[0] == '@') {
+						ReplaceString(arg_1, sizeof arg_1, "@", "", false);
+
+						if ( arg_1[0] == 'g' || arg_1[0] == 'G' ) {
+							switch ( arg_1[1] ) {
+								case '1': rank = g_G1Top;
+								case '2': rank = g_G2Top;
+								case '3': rank = g_G3Top;
+								case '4': rank = g_G4Top;
+								case '5': rank = g_G5Top;
+							}
+						}
+						else {
+							rank = StringToInt(arg_1);
+						}
+
+						if ( g_MapTimesCount < rank )
+							CPrintToChat(client, "%t", "SQL41", g_szChatPrefix, arg_1);
+						else
+							db_CPR(client, "", "", "", rank, -1);
+					}
+					//CONTAINS NAME
+					else {
+						db_CPR(client, "", arg_1, "", -1, -1);
+					}
+				}
+				//cpr <name> <name>
+				//cpr <@rank> <@rank>
+				case 2: {
+					char arg_2[128];
+
+					GetCmdArg(2, arg_2, sizeof arg_2);
+
+					int player1_rank;
+					int player2_rank;
+
+					//CONTAINS RANK
+					if ( arg_1[0] == '@' && arg_2[0] == '@') {
+						ReplaceString(arg_1, sizeof arg_1, "@", "", false);
+						ReplaceString(arg_2, sizeof arg_2, "@", "", false);
+
+						//FORMAT PLAYER 1 RANK
+						if ( arg_1[0] == 'g' || arg_1[0] == 'G' ) {
+							switch ( arg_1[1] ) {
+								case '1': player1_rank = g_G1Top;
+								case '2': player1_rank = g_G2Top;
+								case '3': player1_rank = g_G3Top;
+								case '4': player1_rank = g_G4Top;
+								case '5': player1_rank = g_G5Top;
+							}
+						}
+						else {
+							player1_rank = StringToInt(arg_1);
+						}
+
+						//FORMAT PLAYER 2 RANK
+						if ( arg_2[0] == 'g' || arg_2[0] == 'G' ) {
+							switch ( arg_2[1] ) {
+								case '1': player2_rank = g_G1Top;
+								case '2': player2_rank = g_G2Top;
+								case '3': player2_rank = g_G3Top;
+								case '4': player2_rank = g_G4Top;
+								case '5': player2_rank = g_G5Top;
+							}
+						}
+						else {
+							player2_rank = StringToInt(arg_2);
+						}
+
+						if ( g_MapTimesCount < player1_rank )
+							CPrintToChat(client, "%t", "SQL41", g_szChatPrefix, arg_1);
+						else if ( g_MapTimesCount < player2_rank )
+							CPrintToChat(client, "%t", "SQL41", g_szChatPrefix, arg_2);
+						else
+							db_CPR(client, "", "", "", player1_rank, player2_rank);
+					}
+					//CONTAINS NAME
+					else {
+						db_CPR(client, "", arg_1, arg_2, -1, -1);
+					}
+				}
+			}
+		}
+
+
+		// char arg[128];
+		// GetCmdArg(1, arg, sizeof(arg));
+		// if (StrContains(arg, "surf_") != -1)
+		// {
+		// 	db_selectCPR(client, 1, arg, "");
+		// }
+		// else if (StrContains(arg, "@") != -1)
+		// {
+		// 	ReplaceString(arg, 128, "@", "");
+		// 	char arg2[128];
+		// 	int rank = StringToInt(arg);
+		// 	GetCmdArg(2, arg2, sizeof(arg2));
+		// 	if (!arg2[0])
+		// 		db_selectCPR(client, rank, g_szMapName, "");
+		// 	else
+		// 		db_selectCPR(client, rank, arg2, "");
+		// }
+		// else
+		// {
+		// 	char szPlayerName[MAX_NAME_LENGTH];
+		// 	bool found = false;
+		// 	for (int i = 1; i <= MaxClients; i++)
+		// 	{
+		// 		if (IsValidClient(i) && i != client)
+		// 		{
+		// 			GetClientName(i, szPlayerName, MAX_NAME_LENGTH);
+		// 			StringToUpper(szPlayerName);
+		// 			if ((StrContains(szPlayerName, arg) != -1))
+		// 			{
+		// 				found = true;
+		// 				db_selectCPR(client, 0, g_szMapName, g_szSteamID[i]);
+		// 				break;
+		// 			}
+		// 		}
+		// 	}
+		// 	if (!found)
+		// 		CReplyToCommand(client, "%t", "Commands85", g_szChatPrefix);
+		// }
 	}
 
 	return Plugin_Handled;
