@@ -85,8 +85,8 @@ void CreateCommands()
 	RegConsoleCmd("sm_saveloc", Command_createPlayerCheckpoint, "[surftimer] Creates a checkpoint, where the player can teleport back to");
 	RegConsoleCmd("sm_savelocs", Command_SaveLocList);
 	RegConsoleCmd("sm_loclist", Command_SaveLocList);
-	RegConsoleCmd("sm_normal", Command_normalMode, "[surftimer] Switches player back to normal mode.");
-	RegConsoleCmd("sm_n", Command_normalMode, "[surftimer] Switches player back to normal mode.");
+	//RegConsoleCmd("sm_normal", Command_normalMode, "[surftimer] Switches player back to normal mode.");
+	//RegConsoleCmd("sm_n", Command_normalMode, "[surftimer] Switches player back to normal mode.");
 	RegConsoleCmd("sm_clearsavelocs", Command_clearPlayerCheckpoints, "[surftimer] Clears the players savelocs");
 	RegConsoleCmd("sm_clearlocs", Command_clearPlayerCheckpoints, "[surftimer] Clears the players savelocs");
 	RegConsoleCmd("sm_addsaveloc", Command_recreatePlayerCheckpoint, "[surftimer] Recreates a saveloc with supplied information, where the player can teleport back to");
@@ -663,6 +663,8 @@ public void VoteExtend(int client)
 	return;
 }
 
+//REMOVE THIS FUNCTION?
+//NOT SURE YET
 public Action Command_normalMode(int client, int args)
 {
 	if (!IsValidClient(client))
