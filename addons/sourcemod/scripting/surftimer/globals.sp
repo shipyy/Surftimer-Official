@@ -54,7 +54,7 @@
 
 // Checkpoint Definitions
 // Maximum amount of checkpoints in a map
-#define CPLIMIT 37
+#define CPLIMIT 100
 
 // Zone Definitions
 #define ZONE_MODEL "models/props/de_train/barrel.mdl"
