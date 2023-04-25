@@ -5774,3 +5774,13 @@ public void resetCCPDefaults(int client){
 		g_iCCP_StageTotal_Player[client][i] = 0;	
 	}
 }
+
+public int ClampValues(int value, int min, int max) {
+  if (value > max) {
+    return min;
+  }
+  if (value < min) {
+    return max;
+  }
+  return value;
+}

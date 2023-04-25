@@ -1537,6 +1537,9 @@ bool g_bhasVoted[MAXPLAYERS + 1];
 // Track player SDKHooks
 bool g_bClientHooksCalled[MAXPLAYERS + 1] = { false };
 
+//BOT REPLAY CONTROL
+int g_bReplayMenuOpen_ClientIndex[3] = { -1, -1, -1 };
+
 /*===================================
 =         Predefined Arrays         =
 ===================================*/

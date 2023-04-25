@@ -1967,4 +1967,19 @@
 		"#format"	"{1:s},{2:s}"
 		"en"		"{1} {red} Retry again in {yellow}{2}{red}!"
 	}
+	"Map_Replay_Control"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} {red} There is someone already controlling the Map Replay!"
+	}
+	"Bonus_Replay_Control"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} {red} There is someone already controlling the Bonus Replay!"
+	}
+	"Stage_Replay_Control"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} {red} There is someone already controlling the Stage Replay!"
+	}
 }

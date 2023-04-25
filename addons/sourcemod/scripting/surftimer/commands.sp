@@ -217,6 +217,7 @@ void CreateCommands()
 	// Play record
 	RegConsoleCmd("sm_replay", Command_PlayRecord, "[surftimer] Set the replay bot to replay a run");
 	RegConsoleCmd("sm_replays", Command_PlayRecord, "[surftimer] Set the replay bot to replay a run");
+	RegConsoleCmd("sm_ctrl", Client_ReplayControlMenu, "[surftimer] Controls a replay bot");
 
 	// Delete records
 	RegAdminCmd("sm_deleterecords", Command_DeleteRecords, g_ZonerFlag, "[surftimer] [zoner] Delete records");
@@ -6641,4 +6642,160 @@ public Action Command_PrintCurrentSaveloc(int client, int args)
 	}
 
 	return Plugin_Handled;
+}
+
+public Action Client_ReplayControlMenu(int client, int args)
+{
+	ReplayControlMenu(client);
+	return Plugin_Handled;
+}
+
+public Action ReplayControlMenu(int client)
+{
+	if ( !IsValidClient(client) )
+		return Plugin_Changed;
+
+	//CHECK IF PLAYER IS WATCHING A BOT VIA CLIENT INDEX
+	int ObservedUser = GetEntPropEnt(client, Prop_Send, "m_hObserverTarget");
+
+	int bot = -1;
+
+	if ( ObservedUser == -1 ) {
+		CPrintToChat(client, "NOT WATCHING A REPLAY BOT!");
+		return Plugin_Handled;
+	}
+
+	if ( ObservedUser == g_RecordBot )
+	{
+		if ( g_bReplayMenuOpen_ClientIndex[0] != client && g_bReplayMenuOpen_ClientIndex[0] != -1 ) {
+			CPrintToChat(client, "%t", "Map_Replay_Control", g_szChatPrefix);
+			return Plugin_Handled;
+		}
+
+		bot = g_RecordBot;
+
+		g_bReplayMenuOpen_ClientIndex[0] = client;
+	}
+	else if ( ObservedUser == g_BonusBot )
+	{
+		if ( g_bReplayMenuOpen_ClientIndex[1] != client && g_bReplayMenuOpen_ClientIndex[1] != -1 ) {
+			CPrintToChat(client, "%t", "Bonus_Replay_Control", g_szChatPrefix);
+			return Plugin_Handled;
+		}
+
+		bot = g_BonusBot;
+
+		g_bReplayMenuOpen_ClientIndex[1] = client;
+	}
+	else if ( ObservedUser == g_WrcpBot )
+	{
+		if ( g_bReplayMenuOpen_ClientIndex[2] != client && g_bReplayMenuOpen_ClientIndex[2] != -1 ) {
+			CPrintToChat(client, "%t", "Stage_Replay_Control", g_szChatPrefix);
+			return Plugin_Handled;
+		}
+
+		bot = g_WrcpBot;
+
+		g_bReplayMenuOpen_ClientIndex[2] = client;
+	}
+
+	//FORMAT CONTROL MENU
+	Menu control_menu = CreateMenu(ControlMenuHandler);
+	SetMenuTitle(control_menu, "Replay Control Menu\n \n");
+
+	char szBuffer_menu[64];
+
+	Format(szBuffer_menu, sizeof(szBuffer_menu), "Forward-%d", bot);
+	AddMenuItem(control_menu, szBuffer_menu, "5s Forward");
+
+	Format(szBuffer_menu, sizeof(szBuffer_menu), "Backwards-%d", bot);
+	AddMenuItem(control_menu, szBuffer_menu, "5s Backwards");
+
+	if ( bot == g_RecordBot ) {
+		Format(szBuffer_menu, sizeof(szBuffer_menu), "NextCheckpoint-%d", bot);
+		AddMenuItem(control_menu, szBuffer_menu, "Next Checkpoint");
+
+		Format(szBuffer_menu, sizeof(szBuffer_menu), "PreviousCheckpoint-%d", bot);
+		AddMenuItem(control_menu, szBuffer_menu, "Previous Checkpoint");
+	}
+
+	Format(szBuffer_menu, sizeof(szBuffer_menu), "Restart-%d", bot);
+	AddMenuItem(control_menu, szBuffer_menu, "Restart");
+
+	SetMenuExitBackButton(control_menu, true);
+	DisplayMenu(control_menu, client, MENU_TIME_FOREVER);
+
+	return Plugin_Handled;
+}
+
+public int ControlMenuHandler(Menu menu, MenuAction action, int param1, int param2)
+{
+	if (action == MenuAction_Select)
+	{
+		char szBuffer[64];
+		GetMenuItem(menu, param2, szBuffer, sizeof(szBuffer));
+
+		char szBuffer_split[2][64];
+		ExplodeString(szBuffer, "-", szBuffer_split, 2, sizeof szBuffer_split[]);
+
+		int bot_index = StringToInt(szBuffer_split[1]);
+
+		//USE g_iReplayTick[client] WHERE THE CLIENT -> BOT INDEX
+		if (strcmp(szBuffer_split[0], "Forward", false) == 0 )
+		{
+			g_iReplayTick[bot_index] += ( g_iTickrate * 5 );
+			if ( g_iReplayTick[bot_index] >= g_iReplayTicksCount[bot_index] )
+				g_iReplayTick[bot_index] = 0 + ( g_iReplayTick[bot_index] - g_iReplayTicksCount[bot_index] );
+		}
+		else if (strcmp(szBuffer_split[0], "Backwards", false) == 0 )
+		{
+			g_iReplayTick[bot_index] -= ( g_iTickrate * 5 );
+			if ( g_iReplayTick[bot_index] < 0 )
+				g_iReplayTick[bot_index] = g_iReplayTicksCount[bot_index] - ( g_iReplayTick[bot_index] * -1 );
+		}
+		else if (strcmp(szBuffer_split[0], "NextCheckpoint", false) == 0 )
+		{
+			int previous_checkpoint = ClampValues(++g_Stage[0][bot_index], 1, g_TotalStages);
+
+			// need to separete stage 1 because the start of stage 1 is not present on g_iCPStartFrame
+			// -2  because stage2 start corresponds to the CP1 which is on the position index 0 of the g_iCPStartFrame, so stage2 start tick is on the number of the stage(2) - 2 = 0
+			if ( previous_checkpoint == 1 )
+				g_iReplayTick[bot_index] = 0;
+			else
+				g_iReplayTick[bot_index] = g_iCPStartFrame[g_iSelectedReplayStyle][previous_checkpoint - 2];
+		}
+		else if (strcmp(szBuffer_split[0], "PreviousCheckpoint", false) == 0 )
+		{
+			int next_checkpoint = ClampValues(--g_Stage[0][bot_index], 1, g_TotalStages);
+
+			if ( next_checkpoint == 1 )
+				g_iReplayTick[bot_index] = 0;
+			else
+				g_iReplayTick[bot_index] = g_iCPStartFrame[g_iSelectedReplayStyle][next_checkpoint - 2];
+		}
+		else if (strcmp(szBuffer_split[0], "Restart", false) == 0 ) {
+			g_iReplayTick[bot_index] = 0;
+		}
+
+		ReplayControlMenu(param1);
+	}
+	else if (action == MenuAction_Cancel)
+	{
+		int ObservedUser = GetEntPropEnt(param1, Prop_Send, "m_hObserverTarget");
+
+		if ( ObservedUser == g_RecordBot ) {
+			g_bReplayMenuOpen_ClientIndex[0] = -1;
+		}
+		else if ( ObservedUser == g_BonusBot ) {
+			g_bReplayMenuOpen_ClientIndex[1] = -1;
+		}
+		else if ( ObservedUser == g_WrcpBot ) {
+			g_bReplayMenuOpen_ClientIndex[2] = -1;
+		}
+	}
+	else if (action == MenuAction_End) {
+		delete menu;
+	}
+
+	return 0;
 }

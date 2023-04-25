@@ -303,6 +303,12 @@ public void OnMapStart()
 	// Save Locs
 	ResetSaveLocs();
 
+	//RESET REPLAY CONTROL MENU
+	for(int i = 0; i < 3; i++)
+	{
+		g_bReplayMenuOpen_ClientIndex[0] = -1;
+	}
+
 	//CSD Hud Synchronizer
 	HUD_Handle = CreateHudSynchronizer();
 	Timeleft_Handle = CreateHudSynchronizer();
