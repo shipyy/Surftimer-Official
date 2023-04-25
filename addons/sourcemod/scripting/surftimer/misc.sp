@@ -157,8 +157,8 @@ public void teleportClient(int client, int zonegroup, int zone, bool stopTime)
 	if (g_iInitalStyle[client] != 5 && g_iInitalStyle[client] != 6)
 	 	SetEntPropFloat(client, Prop_Data, "m_flLaggedMovementValue", 1.0);
 
-	//if (g_bPracticeMode[client])
-	//	Command_normalMode(client, 1);
+	if (g_bPracticeMode[client] && ( zone > 1 && zonegroup == 0 ))
+		Command_normalMode(client, 1);
 
 	g_bNotTeleporting[client] = false;
 	g_bInJump[client] = false;
