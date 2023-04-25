@@ -70,8 +70,8 @@ public void OnLibraryAdded(const char[] name)
 	Handle tmp = FindPluginByFile("mapchooser_extended.smx");
 	if ((StrEqual("mapchooser", name)) || (tmp != null && GetPluginStatus(tmp) == Plugin_Running))
 		g_bMapChooser = true;
-	if (tmp != null)
-		CloseHandle(tmp);
+
+	delete tmp;
 
 	// botmimic 2
 	if (StrEqual(name, "dhooks") && g_hTeleport == null)
@@ -81,7 +81,8 @@ public void OnLibraryAdded(const char[] name)
 		if (hGameData == null)
 			return;
 		int iOffset = GameConfGetOffset(hGameData, "Teleport");
-		CloseHandle(hGameData);
+		delete hGameData;
+
 		if (iOffset == -1)
 			return;
 
@@ -221,10 +222,12 @@ public void OnMapStart()
 	SetCashState();
 
 	// Timers
-	CreateTimer(0.1, CKTimer1, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
-	CreateTimer(1.0, CKTimer2, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
-	CreateTimer(60.0, AttackTimer, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
+	CreateTimer(0.1, Timer_100ms, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
+	CreateTimer(1.0, Timer_1s, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
+	CreateTimer(60.0, Timer_1m, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
 	CreateTimer(600.0, PlayerRanksTimer, INVALID_HANDLE, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
+
+	delete g_hZoneTimer;
 	g_hZoneTimer = CreateTimer(GetConVarFloat(g_hChecker), BeamBoxAll, _, TIMER_REPEAT);
 
 	// AutoBhop
@@ -248,8 +251,7 @@ public void OnMapStart()
 
 	// Hook Zones
 	iEnt = -1;
-	if (g_hTriggerMultiple != null)
-		CloseHandle(g_hTriggerMultiple);
+	delete g_hTriggerMultiple;
 
 	g_hTriggerMultiple = CreateArray(256);
 	while ((iEnt = FindEntityByClassname(iEnt, "trigger_multiple")) != -1)
@@ -282,8 +284,7 @@ public void OnMapStart()
 
 	// info_teleport_destinations
 	iEnt = -1;
-	if (g_hDestinations != null)
-		CloseHandle(g_hDestinations);
+	delete g_hDestinations;
 
 	g_hDestinations = CreateArray(128);
 	while ((iEnt = FindEntityByClassname(iEnt, "info_teleport_destination")) != -1)
@@ -293,13 +294,8 @@ public void OnMapStart()
 	g_fMapStartTime = GetGameTime();
 	g_bRoundEnd = false;
 
-	// Playtime
-	CreateTimer(1.0, PlayTimeTimer, INVALID_HANDLE, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
-
 	// Server Announcements
 	g_iServerID = GetConVarInt(g_hServerID);
-	if (GetConVarBool(g_hRecordAnnounce))
-		CreateTimer(45.0, AnnouncementTimer, INVALID_HANDLE, TIMER_REPEAT|TIMER_FLAG_NO_MAPCHANGE);
 
 	// Show Triggers
 	g_iTriggerTransmitCount = 0;
@@ -330,17 +326,9 @@ public void OnMapEnd()
 	g_WrcpBot = -1;
 	db_Cleanup();
 
-	if (g_hSkillGroups != null)
-		CloseHandle(g_hSkillGroups);
-	g_hSkillGroups = null;
-
-	if (g_hBotTrail[0] != null)
-		CloseHandle(g_hBotTrail[0]);
-	g_hBotTrail[0] = null;
-
-	if (g_hBotTrail[1] != null)
-		CloseHandle(g_hBotTrail[1]);
-	g_hBotTrail[1] = null;
+	delete g_hSkillGroups;
+	delete g_hBotTrail[0];
+	delete g_hBotTrail[1];
 
 	Format(g_szMapName, sizeof(g_szMapName), "");
 
@@ -355,16 +343,11 @@ public void OnMapEnd()
 	if (g_hTriggerMultiple != null)
 	{
 		ClearArray(g_hTriggerMultiple);
-		CloseHandle(g_hTriggerMultiple);
 	}
 
-	g_hTriggerMultiple = null;
 	delete g_hTriggerMultiple;
-
-	CloseHandle(g_mTriggerMultipleMenu);
-
-	if (g_hDestinations != null)
-		CloseHandle(g_hDestinations);
+	delete g_mTriggerMultipleMenu;
+	delete g_hDestinations;
 
 	g_hDestinations = null;
 }
@@ -433,19 +416,34 @@ public void OnClientPutInServer(int client)
 		return;
 	}
 
+	// SDKHooks
+	if (g_bClientHooksCalled[client] == false)
+	{
+		SDKHook(client, SDKHook_SetTransmit, Hook_SetTransmit);
+		SDKHook(client, SDKHook_PostThinkPost, Hook_PostThinkPost);
+		SDKHook(client, SDKHook_OnTakeDamage, Hook_OnTakeDamage);
+		SDKHook(client, SDKHook_PreThink, OnPlayerThink);
+		g_bClientHooksCalled[client] = true;
+	}
+
+	// Get SteamID
+	if (!GetClientAuthId(client, AuthId_Steam2, g_szSteamID[client], sizeof(g_szSteamID[]), true))
+	{
+		RequestFrame(OnClientPutInServer, client);
+		return;
+	}
+
+	// Check if steamid has the value of "STEAM_ID_STOP_IGNORING_RETVALS"
+	// Reported here: https://github.com/surftimer/SurfTimer/issues/549
+	if (g_szSteamID[client][6] == 'I' && g_szSteamID[client][7] == 'D')
+	{
+		RequestFrame(OnClientPutInServer, client);
+		return;
+	}
+
 	// Defaults
 	SetClientDefaults(client);
 	Command_Restart(client, 1);
-
-	// SDKHooks
-	SDKHook(client, SDKHook_SetTransmit, Hook_SetTransmit);
-	SDKHook(client, SDKHook_PostThinkPost, Hook_PostThinkPost);
-	SDKHook(client, SDKHook_OnTakeDamage, Hook_OnTakeDamage);
-	SDKHook(client, SDKHook_PreThink, OnPlayerThink);
-	SDKHook(client, SDKHook_PreThinkPost, OnPlayerThink);
-	SDKHook(client, SDKHook_Think, OnPlayerThink);
-	SDKHook(client, SDKHook_PostThink, OnPlayerThink);
-	SDKHook(client, SDKHook_PostThinkPost, OnPlayerThink);
 
 	if (!IsFakeClient(client))
 	{
@@ -475,9 +473,6 @@ public void OnClientPutInServer(int client)
 
 	if (LibraryExists("dhooks"))
 		DHookEntity(g_hTeleport, false, client);
-
-	// Get SteamID
-	GetClientAuthId(client, AuthId_Steam2, g_szSteamID[client], MAX_NAME_LENGTH, true);
 
 	// char fix
 	FixPlayerName(client);
@@ -564,15 +559,6 @@ public void OnClientDisconnect(int client)
 			g_fPlayerLastTime[client] = g_fCurrentRunTime[client];
 		}
 	}
-
-	SDKUnhook(client, SDKHook_SetTransmit, Hook_SetTransmit);
-	SDKUnhook(client, SDKHook_PostThinkPost, Hook_PostThinkPost);
-	SDKUnhook(client, SDKHook_OnTakeDamage, Hook_OnTakeDamage);
-	SDKUnhook(client, SDKHook_PreThink, OnPlayerThink);
-	SDKUnhook(client, SDKHook_PreThinkPost, OnPlayerThink);
-	SDKUnhook(client, SDKHook_Think, OnPlayerThink);
-	SDKUnhook(client, SDKHook_PostThink, OnPlayerThink);
-	SDKUnhook(client, SDKHook_PostThinkPost, OnPlayerThink);
 
 	if (client == g_RecordBot)
 	{
@@ -666,9 +652,7 @@ public void OnSettingChanged(Handle convar, const char[] oldValue, const char[] 
 				else
 					ServerCommand("bot_quota 0");
 
-			if (g_hBotTrail[0] != null)
-				CloseHandle(g_hBotTrail[0]);
-			g_hBotTrail[0] = null;
+			delete g_hBotTrail[0];
 		}
 	}
 	else if (convar == g_hBonusBot)
@@ -702,9 +686,7 @@ public void OnSettingChanged(Handle convar, const char[] oldValue, const char[] 
 				else
 					ServerCommand("bot_quota 0");
 
-			if (g_hBotTrail[1] != null)
-				CloseHandle(g_hBotTrail[1]);
-			g_hBotTrail[1] = null;
+			delete g_hBotTrail[1];
 		}
 	}
 	else if (convar == g_hWrcpBot)
@@ -1068,7 +1050,7 @@ public void OnSettingChanged(Handle convar, const char[] oldValue, const char[] 
 			if (IsValidClient(i) && !IsFakeClient(i))
 			{
 				if (!GetConVarBool(g_hEnforceDefaultTitles))
-					db_viewCustomTitles(i, g_szSteamID[i]);
+					db_viewCustomTitles(i);
 				else
 					LoadDefaultTitle(i);
 			}
@@ -1154,6 +1136,7 @@ public void OnSettingChanged(Handle convar, const char[] oldValue, const char[] 
 		g_hZoneTimer = INVALID_HANDLE;
 	}
 
+	delete g_hZoneTimer;
 	g_hZoneTimer = CreateTimer(GetConVarFloat(g_hChecker), BeamBoxAll, _, TIMER_REPEAT);
 }
 
@@ -1203,7 +1186,8 @@ public void OnPluginStart()
 		return;
 	}
 	int iOffset = GameConfGetOffset(hGameData, "Teleport");
-	CloseHandle(hGameData);
+	delete hGameData;
+
 	if (iOffset == -1)
 		return;
 

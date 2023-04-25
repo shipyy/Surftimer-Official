@@ -29,7 +29,7 @@ public void SetBotQuota()
 		SetConVarInt(hBotQuota, count, false, false);
 	}
 
-	CloseHandle(hBotQuota);
+	delete hBotQuota;
 
 	return;
 }
@@ -98,7 +98,7 @@ public void LoadClientSetting(int client, int setting)
 			case 4: db_viewPlayerPoints(client);
 			case 5: db_viewPlayerOptions(client, g_szSteamID[client]);
 			case 6: db_CheckVIPAdmin(client, g_szSteamID[client]);
-			case 7: db_viewCustomTitles(client, g_szSteamID[client]);
+			case 7: db_viewCustomTitles(client);
 			case 8: db_viewCheckpoints(client, g_szSteamID[client], g_szMapName);
 			case 9: db_LoadCCP(client);
 			case 10: db_viewPRinfo(client, g_szSteamID[client], g_szMapName);
@@ -570,8 +570,7 @@ public void readHints()
 	else
 		SetFailState("[surftimer] %s is empty or does not exist.", HINTS_PATH);
 
-	if (fileHandle != null)
-		CloseHandle(fileHandle);
+	delete fileHandle;
 
 	return;
 }
@@ -601,8 +600,7 @@ public void readMultiServerMapcycle()
 	else
 		SetFailState("[surftimer] %s is empty or does not exist.", MULTI_SERVER_MAPCYCLE);
 
-	if (fileHandle != null)
-		CloseHandle(fileHandle);
+	delete fileHandle;
 
 	return;
 }
@@ -772,7 +770,7 @@ public void checkSpawnPoints()
 				f_spawnAngle[1] = SQL_FetchFloat(query, 4);
 				f_spawnAngle[2] = SQL_FetchFloat(query, 5);
 			}
-			CloseHandle(query);
+			delete query;
 		}
 
 		if (f_spawnLocation[0] == 0.0 && f_spawnLocation[1] == 0.0 && f_spawnLocation[2] == 0.0) // No spawnpoint added to map with !addspawn, try to find spawns from map
@@ -1202,6 +1200,8 @@ public bool Base_TraceFilter(int entity, int contentsMask, any data)
 
 public void SetClientDefaults(int client)
 {
+	g_bClientHooksCalled[client] = false;
+
 	g_fLastCommandBack[client] = GetGameTime();
 	g_ClientSelectedZone[client] = -1;
 	g_Editing[client] = 0;
@@ -2508,8 +2508,8 @@ public void SetSkillGroups()
 				PushArrayArray(g_hSkillGroups, RankValue, sizeof(RankValue));
 			} while (KvGotoNextKey(hKeyValues));
 		}
-		if (hKeyValues != null)
-			CloseHandle(hKeyValues);
+
+		delete hKeyValues;
 	}
 	else
 		SetFailState("[surftimer] %s not found.", SKILLGROUP_PATH);
@@ -3253,12 +3253,13 @@ public void SetInfoBotName(int ent)
 	GetMapTimeLeft(iInfoBotTimeleft);
 	float ftime = float(iInfoBotTimeleft);
 	char szTime[32];
+
 	FormatTimeFloat(g_InfoBot, ftime, 4, szTime, sizeof(szTime));
-	Handle hTmp;
-	hTmp = FindConVar("mp_timelimit");
+	Handle hTmp = FindConVar("mp_timelimit");
+
 	int iTimeLimit = GetConVarInt(hTmp);
-	if (hTmp != null)
-		CloseHandle(hTmp);
+	delete hTmp;
+
 	if (GetConVarBool(g_hMapEnd) && iTimeLimit > 0)
 		Format(szBuffer, sizeof(szBuffer), "%s (in %s)", sNextMap, szTime);
 	else
@@ -5057,7 +5058,7 @@ public void ReadDefaultTitlesWhitelist()
 			if (StrContains(line, "//", true) == -1)
 				PushArrayString(g_DefaultTitlesWhitelist, line);
 		}
-		CloseHandle(whitelist);
+		delete whitelist;
 	}
 	else
 		LogError("[SurfTimer] %s not found", DEFAULT_TITLES_WHITELIST_PATH);

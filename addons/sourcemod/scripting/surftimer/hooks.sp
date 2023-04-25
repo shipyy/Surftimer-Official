@@ -928,10 +928,13 @@ public Action Hook_SetTransmit(int entity, int client)
 	if (client != entity && (0 < entity <= MaxClients) && IsValidClient(client))
 	{
 		if (g_bHide[client] && entity != g_SpecTarget[client])
+		{
 			return Plugin_Handled;
-		else
-			if (entity == g_InfoBot && entity != g_SpecTarget[client])
-				return Plugin_Handled;
+		}
+		else if (entity == g_InfoBot && entity != g_SpecTarget[client])
+		{
+			return Plugin_Handled;
+		}
 	}
 	return Plugin_Continue;
 }
@@ -1468,6 +1471,8 @@ public Action OnPlayerRunCmd(int client, int &buttons, int &impulse, float vel[3
 
 		g_fLastSpeed[client] = speed;
 		g_LastButton[client] = buttons;
+		if (!IsFakeClient(client))
+			BeamBox_OnPlayerRunCmd(client);
 
 		BeamBox_OnPlayerRunCmd(client);
 	}

@@ -84,8 +84,13 @@ public Action StartTimer(Handle timer, any client)
 	return Plugin_Handled;
 }
 
-public Action AttackTimer(Handle timer)
+public Action Timer_1m(Handle timer)
 {
+	if (GetConVarBool(g_hRecordAnnounce) && g_bHasLatestID)
+	{
+		db_checkAnnouncements();
+	}
+
 	for (int i = 1; i <= MaxClients; i++)
 	{
 		if (!IsValidClient(i) || IsFakeClient(i))
@@ -102,7 +107,7 @@ public Action AttackTimer(Handle timer)
 	return Plugin_Continue;
 }
 
-public Action CKTimer1(Handle timer)
+public Action Timer_100ms(Handle timer)
 {
 	if (g_bRoundEnd)
 		return Plugin_Continue;
@@ -150,19 +155,23 @@ public Action LoadReplaysTimer (Handle timer)
 	return Plugin_Handled;
 }
 
-public Action CKTimer2(Handle timer)
+public Action Timer_1s(Handle timer)
 {
 	if (g_bRoundEnd)
 		return Plugin_Continue;
 
 	if (GetConVarBool(g_hMapEnd))
 	{
-		Handle hTmp;
-		hTmp = FindConVar("mp_timelimit");
-		int iTimeLimit;
-		iTimeLimit = GetConVarInt(hTmp);
+		Handle hTmp = FindConVar("mp_timelimit");
+		int iTimeLimit = -1;
+
 		if (hTmp != null)
-			CloseHandle(hTmp);
+		{
+			iTimeLimit = GetConVarInt(hTmp);
+		}
+
+		delete hTmp;
+
 		if (iTimeLimit > 0)
 		{
 			int timeleft;
@@ -212,6 +221,18 @@ public Action CKTimer2(Handle timer)
 		if (!IsValidClient(i) || i == g_InfoBot)
 			continue;
 
+		int team = GetClientTeam(i);
+
+		// Playtime
+		if (team == CS_TEAM_T || team == CS_TEAM_CT)
+		{
+			g_iPlayTimeAliveSession[i]++;
+		}
+		else
+		{
+			g_iPlayTimeSpecSession[i]++;
+		}
+
 		// overlay check
 		if (g_bOverlay[i] && GetGameTime() - g_fLastOverlay[i] > 5.0)
 			g_bOverlay[i] = false;
@@ -256,13 +277,10 @@ public Action CKTimer2(Handle timer)
 	}
 
 	// clean weapons on ground
-	int maxEntities;
-	maxEntities = GetMaxEntities();
 	char classx[20];
 	if (GetConVarBool(g_hCleanWeapons))
 	{
-		int j;
-		for (j = MaxClients + 1; j < maxEntities; j++)
+		for (int j = MaxClients + 1; j < GetMaxEntities(); j++)
 		{
 			if (IsValidEdict(j) && (GetEntDataEnt2(j, g_ownerOffset) == -1))
 			{

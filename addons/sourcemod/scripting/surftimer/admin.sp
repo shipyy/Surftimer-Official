@@ -386,25 +386,33 @@ public void ckAdminMenu(int client)
 		SetMenuExitButton(adminmenu, true);
 		SetMenuOptionFlags(adminmenu, MENUFLAG_BUTTON_EXIT);
 		if (g_AdminMenuLastPage[client] < 6)
+		{
 			DisplayMenuAtItem(adminmenu, client, 0, MENU_TIME_FOREVER);
-		else
-			if (g_AdminMenuLastPage[client] < 12)
-				DisplayMenuAtItem(adminmenu, client, 6, MENU_TIME_FOREVER);
-			else
-				if (g_AdminMenuLastPage[client] < 18)
-					DisplayMenuAtItem(adminmenu, client, 12, MENU_TIME_FOREVER);
-				else
-					if (g_AdminMenuLastPage[client] < 24)
-						DisplayMenuAtItem(adminmenu, client, 18, MENU_TIME_FOREVER);
-					else
-						if (g_AdminMenuLastPage[client] < 30)
-							DisplayMenuAtItem(adminmenu, client, 24, MENU_TIME_FOREVER);
-						else
-							if (g_AdminMenuLastPage[client] < 36)
-								DisplayMenuAtItem(adminmenu, client, 30, MENU_TIME_FOREVER);
-							else
-								if (g_AdminMenuLastPage[client] < 42)
-									DisplayMenuAtItem(adminmenu, client, 36, MENU_TIME_FOREVER);
+		}
+		else if (g_AdminMenuLastPage[client] < 12)
+		{
+			DisplayMenuAtItem(adminmenu, client, 6, MENU_TIME_FOREVER);
+		}
+		else if (g_AdminMenuLastPage[client] < 18)
+		{
+			DisplayMenuAtItem(adminmenu, client, 12, MENU_TIME_FOREVER);
+		}
+		else if (g_AdminMenuLastPage[client] < 24)
+		{
+			DisplayMenuAtItem(adminmenu, client, 18, MENU_TIME_FOREVER);
+		}
+		else if (g_AdminMenuLastPage[client] < 30)
+		{
+			DisplayMenuAtItem(adminmenu, client, 24, MENU_TIME_FOREVER);
+		}
+		else if (g_AdminMenuLastPage[client] < 36)
+		{
+			DisplayMenuAtItem(adminmenu, client, 30, MENU_TIME_FOREVER);
+		}
+		else if (g_AdminMenuLastPage[client] < 42)
+		{
+			DisplayMenuAtItem(adminmenu, client, 36, MENU_TIME_FOREVER);
+		}
 	}
 	else
 	{
@@ -607,8 +615,7 @@ public int AdminPanelHandler(Handle menu, MenuAction action, int param1, int par
 		}
 
 		g_AdminMenuLastPage[param1] = param2;
-		if (menu != null)
-			CloseHandle(menu);
+		delete menu;
 
 		if (refresh)
 			CreateTimer(0.1, RefreshAdminMenu, param1, TIMER_FLAG_NO_MAPCHANGE);
@@ -616,11 +623,7 @@ public int AdminPanelHandler(Handle menu, MenuAction action, int param1, int par
 
 	if (action == MenuAction_End)
 	{
-		if (IsValidClient(param1))
-		{
-			if (menu != null)
-				CloseHandle(menu);
-		}
+		delete menu;
 	}
 
 	return 0;

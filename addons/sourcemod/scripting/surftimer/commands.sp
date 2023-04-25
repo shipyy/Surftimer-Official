@@ -212,7 +212,7 @@ void CreateCommands()
 	RegConsoleCmd("sm_ccp", Command_CCP, "[surftimer] Information about checkpoints info on a map");
 
 	// reload map
-	RegAdminCmd("sm_rm", Command_ReloadMap, ADMFLAG_ROOT, "[surftimer] Reloads the current map");
+	RegAdminCmd("sm_rm", Command_ReloadMap, g_ZonerFlag, "[surftimer] Reloads the current map");
 
 	// Play record
 	RegConsoleCmd("sm_replay", Command_PlayRecord, "[surftimer] Set the replay bot to replay a run");
@@ -618,7 +618,7 @@ public int CustomTitleMenuHandler(Handle menu, MenuAction action, int param1, in
 		switch (param2)
 		{
 			case 0, 1: db_viewPlayerColours(param1, g_szSteamID[param1], param2);
-			case 2: db_toggleCustomPlayerTitle(param1, g_szSteamID[param1]);
+			case 2: db_toggleCustomPlayerTitle(param1);
 		}
 	}
 	else if (action == MenuAction_End)
@@ -4055,14 +4055,13 @@ public Action Command_SetDbTitle(int client, int args)
 	if (!IsValidClient(client) || !IsPlayerVip(client))
 		return Plugin_Handled;
 
-	char arg[256], authSteamId[MAXPLAYERS + 1];
-	GetClientAuthId(client, AuthId_Steam2, authSteamId, MAX_NAME_LENGTH, true);
+	char arg[256];
 
 	if (args == 0)
 	{
 		if (g_bdbHasCustomTitle[client])
 		{
-			db_toggleCustomPlayerTitle(client, authSteamId);
+			db_toggleCustomPlayerTitle(client);
 		}
 		else
 		{
@@ -4102,7 +4101,7 @@ public Action Command_SetDbTitle(int client, int args)
 			}
 		}
 
-		db_checkCustomPlayerTitle(client, authSteamId, arg);
+		db_checkCustomPlayerTitle(client, arg);
 	}
 
 	return Plugin_Handled;
@@ -4131,11 +4130,7 @@ public Action Command_ToggleTitle(int client, int args)
 	if (!IsValidClient(client) || !IsPlayerVip(client))
 		return Plugin_Handled;
 
-	char authSteamId[MAXPLAYERS + 1];
-
-	GetClientAuthId(client, AuthId_Steam2, authSteamId, MAX_NAME_LENGTH, true);
-
-	db_toggleCustomPlayerTitle(client, authSteamId);
+	db_toggleCustomPlayerTitle(client);
 
 	return Plugin_Handled;
 }
@@ -4145,8 +4140,7 @@ public Action Command_SetDbNameColour(int client, int args)
 	if (!IsValidClient(client) || !IsPlayerVip(client))
 		return Plugin_Handled;
 
-	char arg[128], authSteamId[MAXPLAYERS + 1];
-	GetClientAuthId(client, AuthId_Steam2, authSteamId, MAX_NAME_LENGTH, true);
+	char arg[128];
 
 	if (args == 0)
 	{
@@ -4227,7 +4221,7 @@ public Action Command_SetDbNameColour(int client, int args)
 			arg = "0";
 		}
 
-		db_checkCustomPlayerNameColour(client, authSteamId, arg);
+		db_checkCustomPlayerNameColour(client, arg);
 	}
 
 	return Plugin_Handled;
@@ -4238,8 +4232,7 @@ public Action Command_SetDbTextColour(int client, int args)
 	if (!IsValidClient(client) || !IsPlayerVip(client))
 		return Plugin_Handled;
 
-	char arg[128], authSteamId[MAXPLAYERS + 1];
-	GetClientAuthId(client, AuthId_Steam2, authSteamId, MAX_NAME_LENGTH, true);
+	char arg[128];
 
 	if (args == 0)
 	{
@@ -4320,7 +4313,7 @@ public Action Command_SetDbTextColour(int client, int args)
 			arg = "0";
 		}
 
-		db_checkCustomPlayerTextColour(client, authSteamId, arg);
+		db_checkCustomPlayerTextColour(client, arg);
 	}
 
 	return Plugin_Handled;

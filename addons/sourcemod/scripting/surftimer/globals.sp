@@ -1534,6 +1534,9 @@ int g_iPlayerMapAttributes[MAXPLAYERS + 1][8]; //REFER TO g_szMapAttributes FOR 
 int g_iPlayerMapAttributes_temp[MAXPLAYERS + 1][8]; //TEMP VALUES FOR VOTING IN CASE IT IS NOT ALLOWED
 bool g_bhasVoted[MAXPLAYERS + 1];
 
+// Track player SDKHooks
+bool g_bClientHooksCalled[MAXPLAYERS + 1] = { false };
+
 /*===================================
 =         Predefined Arrays         =
 ===================================*/
@@ -1639,6 +1642,18 @@ char g_szMapAttributes[][] =
 	"Unit",
 	"Tech",
 	"Bonuses"
+};
+
+char g_sSteamIdTablesCleanup[][] = {
+	"ck_bonus", 
+	"ck_checkpoints", 
+	"ck_latestrecords", 
+	"ck_playeroptions2", 
+	"ck_playerrank", 
+	"ck_playertemp", 
+	"ck_playertimes", 
+	"ck_prinfo", 
+	"ck_vipadmins"
 };
 
 /*======  End of Declarations  ======*/
