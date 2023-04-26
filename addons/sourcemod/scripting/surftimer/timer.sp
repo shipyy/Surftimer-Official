@@ -635,36 +635,6 @@ public Action FixBot_On(Handle timer)
 	return Plugin_Handled;
 }
 
-public Action PlayTimeTimer(Handle timer)
-{
-	for(int i = 1; i <= MaxClients; i++)
-	{
-		if (IsValidClient(i) && !IsFakeClient(i) && IsClientInGame(i))
-		{
-			int team = GetClientTeam(i);
-
-			if (team == 2 || team == 3)
-			{
-				g_iPlayTimeAliveSession[i]++;
-			}
-			else
-			{
-				g_iPlayTimeSpecSession[i]++;
-			}
-		}
-	}
-
-	return Plugin_Continue;
-}
-
-public Action AnnouncementTimer(Handle timer)
-{
-	if (g_bHasLatestID)
-		db_checkAnnouncements();
-
-	return Plugin_Continue;
-}
-
 public Action EnableJoinMsgs(Handle timer)
 {
 	g_bEnableJoinMsgs = true;

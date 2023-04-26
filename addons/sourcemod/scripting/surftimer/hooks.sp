@@ -1056,31 +1056,10 @@ public Action ApplyStyles(Handle timer, int client)
 
 public Action OnMultipleTrigger1(int entity, int client)
 {
-	if (IsValidClient(client)) {
-		CreateTimer(0.1, ApplyStyles, client);
-	}
+	CreateTimer(0.1, ApplyStyles, client);
 
 	return Plugin_Continue;
 }
-
-/* public Action OnMultipleTrigger2(int entity, int client)
-{
-	if (g_iClientInZone[client][0] > 0) {
-		g_TeleInTriggerMultiple[client] = false;
-	}
-	else {
-		g_TeleInTriggerMultiple[client] = true;
-	}
-	
-	return Plugin_Continue;
-}
-
-public Action OnMultipleTrigger3(int entity, int client)
-{
-	g_TeleInTriggerMultiple[client] = false;
-
-	return Plugin_Continue;
-} */
 
 public Action OnTriggerOutput(const char[] output, int caller, int activator, float delay)
 {
