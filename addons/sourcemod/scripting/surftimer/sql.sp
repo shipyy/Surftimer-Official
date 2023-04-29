@@ -2639,7 +2639,7 @@ public void db_currentRunRank_Prac(int client, int style, int zgroup)
 		WritePackCell(data, style);
 		WritePackFloat(data, g_fCurrentRunTime[client]);
 
-		Format(szQuery, sizeof(szQuery), "SELECT count(runtime)+1 FROM ck_bonus WHERE mapname = '%s' AND style = '%i' AND zonegroup = '%i' AND runtime < '%f'", g_szMapName, zgroup, style, g_fCurrentRunTime[client]);
+		Format(szQuery, sizeof(szQuery), "SELECT count(runtime)+1 FROM ck_bonus WHERE mapname = '%s' AND style = '%i' AND zonegroup = '%i' AND runtime < '%f'", g_szMapName, style, zgroup, g_fCurrentRunTime[client]);
 		SQL_TQuery(g_hDb, SQL_CurrentRunRank_PracCallback, szQuery, data, DBPrio_Low);
 	}
 }
@@ -8109,7 +8109,32 @@ public void sql_selectWrcpRecordCallback(Handle owner, Handle hndl, const char[]
 
 		SQL_TQuery(g_hDb, SQL_UpdateWrcpRecordCallback, szQuery, pack, DBPrio_Low);
 
+		char szSpecMessage[512];
 		g_bStageSRVRecord[data][stage] = false;
+
+		if (style == 0)
+		{
+			if (g_iWrcpMessages[data])
+				CPrintToChat(data, "%t", "SQL11", g_szChatPrefix, stage, g_szFinalWrcpTime[data], szDiff, sz_srDiff);
+
+			Format(szSpecMessage, sizeof(szSpecMessage), "%t", "SQL12", g_szChatPrefix, szName, stage, g_szFinalWrcpTime[data], szDiff, sz_srDiff);
+		}
+		else if (style != 0) // styles
+		{
+			if (g_iWrcpMessages[data])
+				CPrintToChat(data, "%t", "SQL13", g_szChatPrefix, stage, g_szStyleRecordPrint[style], g_szFinalWrcpTime[data], sz_srDiff, g_StyleStageRank[style][data][stage], g_TotalStageStyleRecords[style][stage]);
+
+			Format(szSpecMessage, sizeof(szSpecMessage), "%t", "SQL14", g_szChatPrefix, stage, g_szStyleRecordPrint[style], g_szFinalWrcpTime[data], sz_srDiff, g_StyleStageRank[style][data][stage], g_TotalStageStyleRecords[style][stage]);
+		}
+		CheckpointToSpec(data, szSpecMessage);
+
+		if (g_bRepeat[data])
+		{
+			if (stage <= 1)
+				Command_Restart(data, 1);
+			else
+				teleportClient(data, 0, stage, false);
+		}
 	}
 }
 
@@ -8182,17 +8207,9 @@ public void SQL_UpdateWrcpRecordCallback2(Handle owner, Handle hndl, const char[
 	float time = ReadPackFloat(data);
 	int style = ReadPackCell(data);
 	int stage = ReadPackCell(data);
-	bool bInsert = view_as<bool>(ReadPackCell(data));
+	bool bInsert = ReadPackCell(data) == 0 ? false : true;
 	int client = ReadPackCell(data);
 	CloseHandle(data);
-
-	if (bInsert) // fluffys FIXME
-	{
-		if (style == 0)
-			g_TotalStageRecords[stage]++;
-		else
-			g_TotalStageStyleRecords[style][stage]++;
-	}
 
 	if (stage == 0)
 		return;
@@ -8274,10 +8291,10 @@ public void SQL_UpdateWrcpRecordCallback2(Handle owner, Handle hndl, const char[
 		{ // If the server already has a record
 
 			if (g_fFinalWrcpTime[client] < g_fStageRecord[stage] && g_fFinalWrcpTime[client] > 0.0)
-			{ 
+			{
 				// New fastest time in map
 				g_bStageSRVRecord[client][stage] = true;
-				if (g_fWrcpRecord[client][stage][0] != g_fStageRecord[stage])
+				if (g_fWrcpRecord[client][stage][0] != g_fStageRecord[stage] && ( strcmp(g_szStageRecordPlayer[stage], szName, false) != 0 ) )
 					newRecordHolder = true;
 				g_fStageRecord[stage] = g_fFinalTime[client];
 				Format(g_szStageRecordPlayer[stage], MAX_NAME_LENGTH, "%s", szName);
@@ -8292,6 +8309,9 @@ public void SQL_UpdateWrcpRecordCallback2(Handle owner, Handle hndl, const char[
 			}
 			else
 			{
+				g_bStageSRVRecord[client][stage] = true;
+				if (g_fWrcpRecord[client][stage][0] != g_fStageRecord[stage] && ( strcmp(g_szStageRecordPlayer[stage], szName, false) != 0 ) )
+					newRecordHolder = true;
 				CPrintToChat(client, "%t", "SQL16", g_szChatPrefix, stage, g_szFinalWrcpTime[client], szDiff, sz_srDiff, g_StageRank[client][stage], g_TotalStageRecords[stage]);
 
 				char szSpecMessage[512];
@@ -8315,6 +8335,10 @@ public void SQL_UpdateWrcpRecordCallback2(Handle owner, Handle hndl, const char[
 			SendNewWRCPForward(client, stage, sz_srRawDiff);
 
 			SetNewRecordPrestrafe(client, stage, 0, false, false, true);
+
+			char szSpecMessage[512];
+			Format(szSpecMessage, sizeof(szSpecMessage), "%t", "SQL17", g_szChatPrefix, szName, stage, g_szFinalWrcpTime[client], szDiff, sz_srDiff, g_StageRank[client][stage], g_TotalStageRecords[stage]);
+			CheckpointToSpec(client, szSpecMessage);
 		}
 	}
 	else if (style != 0) // styles
@@ -8326,7 +8350,7 @@ public void SQL_UpdateWrcpRecordCallback2(Handle owner, Handle hndl, const char[
 			{
 				// New fastest time in map
 				g_bStageSRVRecord[client][stage] = true;
-				if (g_fWrcpRecord[client][stage][style] != g_fStyleStageRecord[style][stage])
+				if (g_fWrcpRecord[client][stage][style] != g_fStyleStageRecord[style][stage] && ( strcmp(g_szStageRecordPlayer[stage], szName, false) != 0 ) )
 					newRecordHolder = true;
 
 				g_fStyleStageRecord[style][stage] = g_fFinalTime[client];
@@ -8341,6 +8365,9 @@ public void SQL_UpdateWrcpRecordCallback2(Handle owner, Handle hndl, const char[
 			}
 			else
 			{
+				g_bStageSRVRecord[client][stage] = true;
+				if (g_fWrcpRecord[client][stage][style] != g_fStyleStageRecord[style][stage] && ( strcmp(g_szStageRecordPlayer[stage], szName, false) != 0 ) )
+					newRecordHolder = true;
 				CPrintToChat(client, "%t", "SQL20", g_szChatPrefix, stage, g_szStyleRecordPrint[style], g_szFinalWrcpTime[client], sz_srDiff, g_StyleStageRank[style][client][stage], g_TotalStageStyleRecords[style][stage]);
 
 				char szSpecMessage[512];
@@ -8362,7 +8389,20 @@ public void SQL_UpdateWrcpRecordCallback2(Handle owner, Handle hndl, const char[
 			SendNewWRCPForward(client, stage, sz_srRawDiff);
 
 			SetNewRecordPrestrafe(client, stage, style, false, false, true);
+
+			char szSpecMessage[512];
+			Format(szSpecMessage, sizeof(szSpecMessage), "%t", "SQL21", g_szChatPrefix, stage, g_szStyleRecordPrint[style], g_szFinalWrcpTime[client], sz_srDiff, g_StyleStageRank[style][client][stage], g_TotalStageStyleRecords[style][stage]);
+			CheckpointToSpec(client, szSpecMessage);
 		}
+	}
+
+	// INCREMENT STAGE RECORDS COUNT
+	if (bInsert)
+	{
+		if (style == 0)
+			g_TotalStageRecords[stage]++;
+		else
+			g_TotalStageStyleRecords[style][stage]++;
 	}
 
 	// Check if new record and if someone else had the old record, if so give them points
