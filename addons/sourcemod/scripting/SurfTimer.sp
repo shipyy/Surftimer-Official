@@ -422,6 +422,28 @@ public void OnClientPutInServer(int client)
 		return;
 	}
 
+	if (!IsFakeClient(client))
+	{
+		// Get SteamID
+		if (!GetClientAuthId(client, AuthId_Steam2, g_szSteamID[client], sizeof(g_szSteamID[]), true))
+		{
+			RequestFrame(OnClientPutInServer, client);
+			g_bLoadingSettings[client] = true;
+			return;
+		}
+
+		// Check if steamid has the value of "STEAM_ID_STOP_IGNORING_RETVALS"
+		// Reported here: https://github.com/surftimer/SurfTimer/issues/549
+		// This was being triggered by replay bots
+		if (g_szSteamID[client][6] == 'I' && g_szSteamID[client][7] == 'D')
+		{
+			RequestFrame(OnClientPutInServer, client);
+			g_bLoadingSettings[client] = true;
+			return;
+		}
+		g_MVPStars[client] = 0;
+	}
+
 	// SDKHooks
 	if (g_bClientHooksCalled[client] == false)
 	{
@@ -432,39 +454,9 @@ public void OnClientPutInServer(int client)
 		g_bClientHooksCalled[client] = true;
 	}
 
-	// Get SteamID
-	if (!GetClientAuthId(client, AuthId_Steam2, g_szSteamID[client], sizeof(g_szSteamID[]), true))
-	{
-		RequestFrame(OnClientPutInServer, client);
-		return;
-	}
-
-	// Check if steamid has the value of "STEAM_ID_STOP_IGNORING_RETVALS"
-	// Reported here: https://github.com/surftimer/SurfTimer/issues/549
-	if (g_szSteamID[client][6] == 'I' && g_szSteamID[client][7] == 'D')
-	{
-		RequestFrame(OnClientPutInServer, client);
-		return;
-	}
-
 	// Defaults
 	SetClientDefaults(client);
 	Command_Restart(client, 1);
-
-	if (!IsFakeClient(client))
-	{
-		SendConVarValue(client, g_hFootsteps, "0");
-		StopRecording(client); // clear client replay frames
-	}
-
-	g_bReportSuccess[client] = false;
-	g_bTeleByCommand[client] = false;
-	g_fCommandLastUsed[client] = 0.0;
-
-	// fluffys set bools
-	g_bToggleMapFinish[client] = true;
-	g_bRepeat[client] = false;
-	g_bNotTeleporting[client] = false;
 
 	if (IsFakeClient(client))
 	{
@@ -472,7 +464,18 @@ public void OnClientPutInServer(int client)
 		return;
 	}
 	else
-		g_MVPStars[client] = 0;
+	{
+		SendConVarValue(client, g_hFootsteps, "0");
+		StopRecording(client); // clear client replay frames
+	}
+
+	g_bReportSuccess[client] = false;
+	g_fCommandLastUsed[client] = 0.0;
+
+	// fluffys set bools
+	g_bToggleMapFinish[client] = true;
+	g_bRepeat[client] = false;
+	g_bNotTeleporting[client] = false;
 
 	// Client Country
 	GetCountry(client);
@@ -483,10 +486,6 @@ public void OnClientPutInServer(int client)
 	// char fix
 	FixPlayerName(client);
 
-	// Position Restoring
-	if (GetConVarBool(g_hcvarRestore) && !g_bRenaming && !g_bInTransactionChain)
-	db_selectLastRun(client);
-
 	if (g_bTierFound)
 		AnnounceTimer[client] = CreateTimer(20.0, AnnounceMap, client, TIMER_FLAG_NO_MAPCHANGE);
 
@@ -496,6 +495,12 @@ public void OnClientPutInServer(int client)
 		g_bLoadingSettings[client] = true;
 		g_iSettingToLoad[client] = 0;
 		LoadClientSetting(client, 0);
+	}
+
+	// Position Restoring
+	if (GetConVarBool(g_hcvarRestore) && !g_bRenaming && !g_bInTransactionChain)
+	{
+		db_selectLastRun(client);
 	}
 }
 

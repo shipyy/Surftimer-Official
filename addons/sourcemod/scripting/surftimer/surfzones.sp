@@ -307,12 +307,9 @@ public Action EndTouchTrigger(int caller, int activator)
 
 public void StartTouch(int client, int action[3])
 {
-	/* if (g_iClientInZone[client][0] > 0){
-		g_TeleInTriggerMultiple[client] = false;
-	} */
-
 	if (IsValidClient(client))
 	{	
+		float speedCap = g_mapZones[g_iClientInZone[client][3]].PreSpeed;
 
 		float CurVelVec[3];
 		GetEntPropVector(client, Prop_Data, "m_vecVelocity", CurVelVec);
@@ -410,6 +407,11 @@ public void StartTouch(int client, int action[3])
 			lastCheckpoint[g_iClientInZone[client][2]][client] = 1;
 			g_bSaveLocTele[client] = false;
 
+			if (speedCap > 0.0)
+			{
+				ApplySpeedCapXY(client, g_mapZones[g_iClientInZone[client][3]].PreSpeed);
+			}
+
 			// StopRecording(client); //Add pre
 			StartRecording(client); //Add pre
 
@@ -495,6 +497,11 @@ public void StartTouch(int client, int action[3])
 			g_bInJump[client] = false;
 			g_bInDuck[client] = false;
 			g_KeyCount[client] = 0;
+
+			if (speedCap > 0.0)
+			{
+				ApplySpeedCapXY(client, g_mapZones[g_iClientInZone[client][3]].PreSpeed);
+			}
 
 			// Prevents the Stage(X) replay from starting before the Stage(X) start zone
 			g_iStageStartTouchTick[client] = g_iRecordedTicks[client]; //Add pre

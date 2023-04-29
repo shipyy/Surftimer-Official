@@ -46,9 +46,10 @@ public void db_setupDatabase()
 	g_bInTransactionChain = false;
 
 	CheckDatabaseForUpdates();
-	CleanUpTablesRetvalsSteamId();
 
 	SQL_UnlockDatabase(g_hDb);
+
+	CleanUpTablesRetvalsSteamId();
 
 	for (int i = 0; i < sizeof(g_failedTransactions); i++)
 		g_failedTransactions[i] = 0;
@@ -1671,7 +1672,7 @@ public void sql_selectRankedPlayersRankCallback(Handle owner, Handle hndl, const
 			{
 				if (style == 0)
 				{
-					if (g_PlayerRank[client][0] > GetConVarInt(g_hPrestigeRank) && !g_bPrestigeCheck[client])
+					if (g_PlayerRank[client][0] >= GetConVarInt(g_hPrestigeRank) && !g_bPrestigeCheck[client])
 						KickClient(client, "You must be at least rank %i to join this server", GetConVarInt(g_hPrestigeRank));
 				}
 
@@ -1680,7 +1681,7 @@ public void sql_selectRankedPlayersRankCallback(Handle owner, Handle hndl, const
 			}
 			else
 			{
-				if (g_PlayerRank[client][0] < GetConVarInt(g_hPrestigeRank) || g_bPrestigeCheck[client])
+				if (g_PlayerRank[client][0] <= GetConVarInt(g_hPrestigeRank) || g_bPrestigeCheck[client])
 					g_bPrestigeCheck[client] = true;
 				else if (!g_bPrestigeAvoid[client])
 					KickClient(client, "You must be at least rank %i to join this server", GetConVarInt(g_hPrestigeRank));
@@ -2808,8 +2809,8 @@ public void SQL_CurrentRunRank_StagePracCallback(Handle owner, Handle hndl, cons
 // Called when a player finishes a map
 public void db_selectRecord(int client)
 {
-	if (!IsValidClient(client))
-	return;
+	if (!IsValidClient(client) || g_bPracticeMode[client])
+		return;
 
 	char szQuery[255];
 	Format(szQuery, sizeof(szQuery), "SELECT runtimepro FROM ck_playertimes WHERE steamid = '%s' AND mapname = '%s' AND runtimepro > -1.0 AND style = 0;", g_szSteamID[client], g_szMapName);
@@ -3556,33 +3557,40 @@ public void SQL_LastRunCallback(Handle owner, Handle hndl, const char[] error, a
 
 		// "SELECT cords1,cords2,cords3, angle1, angle2, angle3,runtimeTmp, EncTickrate, Stage, zonegroup FROM ck_playertemp WHERE steamid = '%s' AND mapname = '%s';";
 
-		// Get last psition
-		g_fPlayerCordsRestore[data][0] = SQL_FetchFloat(hndl, 0);
-		g_fPlayerCordsRestore[data][1] = SQL_FetchFloat(hndl, 1);
-		g_fPlayerCordsRestore[data][2] = SQL_FetchFloat(hndl, 2);
-		g_fPlayerAnglesRestore[data][0] = SQL_FetchFloat(hndl, 3);
-		g_fPlayerAnglesRestore[data][1] = SQL_FetchFloat(hndl, 4);
-		g_fPlayerAnglesRestore[data][2] = SQL_FetchFloat(hndl, 5);
+		// Get last position coordinates and angles
+		g_fRestoreCoords[data][0] = SQL_FetchFloat(hndl, 0);
+		g_fRestoreCoords[data][1] = SQL_FetchFloat(hndl, 1);
+		g_fRestoreCoords[data][2] = SQL_FetchFloat(hndl, 2);
+		g_fRestoreAngles[data][0] = SQL_FetchFloat(hndl, 3);
+		g_fRestoreAngles[data][1] = SQL_FetchFloat(hndl, 4);
+		g_fRestoreAngles[data][2] = SQL_FetchFloat(hndl, 5);
+
+		// Get zonegroup for location restoring
 
 
 		int zGroup;
 		zGroup = SQL_FetchInt(hndl, 9);
 
-		g_iClientInZone[data][2] = zGroup;
+		// New variables used for the restore menu
+		g_iRestoreZoneStage[data][0] = zGroup;
+		g_iRestoreZoneStage[data][1] = SQL_FetchInt(hndl, 8);
 
-		g_Stage[zGroup][data] = SQL_FetchInt(hndl, 8);
+		// Check the tickrate for the saved location with the current tickrate of the server
+		int tickrate = RoundFloat(float(SQL_FetchInt(hndl, 7)) / 5.0 / 11.0);
 
 		// Set new start time
-		float fl_time = SQL_FetchFloat(hndl, 6);
-		int tickrate = RoundFloat(float(SQL_FetchInt(hndl, 7)) / 5.0 / 11.0);
+		char runTime[32];
+		g_fRestoreRunTime[data] = SQL_FetchFloat(hndl, 6);
+		FormatTimeFloat(data, g_fRestoreRunTime[data], 3, runTime, sizeof(runTime));
+
+		//CCP DATA
+		// 10 && 11
+		SQL_FetchString(hndl, 10, sz_temp_ccp_times[data], sizeof sz_temp_ccp_times[]);
+		SQL_FetchString(hndl, 11, sz_temp_ccp_attempts[data], sizeof sz_temp_ccp_attempts[]);
+
+		// PrintToServer("tickrate: %i (%i) | g_iTickrate %i | g_fRestoreRunTime[data] %f | g_specToStage[data] %b | g_bLateLoaded %b", tickrate, SQL_FetchInt(hndl, 7), g_iTickrate, g_fRestoreRunTime[data], g_specToStage[data], g_bLateLoaded);
 		if (tickrate == g_iTickrate)
 		{
-			if (fl_time > 0.0)
-			{
-				g_fStartTime[data] = GetClientTickTime(data) - fl_time;
-				g_bTimerRunning[data] = true;
-			}
-
 			if (SQL_FetchFloat(hndl, 0) == -1.0 && SQL_FetchFloat(hndl, 1) == -1.0 && SQL_FetchFloat(hndl, 2) == -1.0)
 			{
 				g_bRestorePosition[data] = false;
@@ -3590,11 +3598,18 @@ public void SQL_LastRunCallback(Handle owner, Handle hndl, const char[] error, a
 			}
 			else
 			{
-				if (g_bLateLoaded && IsPlayerAlive(data) && !g_specToStage[data])
+				if (IsPlayerAlive(data) && !g_specToStage[data])
 				{
-					g_bPositionRestored[data] = true;
-					TeleportEntity(data, g_fPlayerCordsRestore[data], g_fPlayerAnglesRestore[data], NULL_VECTOR);
-					g_bRestorePosition[data] = false;
+					g_bRestorePositionMsg[data] = true;
+					// Show the menu AFTER client settings are fully loaded
+					if (g_bSettingsLoaded[data])
+					{
+						Restore_Menu(data, 0);
+					}
+					else
+					{
+						CPrintToChat(data, "%t", "Commands90", g_szChatPrefix, runTime);
+					}
 				}
 				else
 				{
@@ -4672,9 +4687,9 @@ public void SQL_viewPlayerMapAttributesCallback(Handle owner, Handle hndl, const
 
 		db_UpdateLastSeen(client);
 
-		if (GetConVarBool(g_hTeleToStartWhenSettingsLoaded))
+		if (GetConVarBool(g_hTeleToStartWhenSettingsLoaded) && !g_bPositionRestored[client])
 		{
-			Command_Restart(client, 1);
+			//Command_Restart(client, 1);
 			CreateTimer(0.1, RestartPlayer, client);
 		}
 
@@ -6226,7 +6241,7 @@ public void SQLTxn_ZoneRemovalFailed(Handle db, any client, int numQueries, cons
 
 public void db_insertLastPosition(int client, char szMapName[128], int stage, int zgroup)
 {
-	if (GetConVarBool(g_hcvarRestore) && !g_bRoundEnd && (StrContains(g_szSteamID[client], "STEAM_") != -1) && g_bTimerRunning[client])
+	if (GetConVarBool(g_hcvarRestore) && !g_bRoundEnd && (StrContains(g_szSteamID[client], "STEAM_") != -1) && g_bTimerRunning[client] && g_bhasStages)
 	{
 		Handle pack = CreateDataPack();
 		WritePackCell(pack, client);
@@ -6263,16 +6278,39 @@ public void db_insertLastPositionCallback(Handle owner, Handle hndl, const char[
 	if (1 <= client <= MaxClients)
 	{
 		if (!g_bTimerRunning[client])
-		g_fPlayerLastTime[client] = -1.0;
+		{
+			g_fPlayerLastTime[client] = -1.0;
+		}
+
+		//SAVE CCP DATA
+		int total_CPS = g_bhasStages ? g_TotalStages : g_iTotalCheckpoints;
+		char sz_fCCP_StageTimes_Player[2048];
+		char sz_fCCP_StageAttempts_Player[2048];
+
+		for(int i = 0; i < total_CPS; i++)
+		{
+			//STAGE TIMES
+			if ( i == 0 )
+				Format(sz_fCCP_StageTimes_Player, sizeof sz_fCCP_StageTimes_Player, "%f", g_fStageTimesNew[client][i]);
+			else
+				Format(sz_fCCP_StageTimes_Player, sizeof sz_fCCP_StageTimes_Player, "%s|%f", sz_fCCP_StageTimes_Player, g_fStageTimesNew[client][i]);
+
+			//STAGE ATTEMPTS
+			if ( i == 0 )
+				Format(sz_fCCP_StageAttempts_Player, sizeof sz_fCCP_StageAttempts_Player, "%d", g_iStageAttemptsNew[client][i]);
+			else
+				Format(sz_fCCP_StageAttempts_Player, sizeof sz_fCCP_StageAttempts_Player, "%s|%d", sz_fCCP_StageAttempts_Player, g_iStageAttemptsNew[client][i]);
+		}
+
 		int tickrate = g_iTickrate * 5 * 11;
 		if (SQL_HasResultSet(hndl) && SQL_FetchRow(hndl))
 		{
-			Format(szQuery, sizeof(szQuery), sql_updatePlayerTmp, g_fPlayerCordsLastPosition[client][0], g_fPlayerCordsLastPosition[client][1], g_fPlayerCordsLastPosition[client][2], g_fPlayerAnglesLastPosition[client][0], g_fPlayerAnglesLastPosition[client][1], g_fPlayerAnglesLastPosition[client][2], g_fPlayerLastTime[client], szMapName, tickrate, stage, zgroup, szSteamID);
+			Format(szQuery, sizeof(szQuery), sql_updatePlayerTmp, g_fPlayerCordsLastPosition[client][0], g_fPlayerCordsLastPosition[client][1], g_fPlayerCordsLastPosition[client][2], g_fPlayerAnglesLastPosition[client][0], g_fPlayerAnglesLastPosition[client][1], g_fPlayerAnglesLastPosition[client][2], g_fPlayerLastTime[client], szMapName, tickrate, stage, zgroup, sz_fCCP_StageTimes_Player, sz_fCCP_StageAttempts_Player, szSteamID);
 			SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, _, DBPrio_Low);
 		}
 		else
 		{
-			Format(szQuery, sizeof(szQuery), sql_insertPlayerTmp, g_fPlayerCordsLastPosition[client][0], g_fPlayerCordsLastPosition[client][1], g_fPlayerCordsLastPosition[client][2], g_fPlayerAnglesLastPosition[client][0], g_fPlayerAnglesLastPosition[client][1], g_fPlayerAnglesLastPosition[client][2], g_fPlayerLastTime[client], szSteamID, szMapName, tickrate, stage, zgroup);
+			Format(szQuery, sizeof(szQuery), sql_insertPlayerTmp, g_fPlayerCordsLastPosition[client][0], g_fPlayerCordsLastPosition[client][1], g_fPlayerCordsLastPosition[client][2], g_fPlayerAnglesLastPosition[client][0], g_fPlayerAnglesLastPosition[client][1], g_fPlayerAnglesLastPosition[client][2], g_fPlayerLastTime[client], szSteamID, szMapName, tickrate, stage, zgroup, sz_fCCP_StageTimes_Player, sz_fCCP_StageAttempts_Player);
 			SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, _, DBPrio_Low);
 		}
 	}
@@ -8244,7 +8282,7 @@ public void SQL_UpdateWrcpRecordCallback2(Handle owner, Handle hndl, const char[
 				Format(g_szStageRecordPlayer[stage], MAX_NAME_LENGTH, "%s", szName);
 				FormatTimeFloat(1, g_fStageRecord[stage], 3, g_szRecordStageTime[stage], 64);
 				CPrintToChatAll("%t", "SQL15", g_szChatPrefix, szName, stage, g_szFinalWrcpTime[client], sz_srDiff, g_TotalStageRecords[stage]);
-				g_bSavingWrcpReplay[client] = true;
+				//g_bSavingWrcpReplay[client] = true;
 				// Stage_SaveRecording(client, stage, g_szFinalWrcpTime[client]);
 				PlayWRCPRecord();
 				SendNewWRCPForward(client, stage, sz_srRawDiff);
@@ -8270,7 +8308,7 @@ public void SQL_UpdateWrcpRecordCallback2(Handle owner, Handle hndl, const char[
 			FormatTimeFloat(1, g_fStageRecord[stage], 3, g_szRecordStageTime[stage], 64);
 
 			CPrintToChatAll("%t", "SQL18", g_szChatPrefix, szName, stage, g_szFinalWrcpTime[client]);
-			g_bSavingWrcpReplay[client] = true;
+			//g_bSavingWrcpReplay[client] = true;
 			// Stage_SaveRecording(client, stage, g_szFinalWrcpTime[client]);
 			PlayWRCPRecord();
 			SendNewWRCPForward(client, stage, sz_srRawDiff);

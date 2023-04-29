@@ -682,3 +682,30 @@ public Action RefreshMapAttributes(Handle timer)
 
 	return Plugin_Handled;
 }
+
+public Action RestartAfterRecordSaved(Handle timer, any client)
+{
+	if (!IsValidClient(client))
+		return Plugin_Continue;
+
+	if (!g_bNewReplay[client] || !g_bNewBonus[client]) {
+		if ( g_iClientInZone[client][2] == 0 ) {
+			//STAGE
+			if ( g_Stage[g_iClientInZone[client][2]][client] > 1 )
+			{
+				teleportClient(client, 0, g_Stage[g_iClientInZone[client][2]][client], false);
+			}
+			//MAP
+			else {
+				teleportClient(client, 0, 1, false);
+			}
+		}
+		//BONUS
+		else {
+			teleportClient(client, g_iClientInZone[client][2], 1, false);
+		}
+		return Plugin_Stop;
+	}
+
+	return Plugin_Continue;
+}

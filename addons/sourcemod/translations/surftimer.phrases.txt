@@ -866,6 +866,11 @@
 		"#format"	"{1:s}"
 		"en"		"{1} New stage start position saved"
 	}
+	"Commands90"
+	{
+		"#format"	"{1:s},{2:s}"
+		"en"		"{1} You have a run with time {green}{2}{default} saved, type {yellow}/restore{default} to resume it"
+	}
 	"BotInUse"
 	{
 		"#format"	"{1:s},{2:s}"
@@ -1965,21 +1970,46 @@
 	"Vote Not Submited"
 	{
 		"#format"	"{1:s},{2:s}"
-		"en"		"{1} {red} Retry again in {yellow}{2}{red}!"
+		"en"		"{1} {red}Retry again in {yellow}{2}{red}!"
+	}
+	"Not_Spectating_Bot"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} {yellow}You must be spectating a Replay Bot!"
 	}
 	"Map_Replay_Control"
 	{
 		"#format"	"{1:s}"
-		"en"		"{1} {red} There is someone already controlling the Map Replay!"
+		"en"		"{1} {red}There is someone already controlling the Map Replay!"
 	}
 	"Bonus_Replay_Control"
 	{
 		"#format"	"{1:s}"
-		"en"		"{1} {red} There is someone already controlling the Bonus Replay!"
+		"en"		"{1} {red}There is someone already controlling the Bonus Replay!"
 	}
 	"Stage_Replay_Control"
 	{
 		"#format"	"{1:s}"
-		"en"		"{1} {red} There is someone already controlling the Stage Replay!"
+		"en"		"{1} {red}There is someone already controlling the Stage Replay!"
+	}
+	"No_Saved_Run"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} {red}No previous run found."
+	}
+	"No_Restore_While_Spec"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} {yellow}Cant restore run while spectating."
+	}
+	"Run_Restored"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} {green}Previous Run Restored!"
+	}
+	"SavingRecord"
+	{
+		"#format"	"{1:s}"
+		"en"		"{1} {red}Cannot restart timer yet! Saving replay..."
 	}
 }

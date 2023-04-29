@@ -178,6 +178,7 @@ void CreateCommands()
 	RegConsoleCmd("sm_specbotbonus", Command_SpecBonusBot, "[surftimer] Spectate the bonus bot");
 	RegConsoleCmd("sm_specbotb", Command_SpecBonusBot, "[surftimer] Spectate the bonus bot");
 	RegConsoleCmd("sm_showzones", Command_ShowZones, "[surftimer] Clients can toggle whether zones are visible for them");
+	RegConsoleCmd("sm_restore", Restore_Menu, "[surftimer] Restore last known location for client");
 
 	// Styles
 	RegConsoleCmd("sm_style", Client_SelectStyle, "[surftimer] open style select menu.");
@@ -1450,6 +1451,13 @@ public Action Command_ToBonus(int client, int args)
 	if (g_mapZoneGroupCount > zoneGrp)
 		g_iInBonus[client] = zoneGrp;
 	teleportClient(client, zoneGrp, 1, true);
+
+	if (g_bPracticeMode[client])
+	{
+		g_bPracticeMode[client] = false;
+		CPrintToChat(client, "%t", "PracticeNormal", g_szChatPrefix);
+	}
+
 	return Plugin_Handled;
 }
 
@@ -1570,6 +1578,12 @@ public Action Command_ToStage(int client, int args)
 		teleportClient(client, 0, StageId, true);
 	}
 
+	if (g_bPracticeMode[client])
+	{
+		g_bPracticeMode[client] = false;
+		CPrintToChat(client, "%t", "PracticeNormal", g_szChatPrefix);
+	}
+
 	return Plugin_Handled;
 }
 
@@ -1627,6 +1641,13 @@ public Action Command_Restart(int client, int args)
 	g_bInBhop[client] = false;
 
 	teleportClient(client, 0, 1, true);
+
+	if (g_bPracticeMode[client])
+	{
+		g_bPracticeMode[client] = false;
+		CPrintToChat(client, "%t", "PracticeNormal", g_szChatPrefix);
+	}
+
 	return Plugin_Handled;
 }
 
@@ -6661,7 +6682,7 @@ public Action ReplayControlMenu(int client)
 	int bot = -1;
 
 	if ( ObservedUser == -1 ) {
-		CPrintToChat(client, "NOT WATCHING A REPLAY BOT!");
+		CPrintToChat(client, "%t", "Not_Spectating_Bot", g_szChatPrefix);
 		return Plugin_Handled;
 	}
 
@@ -6798,4 +6819,117 @@ public int ControlMenuHandler(Menu menu, MenuAction action, int param1, int para
 	}
 
 	return 0;
+}
+
+// Restore menu start
+public Action Restore_Menu(int client, int args)
+{
+	if (IsFakeClient(client) || !IsValidClient(client))
+	{
+		return Plugin_Handled;
+	}
+
+	if (g_fRestoreRunTime[client] <= 0.0)
+	{
+		CPrintToChat(client, "%t", "No_Saved_Run", g_szChatPrefix);
+		return Plugin_Handled;
+	}
+
+	if (IsClientObserver(client))
+	{
+		CPrintToChat(client, "%t", "No_Restore_While_Spec", g_szChatPrefix);
+		return Plugin_Handled;
+	}
+
+	char runTime[32];
+	FormatTimeFloat(client, g_fRestoreRunTime[client], 3, runTime, sizeof(runTime));
+	Menu menu_restore = new Menu(Restore_Menu_Callback);
+	menu_restore.SetTitle("Restore last run? (%s)", runTime);
+
+	menu_restore.AddItem("item_yes", "Yes", ITEMDRAW_DEFAULT);
+	menu_restore.AddItem("item_no", "No", ITEMDRAW_DEFAULT);
+
+	menu_restore.ExitButton = true;
+	menu_restore.Display(client, 30);
+
+	return Plugin_Handled;
+}
+
+public int Restore_Menu_Callback(Menu menu, MenuAction action, int client, int param2)
+{
+	switch (action)
+	{
+		case MenuAction_DisplayItem:
+		{
+			char info[32];
+			menu.GetItem(param2, info, sizeof(info));
+
+			return RedrawMenuItem(info);
+		}
+		case MenuAction_Select:
+		{
+			char info[32];
+			menu.GetItem(param2, info, sizeof(info));
+			if (StrContains(info, "yes") != -1)
+			{
+				// Set the correct zonegroup and stage upon restoring
+				g_iClientInZone[client][2] = g_iRestoreZoneStage[client][0];
+				g_Stage[g_iRestoreZoneStage[client][0]][client] = g_iRestoreZoneStage[client][1];
+
+				// Indicate that the client has had their location restored this game - guessing this deals with checkpoints not been passed if enforced
+				g_bPositionRestored[client] = true;
+
+				// Set the correct RunTime upon restoring
+				g_fStartTime[client] = GetClientTickTime(client) - g_fRestoreRunTime[client];
+
+				// Teleport client to last known location
+				TeleportEntity(client, g_fRestoreCoords[client], g_fRestoreAngles[client], NULL_VECTOR);
+
+				// Start the timer after client has been teleported
+				g_bTimerRunning[client] = true;
+				// Indicate that we have finished with location restoring?
+				g_bRestorePosition[client] = false;
+
+				//RESTORE CCP
+				//CONVERT STRING TO ARRAY VALUES
+				int total_CPS = g_bhasStages ? g_TotalStages : g_iTotalCheckpoints;
+				char sz_temp_ccp_times_split[CPLIMIT][32];
+				char sz_temp_ccp_attempts_split[CPLIMIT][32];
+
+				ExplodeString(sz_temp_ccp_times[client] , "|", sz_temp_ccp_times_split, sizeof sz_temp_ccp_times_split, sizeof sz_temp_ccp_times_split[]);
+				ExplodeString(sz_temp_ccp_attempts[client] , "|", sz_temp_ccp_attempts_split, sizeof sz_temp_ccp_attempts_split, sizeof sz_temp_ccp_attempts_split[]);
+
+				for(int i = 0; i < total_CPS; i++)
+				{
+					g_fStageTimesNew[client][i] = StringToFloat(sz_temp_ccp_times_split[i]);
+					g_iStageAttemptsNew[client][i] = StringToInt(sz_temp_ccp_attempts_split[i]);
+				}
+
+				// Incidicate that previous runs is restore
+				CPrintToChat(client, "%t", "Run_Restored", g_szChatPrefix);
+
+				//RESET VALUES
+				g_fRestoreRunTime[client] = 0.0;
+				g_iRestoreZoneStage[client][0] = 0;
+				g_iRestoreZoneStage[client][1] = 0;
+				for(int i = 0; i < 3; i++)
+				{
+					g_fRestoreCoords[client][i] = 0.0;
+					g_fRestoreAngles[client][i] = 0.0;
+				}
+				db_deleteTmp(client);
+			}
+			else
+			{
+				// Client's timer is NOT running
+				g_bPositionRestored[client] = false;
+				g_bTimerRunning[client] = false;
+			}
+		}
+		case MenuAction_End:
+		{
+			delete menu;
+		}
+	}
+	return client;
 }

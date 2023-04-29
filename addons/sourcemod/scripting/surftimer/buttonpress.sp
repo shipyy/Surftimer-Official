@@ -37,10 +37,12 @@ public void CL_OnStartTimerPress(int client)
 				return;
 			}
 		}
-		if (g_bNewReplay[client] || g_bNewBonus[client]) // Don't allow starting the timer, if players record is being saved
+		if (g_bNewReplay[client] || g_bNewBonus[client]){ // Don't allow starting the timer, if players record is being saved
+			CPrintToChat(client, "%t", "SavingRecord", g_szChatPrefix);
+			//CreateTimer(0.1, RestartAfterRecordSaved, client, TIMER_FLAG_NO_MAPCHANGE | TIMER_REPEAT);
 			return;
+		}
 	}
-
 	if (!g_bSpectate[client] && !g_bNoClip[client] && ((GetGameTime() - g_fLastTimeNoClipUsed[client]) > 2.0))
 	{
 		if (g_bActivateCheckpointsOnStart[client])
@@ -883,6 +885,10 @@ public void CL_OnStartWrcpTimerPress(int client)
 
 	if (!g_bSpectate[client] && !g_bNoClip[client] && ((GetGameTime() - g_fLastTimeNoClipUsed[client]) > 2.0))
 	{
+		if (g_bSavingWrcpReplay[client]){ // Don't allow starting the timer, if players record is being saved
+			CPrintToChat(client, "%t", "SavingRecord", g_szChatPrefix);
+			return;
+		}
 
 		int zGroup = g_iClientInZone[client][2];
 		if(zGroup != 0)

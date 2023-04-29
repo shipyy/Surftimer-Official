@@ -85,8 +85,13 @@ public void CheckDatabaseForUpdates()
             db_upgradeDatabase(14);
             return;
         }
+        if (!SQL_FastQuery(g_hDb, "SELECT CCP_times FROM ck_playertemp LIMIT 1"))
+        {
+            db_upgradeDatabase(15);
+            return;
+        }
 
-        LogMessage("Version 14 looks good.");
+        LogMessage("Version 15 looks good.");
     }
 }
 
@@ -176,6 +181,11 @@ public void db_upgradeDatabase(int ver)
     else if (ver == 14)
     {
         SQL_FastQuery(g_hDb, sql_create_playervotes);
+    }
+    else if (ver == 15)
+    {
+        SQL_FastQuery(g_hDb, "ALTER TABLE ck_playertemp ADD COLUMN CCP_times varchar(2048);");
+        SQL_FastQuery(g_hDb, "ALTER TABLE ck_playertemp ADD COLUMN CCP_attempts varchar(2048);");
     }
 
     CheckDatabaseForUpdates();
