@@ -9,6 +9,7 @@ public void db_setupDatabase()
 	===================================*/
 	char szError[255];
 	g_hDb = SQL_Connect("surftimer", false, szError, 255);
+	g_hDb_Updates = SQL_Connect("surftimer", false, szError, 255);
 
 	if (g_hDb == null)
 	{
@@ -21,8 +22,9 @@ public void db_setupDatabase()
 
 	if (strcmp(szIdent, "mysql", false) == 0)
 	{
-		// https://github.com/nikooo777/ckSurf/pull/58
+		SQL_LockDatabase(g_hDb);
 		SQL_FastQuery(g_hDb, "SET sql_mode=(SELECT REPLACE(@@sql_mode,'ONLY_FULL_GROUP_BY',''));");
+		SQL_UnlockDatabase(g_hDb);
 		g_DbType = MYSQL;
 	}
 	else if (strcmp(szIdent, "sqlite", false) == 0)
@@ -38,18 +40,17 @@ public void db_setupDatabase()
 
 	// If updating from a previous version
 	SQL_LockDatabase(g_hDb);
-	//DEFAULT CHARTYPE USED IN SOURCEMOD IS 'utf8mb4_general_ci'
-	SQL_FastQuery(g_hDb, "SET NAMES 'utf8mb4'");
+	SQL_FastQuery(g_hDb, "SET NAMES 'utf8mb4'"); //DEFAULT CHARTYPE USED IN SOURCEMOD IS 'utf8mb4_general_ci'
 
 	// Check if tables need to be Created or database needs to be upgraded
 	g_bRenaming = false;
 	g_bInTransactionChain = false;
 
 	CheckDatabaseForUpdates();
+	CleanUpTablesRetvalsSteamId();
 
 	SQL_UnlockDatabase(g_hDb);
-
-	CleanUpTablesRetvalsSteamId();
+	SQL_UnlockDatabase(g_hDb_Updates);
 
 	for (int i = 0; i < sizeof(g_failedTransactions); i++)
 		g_failedTransactions[i] = 0;
