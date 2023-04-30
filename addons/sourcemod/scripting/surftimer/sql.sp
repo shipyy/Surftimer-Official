@@ -249,7 +249,7 @@ public int callback_Confirm(Menu menu, MenuAction action, int client, int key)
 					db_UpdateTrack(g_szMapName, szName, 999999, g_iRankToDelete[client] + 1, 0, true);
 
 					//LOGTOFILE
-					LogToFileEx(g_szLogFile, "[SurfTimer] Deleted Map Time | Mapname: %d | Rank: %d | SteamID: %s | PlayerName: %s ", g_szMapName, g_iRankToDelete[client], steamID, szName);
+					LogToFileEx(g_szLogFile, "[SurfTimer] Deleted Map Time | Mapname: %s | Rank: %d | SteamID: %s | PlayerName: %s ", g_szMapName, g_iRankToDelete[client], steamID, szName);
 				}
 				case 1:
 				{
@@ -258,7 +258,7 @@ public int callback_Confirm(Menu menu, MenuAction action, int client, int key)
 					FormatEx(szQuery, 512, sql_MainDeleteQeury, "ck_wrcps", g_EditingMap[client], g_SelectedStyle[client], steamID, stageQuery);
 
 					//LOGTOFILE
-					LogToFileEx(g_szLogFile, "[SurfTimer] Deleted Stage Time | Mapname: %d | Stage: %d | Rank: %d | SteamID: %s ", g_szMapName, g_SelectedType[client], g_iRankToDelete[client], steamID);
+					LogToFileEx(g_szLogFile, "[SurfTimer] Deleted Stage Time | Mapname: %s | Stage: %d | Rank: %d | SteamID: %s ", g_szMapName, g_SelectedType[client], g_iRankToDelete[client], steamID);
 				}
 				case 2:
 				{
@@ -281,7 +281,7 @@ public int callback_Confirm(Menu menu, MenuAction action, int client, int key)
 					db_UpdateTrack(g_szMapName, szName, 999999, g_iRankToDelete[client], g_SelectedType[client], true);
 
 					//LOGTOFILE
-					LogToFileEx(g_szLogFile, "[SurfTimer] Deleted Bonus Time | Mapname: %d | Bonus: %d | Rank: %d | SteamID: %s | PlayerName: %s ", g_szMapName, g_SelectedType[client], g_iRankToDelete[client], steamID, szName);
+					LogToFileEx(g_szLogFile, "[SurfTimer] Deleted Bonus Time | Mapname: %s | Bonus: %d | Rank: %d | SteamID: %s | PlayerName: %s ", g_szMapName, g_SelectedType[client], g_iRankToDelete[client], steamID, szName);
 				}
 			}
 			SQL_TQuery(g_hDb, SQL_CheckCallback, szQuery, .prio=DBPrio_Low);
