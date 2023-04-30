@@ -2444,7 +2444,8 @@ public void db_selectBonusesInMapCallback(Handle owner, Handle hndl, const char[
 		if (SQL_GetRowCount(hndl) == 1)
 		{
 			SQL_FetchString(hndl, 0, mapname, 128);
-			db_selectBonusTopSurfers(client, mapname, SQL_FetchInt(hndl, 1), 0);
+			BonusStyleSelectMenu(client, mapname,  SQL_FetchInt(hndl, 1), 0);
+			//db_selectBonusTopSurfers(client, mapname, SQL_FetchInt(hndl, 1), 0);
 			return;
 		}
 
@@ -2499,7 +2500,8 @@ public int MenuHandler_SelectBonusinMap(Handle sMenu, MenuAction action, int cli
 			GetMenuItem(sMenu, item, aID, sizeof(aID));
 			ExplodeString(aID, "-", splits, sizeof(splits), sizeof(splits[]));
 
-			db_selectBonusTopSurfers(client, splits[0], StringToInt(splits[1]), 0);
+			BonusStyleSelectMenu(client, splits[0], StringToInt(splits[1]), 0);
+			//db_selectBonusTopSurfers(client, splits[0], StringToInt(splits[1]), 0);
 		}
 		case MenuAction_End:
 		{
@@ -8211,6 +8213,15 @@ public void SQL_UpdateWrcpRecordCallback2(Handle owner, Handle hndl, const char[
 	int client = ReadPackCell(data);
 	CloseHandle(data);
 
+	// INCREMENT STAGE RECORDS COUNT
+	if (bInsert)
+	{
+		if (style == 0)
+			g_TotalStageRecords[stage]++;
+		else
+			g_TotalStageStyleRecords[style][stage]++;
+	}
+
 	if (stage == 0)
 		return;
 
@@ -8290,7 +8301,7 @@ public void SQL_UpdateWrcpRecordCallback2(Handle owner, Handle hndl, const char[
 		if (g_TotalStageRecords[stage] > 0)
 		{ // If the server already has a record
 
-			if (g_fFinalWrcpTime[client] < g_fStageRecord[stage] && g_fFinalWrcpTime[client] > 0.0)
+			if ( ( g_fFinalWrcpTime[client] < g_fStageRecord[stage] && g_fFinalWrcpTime[client] > 0.0 ) || g_TotalStageRecords[stage] == 1)
 			{
 				// New fastest time in map
 				g_bStageSRVRecord[client][stage] = true;
@@ -8309,9 +8320,6 @@ public void SQL_UpdateWrcpRecordCallback2(Handle owner, Handle hndl, const char[
 			}
 			else
 			{
-				g_bStageSRVRecord[client][stage] = true;
-				if (g_fWrcpRecord[client][stage][0] != g_fStageRecord[stage] && ( strcmp(g_szStageRecordPlayer[stage], szName, false) != 0 ) )
-					newRecordHolder = true;
 				CPrintToChat(client, "%t", "SQL16", g_szChatPrefix, stage, g_szFinalWrcpTime[client], szDiff, sz_srDiff, g_StageRank[client][stage], g_TotalStageRecords[stage]);
 
 				char szSpecMessage[512];
@@ -8346,7 +8354,7 @@ public void SQL_UpdateWrcpRecordCallback2(Handle owner, Handle hndl, const char[
 		if (g_TotalStageStyleRecords[style][stage] > 0)
 		{
 			// If the server already has a record
-			if (g_fFinalWrcpTime[client] < g_fStyleStageRecord[style][stage] && g_fFinalWrcpTime[client] > 0.0)
+			if ( ( g_fFinalWrcpTime[client] < g_fStyleStageRecord[style][stage] && g_fFinalWrcpTime[client] > 0.0 ) || g_TotalStageStyleRecords[style][stage] == 1 )
 			{
 				// New fastest time in map
 				g_bStageSRVRecord[client][stage] = true;
@@ -8365,9 +8373,6 @@ public void SQL_UpdateWrcpRecordCallback2(Handle owner, Handle hndl, const char[
 			}
 			else
 			{
-				g_bStageSRVRecord[client][stage] = true;
-				if (g_fWrcpRecord[client][stage][style] != g_fStyleStageRecord[style][stage] && ( strcmp(g_szStageRecordPlayer[stage], szName, false) != 0 ) )
-					newRecordHolder = true;
 				CPrintToChat(client, "%t", "SQL20", g_szChatPrefix, stage, g_szStyleRecordPrint[style], g_szFinalWrcpTime[client], sz_srDiff, g_StyleStageRank[style][client][stage], g_TotalStageStyleRecords[style][stage]);
 
 				char szSpecMessage[512];
@@ -8394,15 +8399,6 @@ public void SQL_UpdateWrcpRecordCallback2(Handle owner, Handle hndl, const char[
 			Format(szSpecMessage, sizeof(szSpecMessage), "%t", "SQL21", g_szChatPrefix, stage, g_szStyleRecordPrint[style], g_szFinalWrcpTime[client], sz_srDiff, g_StyleStageRank[style][client][stage], g_TotalStageStyleRecords[style][stage]);
 			CheckpointToSpec(client, szSpecMessage);
 		}
-	}
-
-	// INCREMENT STAGE RECORDS COUNT
-	if (bInsert)
-	{
-		if (style == 0)
-			g_TotalStageRecords[stage]++;
-		else
-			g_TotalStageStyleRecords[style][stage]++;
 	}
 
 	// Check if new record and if someone else had the old record, if so give them points

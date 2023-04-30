@@ -1377,7 +1377,8 @@ public int MenuHandler_SelectBonusTop(Menu sMenu, MenuAction action, int client,
 			char aID[3];
 			GetMenuItem(sMenu, item, aID, sizeof(aID));
 			int zoneGrp = StringToInt(aID);
-			db_selectBonusTopSurfers(client, g_szMapName, zoneGrp, 0);
+			BonusStyleSelectMenu(client, g_szMapName, zoneGrp, 0);
+			//db_selectBonusTopSurfers(client, g_szMapName, zoneGrp, 0);
 		}
 		case MenuAction_End:
 		{
@@ -2194,8 +2195,46 @@ public Action Client_BonusTop(int client, int args)
 			return Plugin_Handled;
 		}
 	}
-	db_selectBonusTopSurfers(client, szArg, zGrp, 0);
+	//db_selectBonusTopSurfers(client, szArg, zGrp, 0);
+	BonusStyleSelectMenu(client, szArg, zGrp, 0);
 	return Plugin_Handled;
+}
+
+public void BonusStyleSelectMenu(int client, char mapname[128], int zonegroup, int style)
+{
+	Menu menu = CreateMenu(BonusStyleSelectMenuHandler);
+	SetMenuTitle(menu, "Bonus: Select a style");
+	char szBuffer[128];
+	Format(szBuffer, sizeof szBuffer, "%d-%s", zonegroup, mapname);
+	AddMenuItem(menu, szBuffer, "Normal");
+	AddMenuItem(menu, szBuffer, "Sideways");
+	AddMenuItem(menu, szBuffer, "Half-Sideways");
+	AddMenuItem(menu, szBuffer, "Backwards");
+	AddMenuItem(menu, szBuffer, "Low-Gravity");
+	AddMenuItem(menu, szBuffer, "Slow Motion");
+	AddMenuItem(menu, szBuffer, "Fast Forwards");
+	AddMenuItem(menu, szBuffer, "Freestyle");
+	SetMenuExitButton(menu, true);
+	DisplayMenu(menu, client, MENU_TIME_FOREVER);
+}
+
+public int BonusStyleSelectMenuHandler(Handle menu, MenuAction action, int param1, int param2)
+{
+	if (action == MenuAction_Select)
+	{
+		g_ProfileStyleSelect[param1] = param2;
+
+		char szBuffer[128];
+		char szBuffer_split[2][128];
+		GetMenuItem(menu, param2, szBuffer, sizeof(szBuffer));
+		ExplodeString(szBuffer, "-", szBuffer_split, 4, 128);
+
+		db_selectBonusTopSurfers(param1, szBuffer_split[1], StringToInt(szBuffer_split[0]), param2);
+	}
+	else if (action == MenuAction_End)
+		delete menu;
+
+	return 0;
 }
 
 public Action Client_SWBonusTop(int client, int args)
