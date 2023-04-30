@@ -122,9 +122,9 @@ void CreateCommands()
 	RegConsoleCmd("sm_noclipspeed", Command_NoclipSpeed, "[surftimer] [zoner] Changes the value of sv_noclipspeed");
 
 	// VIP Commands
-	RegAdminCmd("sm_fixbot", Admin_FixBot, g_VipFlag, "[surftimer] Toggles replay bots off and on");
-	RegAdminCmd("sm_fixbots", Admin_FixBot, g_VipFlag, "[surftimer] Toggles replay bots off and on");
-	RegAdminCmd("sm_fb", Admin_FixBot, g_VipFlag, "[surftimer] Toggles replay bots off and on");
+	RegAdminCmd("sm_fixbot", Admin_FixBot, ADMFLAG_CUSTOM6, "[surftimer] Toggles replay bots off and on");
+	RegAdminCmd("sm_fixbots", Admin_FixBot, ADMFLAG_CUSTOM6, "[surftimer] Toggles replay bots off and on");
+	RegAdminCmd("sm_fb", Admin_FixBot, ADMFLAG_CUSTOM6, "[surftimer] Toggles replay bots off and on");
 
 	RegConsoleCmd("sm_vip", Command_Vip, "[surftimer] [vip] Displays the VIP menu to client");
 	RegConsoleCmd("sm_mytitle", Command_PlayerTitle, "[surftimer] [vip] Displays a menu to the player showing their custom title and allowing them to change their colours");
@@ -213,7 +213,7 @@ void CreateCommands()
 	RegConsoleCmd("sm_ccp", Command_CCP, "[surftimer] Information about checkpoints info on a map");
 
 	// reload map
-	RegAdminCmd("sm_rm", Command_ReloadMap, g_ZonerFlag, "[surftimer] Reloads the current map");
+	RegAdminCmd("sm_rm", Command_ReloadMap, ADMFLAG_CUSTOM6, "[surftimer] Reloads the current map");
 
 	// Play record
 	RegConsoleCmd("sm_replay", Command_PlayRecord, "[surftimer] Set the replay bot to replay a run");
@@ -221,8 +221,8 @@ void CreateCommands()
 	RegConsoleCmd("sm_ctrl", Client_ReplayControlMenu, "[surftimer] Controls a replay bot");
 
 	// Delete records
-	RegAdminCmd("sm_deleterecords", Command_DeleteRecords, g_ZonerFlag, "[surftimer] [zoner] Delete records");
-	RegAdminCmd("sm_dr", Command_DeleteRecords, g_ZonerFlag, "[surftimer] [zoner] Delete records");
+	RegAdminCmd("sm_deleterecords", Command_DeleteRecords, ADMFLAG_CUSTOM6, "[surftimer] [zoner] Delete records");
+	RegAdminCmd("sm_dr", Command_DeleteRecords, ADMFLAG_CUSTOM6, "[surftimer] [zoner] Delete records");
 	RegAdminCmd("sm_wipeplayer", Admin_ResetRecords, ADMFLAG_ROOT, "[surfTimer] Removes all database entries of the specific steamid - requires z flag");
 
 	// Setting Commands
