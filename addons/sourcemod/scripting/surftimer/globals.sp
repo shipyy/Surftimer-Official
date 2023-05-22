@@ -39,13 +39,11 @@
 #define DEFAULT_TITLES_PATH "configs/surftimer/default_titles.txt"
 #define HINTS_PATH "configs/surftimer/hints.txt"
 
-// Paths for sounds
-#define WR2_FULL_SOUND_PATH "sound/surftimer/wr.mp3"
-#define WR2_RELATIVE_SOUND_PATH "*surftimer/wr.mp3"
-#define TOP10_FULL_SOUND_PATH "sound/surftimer/top10.mp3"
-#define TOP10_RELATIVE_SOUND_PATH "*surftimer/top10.mp3"
-#define PR_FULL_SOUND_PATH "sound/surftimer/pr.mp3"
-#define PR_RELATIVE_SOUND_PATH "*surftimer/pr.mp3"
+//SOUNDS
+#define SOUNDS_COUNT 15
+#define SOUND_EVENTS 10
+#define SOUNDS_PATH "sounds/surftimer"
+#define SOUNDS_CONFIG_PATH "configs/surftimer/sounds.txt"
 
 #define MAX_STYLES 8
 
@@ -462,9 +460,6 @@ bool g_bCheckCustomTitle[MAXPLAYERS + 1];
 bool g_bEnableJoinMsgs;
 char g_szCustomJoinMsg[MAXPLAYERS + 1][256];
 
-// 1 = PB Sound, 2 = Top 10 Sound, 3 = WR sound
-// char g_szCustomSounds[MAXPLAYERS + 1][3][256];
-
 /*----------  Custom Titles  ----------*/
 char g_szCustomTitleColoured[MAXPLAYERS + 1][1024];
 char g_szCustomTitle[MAXPLAYERS + 1][1024];
@@ -474,11 +469,9 @@ bool g_bdbHasCustomTitle[MAXPLAYERS + 1] = {false, ...};
 // 0 = name, 1 = text;
 int g_iCustomColours[MAXPLAYERS + 1][2];
 
-// int g_idbCustomTextColour[MAXPLAYERS + 1] = {0, ...};
 bool g_bHasCustomTextColour[MAXPLAYERS + 1] = {false, ...};
 bool g_bCustomTitleAccess[MAXPLAYERS + 1] = {false, ...};
 bool g_bUpdatingColours[MAXPLAYERS + 1];
-// char g_szsText[MAXPLAYERS + 1];
 
 // to be used with sm_p, stage sr
 int g_pr_BonusCount;
@@ -514,7 +507,6 @@ int g_iWrcpMenuStyleSelect[MAXPLAYERS + 1];
 char g_szWrcpMapSelect[MAXPLAYERS + 1][128];
 bool g_bStageSRVRecord[MAXPLAYERS + 1][CPLIMIT];
 char g_szStageRecordPlayer[CPLIMIT][MAX_NAME_LENGTH];
-// bool g_bFirstStageRecord[CPLIMIT];
 
 // PracMode SRCP
 float g_fStartPracSrcpTime[MAXPLAYERS + 1];
@@ -598,7 +590,38 @@ int g_iSettingToLoad[MAXPLAYERS + 1];
 int g_iPreviousSpeed[MAXPLAYERS + 1];
 
 /*----------  Sounds  ----------*/
+ArrayList g_Sounds;
+
+// SOUND_COUNT - 2 FOR 2 DEFAULT SOUNDS
+int g_iClientSounds[MAXPLAYERS + 1][SOUND_EVENTS];
+// 0 - map wr
+// 1 - map pb
+// 2 - map top10
+// 3 - bonus wr
+// 4 - bonus pb
+// 5 - bonus top10
+// 6 - stage wr
+// 7 - timer start
+// 8 - missed pb
+
+char g_szCustomSoundsNames[][] = {
+	"Map WR",
+	"Map PB",
+	"Map TOP10",
+	"Bonus WR",
+	"Bonus PB",
+	"Bonus TOP10",
+	"WRCP",
+	"Timer Start",
+	"Missed PB",
+	"Timer Error"
+};
+
 bool g_bTop10Time[MAXPLAYERS + 1] = {false, ...};
+bool g_bBonusTop10Time[MAXPLAYERS + 1] = {false, ...};
+
+// Enable quake sounds?
+bool g_bEnableQuakeSounds[MAXPLAYERS + 1];
 
 // Rate Limiting Commands
 float g_fCommandLastUsed[MAXPLAYERS + 1];
@@ -658,9 +681,6 @@ Handle g_hAutoBhop = INVALID_HANDLE;
 Handle g_hEnableBhop = INVALID_HANDLE;
 
 /*----------  Flag Varibles  ----------*/
-// ConVar g_hCustomTitlesFlag = null;
-// int g_CustomTitlesFlag;
-// bool g_bCustomTitlesFlag;
 
 // UNIX Times
 int g_iPlayTimeAlive[MAXPLAYERS + 1];
@@ -802,9 +822,6 @@ bool g_bCheckpointsEnabled[MAXPLAYERS + 1];
 
 // Did client enable checkpoints? Then start using them again on the next run
 bool g_bActivateCheckpointsOnStart[MAXPLAYERS + 1];
-
-// Enable quake sounds?
-bool g_bEnableQuakeSounds[MAXPLAYERS + 1];
 
 // Hide other players?
 bool g_bHide[MAXPLAYERS + 1];
@@ -1677,5 +1694,7 @@ char g_sSteamIdTablesCleanup[][] = {
 	"ck_prinfo", 
 	"ck_vipadmins"
 };
+
+
 
 /*======  End of Declarations  ======*/

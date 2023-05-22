@@ -1690,7 +1690,6 @@ public Action Hook_FootstepCheck(int clients[64], int &numClients, char sample[P
 			}
 			if (g_bEnableQuakeSounds[entity])
 				EmitSound(clients, numClients, sample, entity);
-			// return Plugin_Changed;
 
 			return Plugin_Stop;
 		}

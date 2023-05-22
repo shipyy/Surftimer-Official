@@ -11,7 +11,7 @@ public void CL_OnStartTimerPress(int client)
 				if (GetGameTime() - g_fErrorMessage[client] > 1.0)
 				{
 					CPrintToChat(client, "%t", "BPress1", g_szChatPrefix);
-					EmitSoundToClientNoPreCache(client, "play buttons\\button10.wav", false);
+					PlaySound(client, 9);
 					g_fErrorMessage[client] = GetGameTime();
 				}
 				return;
@@ -21,7 +21,7 @@ public void CL_OnStartTimerPress(int client)
 				if (GetGameTime() - g_fErrorMessage[client] > 1.0)
 				{
 					CPrintToChat(client, "%t", "BPress2", g_szChatPrefix);
-					EmitSoundToClientNoPreCache(client, "play buttons\\button10.wav", false);
+					PlaySound(client, 9);
 					g_fErrorMessage[client] = GetGameTime();
 				}
 				return;
@@ -31,7 +31,7 @@ public void CL_OnStartTimerPress(int client)
 				if (GetGameTime() - g_fErrorMessage[client] > 1.0)
 				{
 					CPrintToChat(client, "%t", "BPress3", g_szChatPrefix);
-					EmitSoundToClientNoPreCache(client, "play buttons\\button10.wav", false);
+					PlaySound(client, 9);
 					g_fErrorMessage[client] = GetGameTime();
 				}
 				return;
@@ -64,6 +64,7 @@ public void CL_OnStartTimerPress(int client)
 		g_bMissedBonusBest[client] = true;
 		g_bTimerRunning[client] = true;
 		g_bTop10Time[client] = false;
+		g_bBonusTop10Time[client] = false;
 
 		// Strafe Sync
 		g_iGoodGains[client] = 0;
@@ -218,7 +219,7 @@ public void CL_OnStartTimerPress(int client)
 	}
 
 	// Play Start Sound
-	PlayButtonSound(client);
+	PlaySound(client, 7);
 
 	if (g_iRecordedTicks[client] == 0)
 		g_iStartPressTick[client] = g_iRecordedTicks[client];
@@ -257,7 +258,7 @@ public void CL_OnEndTimerPress(int client)
 			}
 		}
 
-		PlayButtonSound(client);
+		PlaySound(client, 7);
 
 		g_bTimerRunning[client] = false;
 		return;
@@ -266,11 +267,11 @@ public void CL_OnEndTimerPress(int client)
 	// If timer is not on, play error sound and return
 	if (!g_bTimerRunning[client])
 	{
-		EmitSoundToClientNoPreCache(client, "play buttons\\button10.wav", false);
+		PlaySound(client, 9);
 		return;
 	}
-	else
-		PlayButtonSound(client);
+	// else
+	// 	PlaySound(client, 7);
 
 	// Get client name
 	char szName[128];
@@ -1033,8 +1034,6 @@ public void CL_OnEndWrcpTimerPress(int client, float time2)
 
 	if (g_bWrcpTimeractivated[client] && g_iCurrentStyle[client] == 0)
 	{
-		// int stage = g_CurrentStage[client];
-
 		g_fFinalWrcpTime[client] = g_fCurrentWrcpRunTime[client];
 
 		if (g_fFinalWrcpTime[client] <= 0.0)

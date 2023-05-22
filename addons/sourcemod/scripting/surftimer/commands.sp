@@ -4,6 +4,10 @@
 */
 void CreateCommands()
 {
+	//TEST
+	RegConsoleCmd("sm_ps", Client_TestSound, "[surftimer] sound test");
+
+
 	// Client Commands
 	RegConsoleCmd("sm_usp", Client_Usp, "[surftimer] spawns a usp silencer");
 	RegConsoleCmd("sm_glock", Client_Glock, "[surftimer] spawns a glock");
@@ -12,7 +16,7 @@ void CreateCommands()
 	RegConsoleCmd("sm_hideweapon", Client_HideWeapon, "[surftimer] hides your weapon model");
 	RegConsoleCmd("sm_disarm", Client_HideWeapon, "[surftimer] hides your weapon model");
 	RegAdminCmd("sm_goto", Client_GoTo, ADMFLAG_CUSTOM2, "[surftimer] teleports you to a selected player");
-	RegConsoleCmd("sm_sound", Client_QuakeSounds, "[surftimer] on/off quake sounds");
+	RegConsoleCmd("sm_sound", Client_Sounds, "[surftimer] on/off quake sounds");
 	RegConsoleCmd("sm_bhop", Client_AutoBhop, "[surftimer] on/off autobhop");
 	RegConsoleCmd("sm_flashlight", Client_Flashlight, "[surftimer] on/off flashlight");
 	RegConsoleCmd("sm_maptop", Client_MapTop, "[surftimer] displays local map top for a given map");
@@ -1621,7 +1625,7 @@ public Action Command_Restart(int client, int args)
 			g_fClientRestarting[client] = GetGameTime();
 			g_bClientRestarting[client] = true;
 			CPrintToChat(client, "%t", "Commands34", g_szChatPrefix);
-			EmitSoundToClientNoPreCache(client, "play ambient/misc/clank4", false);
+			//EmitSoundToClientNoPreCache(client, "play ambient/misc/clank4", false);
 			return Plugin_Handled;
 		}
 	}
@@ -3337,28 +3341,10 @@ public Action Client_GoTo(int client, int args)
 	return Plugin_Handled;
 }
 
-public Action Client_QuakeSounds(int client, int args)
-{
-	QuakeSounds(client);
-	if (g_bEnableQuakeSounds[client])
-		CPrintToChat(client, "%t", "QuakeSounds1", g_szChatPrefix);
-	else
-		CPrintToChat(client, "%t", "QuakeSounds2", g_szChatPrefix);
-	return Plugin_Handled;
-}
-
-void QuakeSounds(int client, bool menu = false)
-{
-	g_bEnableQuakeSounds[client] = !g_bEnableQuakeSounds[client];
-	if (menu)
-		MiscellaneousOptions(client);
-}
-
 public Action Client_Stop(int client, int args)
 {
 	if (g_bTimerRunning[client])
 	{
-		// PlayerPanel(client);
 		g_bTimerRunning[client] = false;
 		g_fStartTime[client] = -1.0;
 		g_fCurrentRunTime[client] = -1.0;
@@ -3541,7 +3527,8 @@ public void OptionMenu(int client)
 
 	AddMenuItem(optionmenu, "CentreHud", "Centre Hud Options");
 	AddMenuItem(optionmenu, "SideHud", "Side Hud Options");
-	AddMenuItem(optionmenu, "CSDOptions", "Center Speed Options\n \n");
+	AddMenuItem(optionmenu, "CSDOptions", "Center Speed Options");
+	AddMenuItem(optionmenu, "SoundOptions", "Sound Options\n \n");
 	AddMenuItem(optionmenu, "Miscellaneous", "Miscellaneous Options");
 
 	SetMenuOptionFlags(optionmenu, MENUFLAG_BUTTON_EXIT);
@@ -3562,7 +3549,8 @@ public int OptionMenuHandler(Menu menu, MenuAction action, int param1, int param
 			case 1: CentreHudOptions(param1, 0);
 			case 2: SideHudOptions(param1, 0);
 			case 3: CSDOptions(param1);
-			case 4: MiscellaneousOptions(param1);
+			case 4: SoundOptions(param1);
+			case 5: MiscellaneousOptions(param1);
 		}
 	}
 	else if (action == MenuAction_End)
@@ -3906,12 +3894,6 @@ public void MiscellaneousOptions(int client)
 	else
 		AddMenuItem(menu, "", "[OFF] Hide Players");
 
-	// Timer Sounds
-	if (g_bEnableQuakeSounds[client])
-		AddMenuItem(menu, "", "[ON] Timer Sounds");
-	else
-		AddMenuItem(menu, "", "[OFF] Timer Sounds");
-
 	// Tele Side
 	if (g_iTeleSide[client] == 0)
 		AddMenuItem(menu, "", "[LEFT] Start Side");
@@ -3990,16 +3972,15 @@ public int MiscellaneousOptionsHandler(Menu menu, MenuAction action, int param1,
 		switch (param2)
 		{
 			case 0: HideMethod(param1, true);
-			case 1: QuakeSounds(param1, true);
-			case 2: TeleSide(param1, true);
-			case 3: HideChat(param1, true);
-			case 4: HideViewModel(param1, true);
-			case 5: PrespeedText(param1, true);
-			case 6: PreSpeedMode(param1, true);
-			case 7: HintsText(param1, true);
-			case 8: TimeleftText(param1, true);
-			case 9: CheckpointComparisonType(param1, true);
-			case 10: DefaultStyle_Changer(param1, true);
+			case 1: TeleSide(param1, true);
+			case 2: HideChat(param1, true);
+			case 3: HideViewModel(param1, true);
+			case 4: PrespeedText(param1, true);
+			case 5: PreSpeedMode(param1, true);
+			case 6: HintsText(param1, true);
+			case 7: TimeleftText(param1, true);
+			case 8: CheckpointComparisonType(param1, true);
+			case 9: DefaultStyle_Changer(param1, true);
 		}
 	}
 	else if (action == MenuAction_Cancel)
@@ -4910,7 +4891,6 @@ public Action Command_SelectMapTime(int client, int args)
 						StringToUpper(arg1);
 						if ((StrContains(szName, arg1) != -1))
 						{
-							// bPlayerFound = true;
 							GetClientAuthId(i, AuthId_Steam2, szSteamId2, MAX_NAME_LENGTH, true);
 						}
 					}
@@ -4959,7 +4939,6 @@ public Action Command_SelectBonusTime(int client, int args)
 			GetCmdArg(1, arg1, sizeof(arg1));
 			GetCmdArg(2, arg2, sizeof(arg2));
 
-			// bool bPlayerFound = false;
 			char szSteamId2[32];
 			char szName[MAX_NAME_LENGTH];
 
@@ -4985,7 +4964,6 @@ public Action Command_SelectBonusTime(int client, int args)
 								StringToUpper(arg2);
 								if ((StrContains(szName, arg2) != -1))
 								{
-									// bPlayerFound = true;
 									GetClientAuthId(i, AuthId_Steam2, szSteamId2, MAX_NAME_LENGTH, true);
 									break;
 								}
@@ -5019,7 +4997,6 @@ public Action Command_SelectBonusTime(int client, int args)
 						StringToUpper(arg1);
 						if ((StrContains(szName, arg1) != -1))
 						{
-							// bPlayerFound = true;
 							GetClientAuthId(i, AuthId_Steam2, szSteamId2, MAX_NAME_LENGTH, true);
 							break;
 						}
@@ -5705,7 +5682,6 @@ public Action Command_CPR(int client, int args)
 			CReplyToCommand(client, "%t", "Commands84", g_szChatPrefix);
 			return Plugin_Handled;
 		}
-		//db_selectCPR(client, 1, g_szMapName, "");
 		db_CPR(client, g_szMapName, "", "", -1, -1);
 	}
 	else
@@ -5713,13 +5689,7 @@ public Action Command_CPR(int client, int args)
 		char arg_1[128];
 		GetCmdArg(1, arg_1, sizeof arg_1);
 
-		// HAS MAPNAME
-		// int s_MapNameSelected_Index;
-		// s_MapNameSelected_Index = FindStringInArray(g_MapList, arg);
-		// PrintToConsole(client, "INDEX %d", s_MapNameSelected_Index);
-
 		g_bCPR_MapFound[client] = false;
-		// db_CheckMapNameInServer(client, arg_1);
 
 		char szMapName[128];
 
@@ -5938,46 +5908,6 @@ public Action Command_CPR(int client, int args)
 				}
 			}
 		}
-
-
-		// char arg[128];
-		// GetCmdArg(1, arg, sizeof(arg));
-		// if (StrContains(arg, "surf_") != -1)
-		// {
-		// 	db_selectCPR(client, 1, arg, "");
-		// }
-		// else if (StrContains(arg, "@") != -1)
-		// {
-		// 	ReplaceString(arg, 128, "@", "");
-		// 	char arg2[128];
-		// 	int rank = StringToInt(arg);
-		// 	GetCmdArg(2, arg2, sizeof(arg2));
-		// 	if (!arg2[0])
-		// 		db_selectCPR(client, rank, g_szMapName, "");
-		// 	else
-		// 		db_selectCPR(client, rank, arg2, "");
-		// }
-		// else
-		// {
-		// 	char szPlayerName[MAX_NAME_LENGTH];
-		// 	bool found = false;
-		// 	for (int i = 1; i <= MaxClients; i++)
-		// 	{
-		// 		if (IsValidClient(i) && i != client)
-		// 		{
-		// 			GetClientName(i, szPlayerName, MAX_NAME_LENGTH);
-		// 			StringToUpper(szPlayerName);
-		// 			if ((StrContains(szPlayerName, arg) != -1))
-		// 			{
-		// 				found = true;
-		// 				db_selectCPR(client, 0, g_szMapName, g_szSteamID[i]);
-		// 				break;
-		// 			}
-		// 		}
-		// 	}
-		// 	if (!found)
-		// 		CReplyToCommand(client, "%t", "Commands85", g_szChatPrefix);
-		// }
 	}
 
 	return Plugin_Handled;
@@ -6473,8 +6403,6 @@ public void PlayRecordCPMenu(int client, char szBuffer[128])
 		int style = StringToInt(szBuffer2[1]);
 		g_iSelectedReplayStyle = style;
 
-		//PrintToChatAll("style %d", style);
-
 		for (int i = 0; i <= cp_count; i++)
 			if (g_bMapReplay[style]){
 				if(i == 0){
@@ -6547,7 +6475,6 @@ public int PlayRecordCPMenuHandler(Handle menu, MenuAction action, int param1, i
 				g_iManualReplayCount = 0;
 				g_bManualReplayPlayback = true;
 				g_iSelectedReplayStyle = style;
-				//PrintToChatAll("style value %d", style);
 				PlayRecord(bot, 0, style, selected_CP);
 			}
 			else
@@ -6971,4 +6898,24 @@ public int Restore_Menu_Callback(Menu menu, MenuAction action, int client, int p
 		}
 	}
 	return client;
+}
+
+public Action Client_TestSound(int client, int args)
+{
+	if (!IsValidClient(client))
+		return Plugin_Handled;
+
+	for(int i = 0; i < SOUND_EVENTS; i++)
+		g_iClientSounds[client][i] = i;
+
+	char index[32];
+	if (args > 0) {
+		GetCmdArg(1, index, sizeof index);
+		PlaySound(client, StringToInt(index));
+	}
+	else {
+		PlaySound(client, 0);
+	}
+
+	return Plugin_Handled;
 }

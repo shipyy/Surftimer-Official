@@ -62,18 +62,13 @@ ConVar g_hPointSystem = null;									// Use the point system?
 ConVar g_hCleanWeapons = null;									// Clean weapons from ground?
 int g_ownerOffset;												// Used to clear weapons from ground
 ConVar g_hCvarGodMode = null;									// Enable god mode?
-// ConVar g_hAutoTimer = null;
 ConVar g_hMapEnd = null;										// Allow map ending?
 ConVar g_hAutohealing_Hp = null;								// Automatically heal lost HP?
-// Bot Colors & effects:
 ConVar g_hReplayBotColor = null;								// Replay bot color
 int g_ReplayBotColor[3];
 ConVar g_hBonusBotColor = null;									// Bonus bot color
 int g_BonusBotColor[3];
 ConVar g_hDoubleRestartCommand;									// Double !r restart
-ConVar g_hSoundEnabled = null;									// Enable timer start sound
-ConVar g_hSoundPath = null;										// Define start sound
-// char sSoundPath[64];
 ConVar g_hSpawnToStartZone = null;								// Teleport on spawn to start zone
 ConVar g_hAnnounceRank = null;									// Min rank to announce in chat
 ConVar g_hForceCT = null;										// Force players CT
@@ -93,18 +88,6 @@ ConVar g_hSidewaysBlockKeys = null;
 ConVar g_hEnforceDefaultTitles = null;
 ConVar g_hWrcpPoints = null;
 ConVar g_hPlayReplayVipOnly = null;
-ConVar g_hSoundPathWR = null;
-char g_szSoundPathWR[PLATFORM_MAX_PATH];
-char g_szRelativeSoundPathWR[PLATFORM_MAX_PATH];
-ConVar g_hSoundPathTop = null;
-char g_szSoundPathTop[PLATFORM_MAX_PATH];
-char g_szRelativeSoundPathTop[PLATFORM_MAX_PATH];
-ConVar g_hSoundPathPB = null;
-char g_szSoundPathPB[PLATFORM_MAX_PATH];
-char g_szRelativeSoundPathPB[PLATFORM_MAX_PATH];
-ConVar g_hSoundPathWRCP = null;
-char g_szSoundPathWRCP[PLATFORM_MAX_PATH];
-char g_szRelativeSoundPathWRCP[PLATFORM_MAX_PATH];
 ConVar g_hMustPassCheckpoints = null;
 ConVar g_hSlayOnRoundEnd = null;
 ConVar g_hLimitSpeedType = null;
@@ -146,8 +129,6 @@ void CreateConVars()
 	g_hZonesToDisplay = AutoExecConfig_CreateConVar("ck_zone_drawzones", "1", "Which zones are visible for players. 1 = draw start & end zones, 2 = draw start, end, stage and bonus zones, 3 = draw all zones.");
 	g_hZonesBeamWidth = AutoExecConfig_CreateConVar("ck_zone_zonewidth", "1.0", "Width of the zones visible to players", _, true, 0.0, true, 1.0);
 	g_hSpawnToStartZone = AutoExecConfig_CreateConVar("ck_spawn_to_start_zone", "1.0", "1 = Automatically spawn to the start zone when the client joins the team.", _, true, 0.0, true, 1.0);
-	g_hSoundEnabled = AutoExecConfig_CreateConVar("ck_startzone_sound_enabled", "1.0", "Enable the sound after leaving the start zone.", _, true, 0.0, true, 1.0);
-	g_hSoundPath = AutoExecConfig_CreateConVar("ck_startzone_sound_path", "buttons\\button3.wav", "The path to the sound file that plays after the client leaves the start zone..");
 	g_hAnnounceRank = AutoExecConfig_CreateConVar("ck_min_rank_announce", "0", "Higher ranks than this won't be announced to the everyone on the server. 0 = Announce all records.", _, true, 0.0);
 	g_hAnnounceRecord = AutoExecConfig_CreateConVar("ck_chat_record_type", "0", "0: Announce all times to chat, 1: Only announce PB's to chat, 2: Only announce SR's to chat", _, true, 0.0, true, 2.0);
 	g_hForceCT = AutoExecConfig_CreateConVar("ck_force_players_ct", "0", "Forces all players to join the CT team.", _, true, 0.0, true, 1.0);
@@ -341,67 +322,6 @@ void CreateConVars()
 
 	// Play Replay
 	g_hPlayReplayVipOnly = AutoExecConfig_CreateConVar("ck_play_replay_vip_only", "1", "Sets whether the sm_replay command will be VIP only Disable/Enable");
-
-	// Sound Convars
-	g_hSoundPathWR = AutoExecConfig_CreateConVar("ck_sp_wr", "sound/surftimer/wr.mp3", "Set the sound path for the WR sound");
-	HookConVarChange(g_hSoundPathWR, OnSettingChanged);
-	GetConVarString(g_hSoundPathWR, g_szSoundPathWR, sizeof(g_szSoundPathWR));
-	if (FileExists(g_szSoundPathWR))
-	{
-		char sBuffer[2][PLATFORM_MAX_PATH];
-		ExplodeString(g_szSoundPathWR, "sound/", sBuffer, 2, PLATFORM_MAX_PATH);
-		Format(g_szRelativeSoundPathWR, sizeof(g_szRelativeSoundPathWR), "*%s", sBuffer[1]);
-	}
-	else
-	{
-		Format(g_szSoundPathWR, sizeof(g_szSoundPathWR), WR2_FULL_SOUND_PATH);
-		Format(g_szRelativeSoundPathWR, sizeof(g_szRelativeSoundPathWR), WR2_RELATIVE_SOUND_PATH);
-	}
-
-	g_hSoundPathTop = AutoExecConfig_CreateConVar("ck_sp_top", "sound/surftimer/top10.mp3", "Set the sound path for the Top 10 sound");
-	HookConVarChange(g_hSoundPathTop, OnSettingChanged);
-	GetConVarString(g_hSoundPathTop, g_szSoundPathTop, sizeof(g_szSoundPathTop));
-	if (FileExists(g_szSoundPathTop))
-	{
-		char sBuffer[2][PLATFORM_MAX_PATH];
-		ExplodeString(g_szSoundPathTop, "sound/", sBuffer, 2, PLATFORM_MAX_PATH);
-		Format(g_szRelativeSoundPathTop, sizeof(g_szRelativeSoundPathTop), "*%s", sBuffer[1]);
-	}
-	else
-	{
-		Format(g_szSoundPathTop, sizeof(g_szSoundPathTop), TOP10_FULL_SOUND_PATH);
-		Format(g_szRelativeSoundPathTop, sizeof(g_szRelativeSoundPathTop), TOP10_RELATIVE_SOUND_PATH);
-	}
-
-	g_hSoundPathPB = AutoExecConfig_CreateConVar("ck_sp_pb", "sound/surftimer/pr.mp3", "Set the sound path for the PB sound");
-	HookConVarChange(g_hSoundPathPB, OnSettingChanged);
-	GetConVarString(g_hSoundPathPB, g_szSoundPathPB, sizeof(g_szSoundPathPB));
-	if (FileExists(g_szSoundPathPB))
-	{
-		char sBuffer[2][PLATFORM_MAX_PATH];
-		ExplodeString(g_szSoundPathPB, "sound/", sBuffer, 2, PLATFORM_MAX_PATH);
-		Format(g_szRelativeSoundPathPB, sizeof(g_szRelativeSoundPathPB), "*%s", sBuffer[1]);
-	}
-	else
-	{
-		Format(g_szSoundPathPB, sizeof(g_szSoundPathPB), PR_FULL_SOUND_PATH);
-		Format(g_szRelativeSoundPathPB, sizeof(g_szRelativeSoundPathPB), PR_RELATIVE_SOUND_PATH);
-	}
-
-	g_hSoundPathWRCP = AutoExecConfig_CreateConVar("ck_sp_wrcp", "sound/physics/glass/glass_bottle_break2.wav", "Set the sound path for the WRCP sound");
-	HookConVarChange(g_hSoundPathWRCP, OnSettingChanged);
-	GetConVarString(g_hSoundPathWRCP, g_szSoundPathWRCP, sizeof(g_szSoundPathWRCP));
-	if (FileExists(g_szSoundPathWRCP))
-	{
-		char sBuffer[2][PLATFORM_MAX_PATH];
-		ExplodeString(g_szSoundPathWRCP, "sound/", sBuffer, 2, PLATFORM_MAX_PATH);
-		Format(g_szRelativeSoundPathWRCP, sizeof(g_szRelativeSoundPathWRCP), "*%s", sBuffer[1]);
-	}
-	else
-	{
-		Format(g_szSoundPathWRCP, sizeof(g_szSoundPathWRCP), "sound/physics/glass/glass_bottle_break2.wav");
-		Format(g_szRelativeSoundPathWRCP, sizeof(g_szRelativeSoundPathWRCP), "*physics/glass/glass_bottle_break2.wav");
-	}
 
 	g_hMustPassCheckpoints = AutoExecConfig_CreateConVar("ck_enforce_checkpoints", "1", "Sets whether a player must pass all checkpoints to finish their run. Enable/Disable");
 

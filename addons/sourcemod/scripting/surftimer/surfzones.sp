@@ -542,21 +542,19 @@ public void StartTouch(int client, int action[3])
 						CL_OnEndPracSrcpTimerPress(client, fCurrentPracSrcpRunTime);
 					}
 				}
-				
+
 				// Stage enforcer
 				g_iCheckpointsPassed[client]++;
 				if (g_iCheckpointsPassed[client] == g_TotalStages)
 					g_bIsValidRun[client] = true;
-				
+
 				if (g_iCurrentStyle[client] == 0)
 				{
 					Checkpoint(client, action[1], g_iClientInZone[client][2], fCurrentRunTime, g_fLastSpeed[client]);
 				}
 				else{
-					//PrintToChatAll("style %d | cp %i | %d tick count", g_iCurrentStyle[client], action[1], g_iRecordedTicks[client]);
 					g_iCPStartFrame_CurrentRun[g_iCurrentStyle[client]][action[1]][client] = g_iRecordedTicks[client];
 				}
-				
 				if (!g_bSaveLocTele[client])
 				{
 					lastCheckpoint[g_iClientInZone[client][2]][client] = action[1];
@@ -602,7 +600,7 @@ public void StartTouch(int client, int action[3])
 						g_iCheckpointsPassed[client]++;
 
 						if (g_iCheckpointsPassed[client] == g_iTotalCheckpoints)
-						{	
+						{
 							g_bIsValidRun[client] = true;
 						}
 					}
@@ -617,7 +615,7 @@ public void StartTouch(int client, int action[3])
 				if (g_iCurrentStyle[client] == 0)
 				{
 					Checkpoint(client, action[1], g_iClientInZone[client][2], fCurrentRunTime, g_fLastSpeed[client]);
-					
+
 					if (!g_bSaveLocTele[client])
 					{
 						lastCheckpoint[g_iClientInZone[client][2]][client] = action[1];
@@ -628,7 +626,6 @@ public void StartTouch(int client, int action[3])
 					}
 				}
 				else{
-					//PrintToChatAll("style %d | cp %i | %d tick count", g_iCurrentStyle[client], action[1], g_iRecordedTicks[client]);
 					g_iCPStartFrame_CurrentRun[g_iCurrentStyle[client]][action[1]][client] = g_iRecordedTicks[client];
 				}
 			}
@@ -708,7 +705,7 @@ public void EndTouch(int client, int action[3])
 				if (g_bNoClip[client] || (!g_bNoClip[client] && (GetGameTime() - g_fLastTimeNoClipUsed[client]) < 3.0))
 				{
 					CPrintToChat(client, "%t", "SurfZones1", g_szChatPrefix);
-					EmitSoundToClientNoPreCache(client, "play buttons\\button10.wav", false);
+					PlaySound(client, 9);
 					// fluffys
 					// ClientCommand(client, "sm_stuck");
 				}

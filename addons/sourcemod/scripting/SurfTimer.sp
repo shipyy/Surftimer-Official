@@ -24,7 +24,6 @@
 #include <dhooks>
 #include <mapchooser>
 #include <surftimer>
-// #include <chat-processor>
 
 /*===================================
 =            Definitions            =
@@ -44,6 +43,7 @@
 #include "surftimer/globals.sp"
 #include "surftimer/api.sp"
 #include "surftimer/convars.sp"
+#include "surftimer/sound.sp"
 #include "surftimer/misc.sp"
 #include "surftimer/db/queries.sp"
 #include "surftimer/db/updater.sp"
@@ -217,6 +217,9 @@ public void OnMapStart()
 	for (int i = 0; i < MAX_STYLES; i++)
 		g_bReplayTickFound[i] = false;
 
+	//PRECACHE SOUNDS
+	PreCacheSounds();
+
 	// Precache
 	InitPrecache();
 	SetCashState();
@@ -275,7 +278,6 @@ public void OnMapStart()
 		{
 			char szTriggerName[128];
 			GetEntPropString(iEnt, Prop_Send, "m_iName", szTriggerName, 128, 0);
-			//PushArrayString(g_TriggerMultipleList, szTriggerName);
 			AddMenuItem(g_mTriggerMultipleMenu, szTriggerName, szTriggerName);
 		}
 	}
@@ -319,8 +321,6 @@ public void OnMapStart()
 
 public void OnMapEnd()
 {
-
-	// ServerCommand("sm_updater_force");
 	g_bEnableJoinMsgs = false;
 	g_bServerDataLoaded = false;
 	g_bHasLatestID = false;
@@ -622,6 +622,9 @@ public void OnClientDisconnect(int client)
 			db_UpdatePRinfo(client, g_szSteamID[client], zonegroup);
 		}
 	}
+
+	//SOUNDS
+	db_updatePlayerSound(client);
 }
 
 public void OnSettingChanged(Handle convar, const char[] oldValue, const char[] newValue)
@@ -1081,66 +1084,6 @@ public void OnSettingChanged(Handle convar, const char[] oldValue, const char[] 
 		else
 			g_VipFlag = FlagToBit(flag);
 	}
-	else if (convar == g_hSoundPathWR)
-	{
-		GetConVarString(g_hSoundPathWR, g_szSoundPathWR, sizeof(g_szSoundPathWR));
-		if (FileExists(g_szSoundPathWR))
-		{
-			char sBuffer[2][PLATFORM_MAX_PATH];
-			ExplodeString(g_szSoundPathWR, "sound/", sBuffer, 2, PLATFORM_MAX_PATH);
-			Format(g_szRelativeSoundPathWR, sizeof(g_szRelativeSoundPathWR), "*%s", sBuffer[1]);
-		}
-		else
-		{
-			Format(g_szSoundPathWR, sizeof(g_szSoundPathWR), WR2_FULL_SOUND_PATH);
-			Format(g_szRelativeSoundPathWR, sizeof(g_szRelativeSoundPathWR), WR2_RELATIVE_SOUND_PATH);
-		}
-	}
-	else if (convar == g_hSoundPathTop)
-	{
-		GetConVarString(g_hSoundPathTop, g_szSoundPathTop, sizeof(g_szSoundPathTop));
-		if (FileExists(g_szSoundPathTop))
-		{
-			char sBuffer[2][PLATFORM_MAX_PATH];
-			ExplodeString(g_szSoundPathTop, "sound/", sBuffer, 2, PLATFORM_MAX_PATH);
-			Format(g_szRelativeSoundPathTop, sizeof(g_szRelativeSoundPathTop), "*%s", sBuffer[1]);
-		}
-		else
-		{
-			Format(g_szSoundPathTop, sizeof(g_szSoundPathTop), TOP10_FULL_SOUND_PATH);
-			Format(g_szRelativeSoundPathTop, sizeof(g_szRelativeSoundPathTop), TOP10_RELATIVE_SOUND_PATH);
-		}
-	}
-	else if (convar == g_hSoundPathPB)
-	{
-		GetConVarString(g_hSoundPathPB, g_szSoundPathPB, sizeof(g_szSoundPathPB));
-		if (FileExists(g_szSoundPathPB))
-		{
-			char sBuffer[2][PLATFORM_MAX_PATH];
-			ExplodeString(g_szSoundPathPB, "sound/", sBuffer, 2, PLATFORM_MAX_PATH);
-			Format(g_szRelativeSoundPathPB, sizeof(g_szRelativeSoundPathPB), "*%s", sBuffer[1]);
-		}
-		else
-		{
-			Format(g_szSoundPathPB, sizeof(g_szSoundPathPB), PR_FULL_SOUND_PATH);
-			Format(g_szRelativeSoundPathPB, sizeof(g_szRelativeSoundPathPB), PR_RELATIVE_SOUND_PATH);
-		}
-	}
-	else if (convar == g_hSoundPathWRCP)
-	{
-		GetConVarString(g_hSoundPathWRCP, g_szSoundPathWRCP, sizeof(g_szSoundPathWRCP));
-		if (FileExists(g_szSoundPathWRCP))
-		{
-			char sBuffer[2][PLATFORM_MAX_PATH];
-			ExplodeString(g_szSoundPathWRCP, "sound/", sBuffer, 2, PLATFORM_MAX_PATH);
-			Format(g_szRelativeSoundPathWRCP, sizeof(g_szRelativeSoundPathWRCP), "*%s", sBuffer[1]);
-		}
-		else
-		{
-			Format(g_szSoundPathWRCP, sizeof(g_szSoundPathWRCP), "sound/physics/glass/glass_bottle_break2.wav");
-			Format(g_szRelativeSoundPathWRCP, sizeof(g_szRelativeSoundPathWRCP), "*physics/glass/glass_bottle_break2.wav");
-		}
-	}
 	if (g_hZoneTimer != INVALID_HANDLE)
 	{
 		KillTimer(g_hZoneTimer);
@@ -1176,6 +1119,9 @@ public void OnPluginStart()
 
 	// Hints array
 	g_aHints = new ArrayList(MAX_HINT_SIZE);
+
+	//SOUNDS
+	g_Sounds = new ArrayList(PLATFORM_MAX_PATH);
 
 	// mapcycle array
 	int arraySize = ByteCountToCells(PLATFORM_MAX_PATH);

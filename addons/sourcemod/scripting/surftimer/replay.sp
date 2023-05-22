@@ -440,8 +440,6 @@ public void PlayRecord(int client, int type, int style, int use_CP)
 		return;
 	}
 
-	//PrintToChatAll("style value inside : %d", style);
-
 	char buffer[256];
 	char sPath[256];
 
@@ -509,12 +507,11 @@ public void PlayRecord(int client, int type, int style, int use_CP)
 		}
 		else
 		{
-			//PrintToChatAll("\n\nHERE\n\n");
 			// get style acronym and make it upper case
 			char buffer2[128];
 			Format(buffer2, sizeof(buffer2), g_szStyleAcronyms[style]);
 			StringToUpper(buffer2);
-			
+
 			Format(buffer, sizeof(buffer), "%s: %s (%s)", buffer2, g_szReplayName, g_szReplayTime);
 			SetClientName(client, buffer);
 

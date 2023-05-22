@@ -90,8 +90,13 @@ public void CheckDatabaseForUpdates()
             db_upgradeDatabase(15);
             return;
         }
+        if (!SQL_FastQuery(g_hDb, "SELECT enabled FROM ck_soundoptions LIMIT 1"))
+        {
+            db_upgradeDatabase(16);
+            return;
+        }
 
-        LogMessage("Version 15 looks good.");
+        LogMessage("Version 16 looks good.");
     }
 }
 
@@ -99,7 +104,6 @@ public void db_upgradeDatabase(int ver)
 {
     if (ver == 0)
     {
-        // SurfTimer v2.01 -> SurfTimer v2.1
         char query[128];
         for (int i = 1; i < 11; i++)
         {
@@ -121,7 +125,6 @@ public void db_upgradeDatabase(int ver)
     }
     else if (ver == 1)
     {
-    // SurfTimer v2.1 -> v2.2
         SQL_FastQuery(g_hDb_Updates, "ALTER TABLE ck_maptier ADD COLUMN ranked INT(11) NOT NULL DEFAULT '1';");
         SQL_FastQuery(g_hDb_Updates, "ALTER TABLE ck_playerrank DROP PRIMARY KEY, ADD COLUMN style INT(11) NOT NULL DEFAULT '0', ADD PRIMARY KEY (steamid, style);");
     }
@@ -186,6 +189,11 @@ public void db_upgradeDatabase(int ver)
     {
         SQL_FastQuery(g_hDb_Updates, "ALTER TABLE ck_playertemp ADD COLUMN CCP_times varchar(2048);");
         SQL_FastQuery(g_hDb_Updates, "ALTER TABLE ck_playertemp ADD COLUMN CCP_attempts varchar(2048);");
+    }
+    else if (ver == 16)
+    {
+        SQL_FastQuery(g_hDb_Updates, sql_createSoundOptions);
+        SQL_FastQuery(g_hDb_Updates, "ALTER TABLE ck_playeroptions2 DROP COLUMN IF EXISTS sounds;");
     }
 
     CheckDatabaseForUpdates();
