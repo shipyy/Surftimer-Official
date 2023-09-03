@@ -507,9 +507,9 @@ public Action ShowHintsTimer(Handle timer)
 }
 
 public Action TimeleftTimer(Handle timer,any client)
-{	
+{
 
-	/* 
+	/*
 	=====
 	Code used from : "https://github.com/FAQU2/timeleft-onscreen"
 	=====
@@ -527,9 +527,9 @@ public Action TimeleftTimer(Handle timer,any client)
 				FormatEx(timeleft, sizeof(timeleft), "Timeleft: %ih %02im", time / 3600, (time / 60) % 60);
 			else if (time < 60)
 				FormatEx(timeleft, sizeof(timeleft), "Timeleft: %02is", time);
-			else 
+			else
 				FormatEx(timeleft, sizeof(timeleft), "Timeleft: %im %02is", time / 60, time % 60);
-			
+
 			SetHudTextParams(-1.0, 0.10, 1.0, 255, 255, 255, 255, 0, 0.0, 0.0, 0.0);
 
 			ShowSyncHudText(i, Timeleft_Handle, timeleft);

@@ -757,6 +757,7 @@ public bool LoadRecordFromFile(const char[] path, FileHeader header, bool header
 		}
 
 		header.Frames = aRecordFrames;
+		delete aRecordFrames;
 
 		// Free any old handles if we already loaded this one once before.
 		StringMap smOldAT;

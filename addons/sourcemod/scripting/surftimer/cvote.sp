@@ -1,17 +1,17 @@
 char votetype[32];
 char mapnameforvote[64];
 
-Handle mapTime;
+//Handle mapTime;
 
-public void GetCurrentMaptime()
-{
-	mapTime = FindConVar("mp_timelimit");
-}
+// public void GetCurrentMaptime()
+// {
+// 	mapTime = FindConVar("mp_timelimit");
+// }
 
 public void extendMap(int seconds)
 {
 	ExtendMapTimeLimit(seconds);
-	GetCurrentMaptime();
+	//GetCurrentMaptime();
 }
 
 public Action start_vote(int client, int args)
@@ -103,13 +103,15 @@ public int Handle_VoteMenuExtend(Menu menu, MenuAction action, int param1, int p
 
 		percent = votes / totalVotes;
 
-		GetCurrentMaptime();
-		int iTimeLimit = GetConVarInt(mapTime);
+		//GetCurrentMaptime();
+		//int iTimeLimit = GetConVarInt(mapTime);
 
-		if (iTimeLimit >= 90)
-			limit = 0.75;
-		else
-			limit = 0.50;
+		// if (iTimeLimit >= 90)
+		// 	limit = 0.75;
+		// else
+		// 	limit = 0.50;
+
+		limit = 0.65;
 
 		/* 0=yes, 1=no */
 		if ((strcmp(item, VOTE_YES) == 0 && FloatCompare(percent,limit) < 0 && param1 == 0) || (strcmp(item, VOTE_NO) == 0 && param1 == 1))

@@ -309,16 +309,27 @@ public void StartTouch(int client, int action[3])
 {
 	if (IsValidClient(client))
 	{	
-		float speedCap = g_mapZones[g_iClientInZone[client][3]].PreSpeed;
+		// char temp[128];
+		// GetClientName(client, temp, sizeof temp);
+		// PrintToConsole(0, "client id:", client);
+		// PrintToConsole(0, "0: %s", temp);
+		// PrintToConsole(0, "1: %d", g_iClientInZone[client][3]);
+		// PrintToConsole(0, "2: %f", g_mapZones[g_iClientInZone[client][3]].PreSpeed);
+
+		float speedCap;
+		if(!IsFakeClient(client)) {
+			speedCap = g_mapZones[g_iClientInZone[client][3]].PreSpeed;
+		}
 
 		float CurVelVec[3];
 		GetEntPropVector(client, Prop_Data, "m_vecVelocity", CurVelVec);
 		float currentspeed_XY = SquareRoot(Pow(CurVelVec[0], 2.0) + Pow(CurVelVec[1], 2.0));
 		float currentspeed_Z = SquareRoot(Pow(CurVelVec[2], 2.0));
 
-		if ((action[0] == 1 || (action[0] == 3 && g_Stage[0][client] == g_iClientInZone[client][2]) || action[0] == 5) && g_bPracticeMode[client] && (currentspeed_XY > g_mapZones[g_iClientInZone[client][3]].PreSpeed || currentspeed_Z > g_mapZones[g_iClientInZone[client][3]].PreSpeed) ) {
-			
-			Command_Teleport(client, 1); // teleport back to zone
+		if(!IsFakeClient(client)) {
+			if ((action[0] == 1 || (action[0] == 3 && g_Stage[0][client] == g_iClientInZone[client][2]) || action[0] == 5) && g_bPracticeMode[client] && (currentspeed_XY > g_mapZones[g_iClientInZone[client][3]].PreSpeed || currentspeed_Z > g_mapZones[g_iClientInZone[client][3]].PreSpeed) ) {
+				Command_Teleport(client, 1); // teleport back to zone
+			}
 		}
 
 		float fCurrentRunTime = g_fCurrentRunTime[client];

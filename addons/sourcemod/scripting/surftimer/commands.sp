@@ -2653,11 +2653,14 @@ void CenterSpeedDisplay(int client, bool menu = false)
 			default: update_rate = 15;
 		}
 	}
+	else {
+		return;
+	}
 
 	if(g_iClientTick[client] - g_iCurrentTick[client] >= update_rate)
 	{
 		g_iCurrentTick[client] += update_rate;
-		if (IsValidClient(client) && !IsFakeClient(client) && g_bCenterSpeedDisplay[client])
+		if (IsValidClient(client) && !IsFakeClient(client))
 		{
 
 			float fCSD_PosX;
