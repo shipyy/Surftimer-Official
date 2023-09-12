@@ -748,6 +748,11 @@ public Action ApplyStyles(Handle timer, int client)
 
 public Action OnMultipleTrigger1(int entity, int client)
 {
+	if (!IsValidClient(client) || IsFakeClient(client))
+	{
+		return Plugin_Handled;
+	}
+
 	CreateTimer(0.1, ApplyStyles, client);
 
 	return Plugin_Continue;
@@ -756,7 +761,7 @@ public Action OnMultipleTrigger1(int entity, int client)
 public Action OnTriggerOutput(const char[] output, int caller, int activator, float delay)
 {
 	if (!IsValidClient(activator)) return Plugin_Continue;
-	
+
 	// Block Output when player use a teleport command
 	if(g_bTeleByCommand[activator])
 	{

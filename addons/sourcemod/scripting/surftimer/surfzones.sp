@@ -308,14 +308,7 @@ public Action EndTouchTrigger(int caller, int activator)
 public void StartTouch(int client, int action[3])
 {
 	if (IsValidClient(client))
-	{	
-		// char temp[128];
-		// GetClientName(client, temp, sizeof temp);
-		// PrintToConsole(0, "client id:", client);
-		// PrintToConsole(0, "0: %s", temp);
-		// PrintToConsole(0, "1: %d", g_iClientInZone[client][3]);
-		// PrintToConsole(0, "2: %f", g_mapZones[g_iClientInZone[client][3]].PreSpeed);
-
+	{
 		float speedCap;
 		if(!IsFakeClient(client)) {
 			speedCap = g_mapZones[g_iClientInZone[client][3]].PreSpeed;
@@ -335,7 +328,7 @@ public void StartTouch(int client, int action[3])
 		float fCurrentRunTime = g_fCurrentRunTime[client];
 		float fCurrentWrcpRunTime = g_fCurrentWrcpRunTime[client];
 		float fCurrentPracSrcpRunTime = g_fCurrentPracSrcpRunTime[client];
-		
+
 		// Types: Start(1), End(2), Stage(3), Checkpoint(4), Speed(5), TeleToStart(6), Validator(7), Chekcer(8), Stop(0) // fluffys: NoBhop(9), NoCrouch(10)
 
 		//PRINFO
